@@ -14,8 +14,10 @@ App.start({
     `,
   main() {
     Launcher();
-    App.get_monitors().map(Bar);
-    App.get_monitors().map(OSD);
-    App.get_monitors().map(Dock);
+    for (const monitor in App.get_monitors()) {
+      Bar({ monitor });
+      OSD({ monitor });
+      Dock({ monitor });
+    }
   },
 });

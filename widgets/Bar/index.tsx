@@ -13,7 +13,7 @@ import Niri from "../../support/niri";
 import niri from "../../support/niri";
 import Weather from "./Weather";
 
-export default (gdkmonitor: Gdk.Monitor) => {
+export default ({ monitor }: { monitor: Gdk.Monitor }) => {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
   const visible = Variable(false);
   niri.activeWindowId.subscribe((x) => {
@@ -46,14 +46,14 @@ export default (gdkmonitor: Gdk.Monitor) => {
       <SysTray />
       <Network />
       <Hardware />
-      <QuickSettings gdkmonitor={gdkmonitor} />
+      <QuickSettings monitor={monitor} />
     </box>
   );
 
   return (
     <window
       name="bar"
-      gdkmonitor={gdkmonitor}
+      monitor={monitor}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={TOP | LEFT | RIGHT}
       application={App}
@@ -62,11 +62,25 @@ export default (gdkmonitor: Gdk.Monitor) => {
       `}
     >
       <centerbox
-        visible={visible()}
+        // visible={visible()}
         start_widget={LeftModules}
         center_widget={CenterModules}
         end_widget={RightModules}
       />
+      {/* <revealer
+        // revealChild={visible()}
+        // transitionDuration={globalTransition}
+        // transitionType={Gtk.RevealerTransitionType.NONE}
+        // transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
+        child={
+          <centerbox
+            // visible={visible()}
+            start_widget={LeftModules}
+            center_widget={CenterModules}
+            end_widget={RightModules}
+          />
+        }
+      /> */}
     </window>
   );
 };

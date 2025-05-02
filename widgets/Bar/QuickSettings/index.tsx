@@ -5,7 +5,7 @@ import { execAsync } from "astal/process";
 import { App, Gtk } from "astal/gtk3";
 import { confirm } from "../../../support/confirm";
 
-export default ({ gdkmonitor }) => {
+export default ({ monitor }: { monitor: Gdk.Monitor }) => {
   const visible = Variable(false);
 
   const logout = () =>
@@ -20,7 +20,7 @@ export default ({ gdkmonitor }) => {
     valign={Gtk.Align.START}
     halign={Gtk.Align.END}
     application={App}
-    gdkmonitor={gdkmonitor}
+    monitor={monitor}
   >
     <box
       widthRequest={320}

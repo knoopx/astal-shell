@@ -46,7 +46,6 @@ const AppButton = ({ app }: { app: Apps.Application }) => {
 
 export default () => {
   const apps = new Apps.Apps();
-
   const text = Variable("");
   const list = text((text) => apps.fuzzy_query(text).slice(0, MAX_ITEMS));
   const onSelect = () => {
@@ -55,7 +54,6 @@ export default () => {
   };
 
   let ref;
-
   return (
     <window
       name="launcher"
@@ -74,7 +72,12 @@ export default () => {
         ref.grab_focus();
       }}
       onKeyPressEvent={(self, e) => {
-        if (e.get_keyval()[1] === Gdk.KEY_Escape) self.hide();
+        const key = e.get_keyval()[1];
+        if (key === Gdk.KEY_Escape) self.hide();
+        if (!ref.has_focus && ![65362, 65364].includes(key)) {
+          ref.grab_focus();
+          ref.set_position(ref.get_text_length());
+        }
       }}
       css={`
         background: rgba(0, 0, 0, 0.35);
@@ -83,6 +86,7 @@ export default () => {
       <box
         widthRequest={500}
         spacing={16}
+        valign={Gtk.Align.START}
         halign={Gtk.Align.CENTER}
         vertical
         css={`

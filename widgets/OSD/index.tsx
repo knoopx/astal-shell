@@ -54,7 +54,7 @@ const OnScreenProgress = ({ visible }) => {
   );
 };
 
-export default function OSD(monitor: Gdk.Monitor) {
+export default function OSD({ monitor }: { monitor: Gdk.Monitor }) {
   const visible = Variable(false);
 
   return (
@@ -68,7 +68,7 @@ export default function OSD(monitor: Gdk.Monitor) {
       css={`
         background: none;
       `}
-      gdkmonitor={monitor}
+      monitor={monitor}
       application={App}
       layer={Astal.Layer.OVERLAY}
       keymode={Astal.Keymode.ON_DEMAND}
