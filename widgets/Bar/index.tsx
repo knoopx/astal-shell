@@ -50,7 +50,7 @@ export default ({ monitor }: { monitor: Gdk.Monitor }) => {
     </box>
   );
 
-  return (
+  const win = (
     <window
       name="bar"
       monitor={monitor}
@@ -61,12 +61,14 @@ export default ({ monitor }: { monitor: Gdk.Monitor }) => {
         background: rgba(0, 0, 0, 0.5);
       `}
     >
+      {/* {bind(visible).as((v) => ( */}
       <centerbox
         // visible={visible()}
         start_widget={LeftModules}
         center_widget={CenterModules}
         end_widget={RightModules}
       />
+      {/* ))} */}
       {/* <revealer
         // revealChild={visible()}
         // transitionDuration={globalTransition}
@@ -83,4 +85,11 @@ export default ({ monitor }: { monitor: Gdk.Monitor }) => {
       /> */}
     </window>
   );
+
+  visible.subscribe((v) => {
+    win.opacity = v ? 1 : 0;
+    win.reactive = v ? 0 : 1;
+  });
+
+  return win;
 };

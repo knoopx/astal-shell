@@ -4,22 +4,15 @@ import { bind, GLib, Variable } from "astal";
 
 const MAX_ITEMS = 12;
 
-function hide() {
-  App.get_window("launcher")!.hide();
-}
-
-const AppButton = ({ app }: { app: Apps.Application }) => {
+const AppButton = ({ app, ...props }: { app: Apps.Application }) => {
   return (
-    <button
-      onClicked={() => {
-        hide();
-        app.launch();
-      }}
-    >
+    <button {...props}>
       <box spacing={10}>
         <icon
           css={`
             font-size: 3em;
+            min-width: 48px;
+            min-height: 48px;
           `}
           icon={app.iconName}
         />
@@ -46,11 +39,15 @@ const AppButton = ({ app }: { app: Apps.Application }) => {
 
 export default () => {
   const apps = new Apps.Apps();
+  const selected = Variable(null);
   const text = Variable("");
   const list = text((text) => apps.fuzzy_query(text).slice(0, MAX_ITEMS));
-  const onSelect = () => {
-    apps.fuzzy_query(text.get())?.[0].launch();
-    hide();
+  const onSubmit = () => {
+    App.get_window("launcher")!.hide();
+    const app = selected.get() || list.get()[0];
+    app.launch();
+    text.set("");
+    ref.set_text("");
   };
 
   let ref;
@@ -68,15 +65,16 @@ export default () => {
       keymode={Astal.Keymode.ON_DEMAND}
       application={App}
       onShow={(self) => {
-        ref.set_text("");
         ref.grab_focus();
       }}
       onKeyPressEvent={(self, e) => {
-        const key = e.get_keyval()[1];
-        if (key === Gdk.KEY_Escape) self.hide();
-        if (!ref.has_focus && ![65362, 65364].includes(key)) {
-          ref.grab_focus();
-          ref.set_position(ref.get_text_length());
+        if (self.visible) {
+          const key = e.get_keyval()[1];
+          if (key === Gdk.KEY_Escape) self.hide();
+          if (!ref.has_focus && ![65362, 65364].includes(key)) {
+            ref.grab_focus();
+            ref.set_position(ref.get_text_length());
+          }
         }
       }}
       css={`
@@ -106,10 +104,14 @@ export default () => {
           onChanged={(self) => {
             text.set(self.text);
           }}
-          onActivate={onSelect}
+          onActivate={onSubmit}
         />
         <box spacing={6} vertical>
-          {list.as((list) => list.map((app) => <AppButton app={app} />))}
+          {list.as((list) =>
+            list.map((app) => (
+              <AppButton onFocus={() => selected.set(app)} app={app} />
+            ))
+          )}
         </box>
       </box>
     </window>
