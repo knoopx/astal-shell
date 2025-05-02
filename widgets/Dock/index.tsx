@@ -28,25 +28,30 @@ function AppButton({ app }: { app: Apps.Application }) {
 
 export default (monitor) => {
   const apps = new Apps.Apps();
-  const myApps = [
-    "nautilus",
-    "firefox",
-    "gmail",
-    "calendar",
-    "telegram",
-    "whatsapp",
-    "spotify",
-    "plexamp",
-    "plex web",
-    "webull",
-    "reddit",
-    "youtube",
-    "home assistant",
-  ].map((x) => apps.exact_query(x)[0]);
 
   const visible = Variable(false);
   niri.activeWindowId.subscribe((x) => {
     visible.set(x == null);
+  });
+
+  const appButtons = bind(visible).as(() => {
+    const matches = [
+      "nautilus",
+      "firefox",
+      "gmail",
+      "calendar",
+      "telegram",
+      "whatsapp",
+      "spotify",
+      "plexamp",
+      "plex web",
+      "webull",
+      "reddit",
+      "youtube",
+      "home assistant",
+    ].map((x) => apps.exact_query(x)[0]);
+
+    return matches.map((app) => <AppButton app={app} />);
   });
 
   return (
@@ -57,8 +62,9 @@ export default (monitor) => {
         Astal.WindowAnchor.TOP |
         Astal.WindowAnchor.BOTTOM
       }
-      monitor={monitor.id}
+      monitor={monitor}
       keymode={Astal.Keymode.NONE}
+      layer={Astal.Layer.OVERLAY}
       exclusivity={Astal.Exclusivity.IGNORE}
       application={App}
       css={`
@@ -75,9 +81,7 @@ export default (monitor) => {
         visible={visible()}
         vertical
       >
-        {myApps.map((app) => (
-          <AppButton app={app} />
-        ))}
+        {appButtons}
       </box>
     </window>
   );
