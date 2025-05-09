@@ -17,7 +17,7 @@ App.start({
     for (const monitor in App.get_monitors()) {
       Bar({ monitor });
       OSD({ monitor });
-      Dock({ monitor });
+      // Dock({ monitor });
     }
   },
 });

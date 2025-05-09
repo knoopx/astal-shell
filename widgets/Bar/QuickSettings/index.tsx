@@ -2,10 +2,10 @@ import { Variable } from "astal";
 import Popover from "../../Popover";
 import Volume from "./Volume";
 import { execAsync } from "astal/process";
-import { App, Gtk } from "astal/gtk3";
+import { App, Gtk, Gdk } from "astal/gtk3";
 import { confirm } from "../../../support/confirm";
 
-export default ({ monitor }: { monitor: Gdk.Monitor }) => {
+export default ({ monitor }: { monitor: number }) => {
   const visible = Variable(false);
 
   const logout = () =>

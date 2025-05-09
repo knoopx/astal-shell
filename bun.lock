@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "astal-shell",
+      "dependencies": {
+        "astal": "/home/knoopx/.local/share/ags",
+      },
+    },
+  },
+  "packages": {
+    "astal": ["astal@file:../../.local/share/ags", {}],
+  }
+}

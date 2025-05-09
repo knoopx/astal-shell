@@ -12,8 +12,9 @@ import Hardware from "./Hardware";
 import Niri from "../../support/niri";
 import niri from "../../support/niri";
 import Weather from "./Weather";
+import Shortcuts from "./Shortcuts";
 
-export default ({ monitor }: { monitor: Gdk.Monitor }) => {
+export default ({ monitor }: { monitor: number }) => {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
   const visible = Variable(false);
   niri.activeWindowId.subscribe((x) => {
@@ -43,6 +44,7 @@ export default ({ monitor }: { monitor: Gdk.Monitor }) => {
       hexpand
       halign={Gtk.Align.END}
     >
+      <Shortcuts />
       <SysTray />
       <Network />
       <Hardware />

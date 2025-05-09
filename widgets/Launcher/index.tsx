@@ -4,7 +4,9 @@ import { bind, GLib, Variable } from "astal";
 
 const MAX_ITEMS = 12;
 
-const AppButton = ({ app, ...props }: { app: Apps.Application }) => {
+type AppButtonProps = Astal.Button & { app: Apps.Application };
+
+const AppButton = ({ app, ...props }: AppButtonProps) => {
   return (
     <button {...props}>
       <box spacing={10}>
@@ -42,43 +44,49 @@ export default () => {
   const selected = Variable(null);
   const text = Variable("");
   const list = text((text) => apps.fuzzy_query(text).slice(0, MAX_ITEMS));
-  const onSubmit = () => {
+  const run = (app: Apps.Application) => {
     App.get_window("launcher")!.hide();
-    const app = selected.get() || list.get()[0];
     app.launch();
     text.set("");
-    ref.set_text("");
+    textEntry.set_text("");
   };
 
-  let ref;
+  const textEntry = (
+    <entry
+      placeholderText="Search"
+      onChanged={(self) => {
+        text.set(self.text);
+      }}
+      onActivate={() => run(selected.get() || list.get()[0])}
+    />
+  );
+
   return (
     <window
       name="launcher"
       visible={false}
-      anchor={
-        Astal.WindowAnchor.TOP |
-        Astal.WindowAnchor.BOTTOM |
-        Astal.WindowAnchor.LEFT |
-        Astal.WindowAnchor.RIGHT
-      }
+      anchor={Astal.WindowAnchor.TOP}
       exclusivity={Astal.Exclusivity.IGNORE}
-      keymode={Astal.Keymode.ON_DEMAND}
+      // keymode={Astal.Keymode.ON_DEMAND}
+      keymode={Astal.Keymode.EXCLUSIVE}
+      modal={true}
       application={App}
-      onShow={(self) => {
-        ref.grab_focus();
+      onNotifyVisible={(self) => {
+        textEntry.grab_focus();
       }}
       onKeyPressEvent={(self, e) => {
         if (self.visible) {
           const key = e.get_keyval()[1];
           if (key === Gdk.KEY_Escape) self.hide();
-          if (!ref.has_focus && ![65362, 65364].includes(key)) {
-            ref.grab_focus();
-            ref.set_position(ref.get_text_length());
+          if (!textEntry.has_focus && ![65362, 65364].includes(key)) {
+            textEntry.grab_focus();
+            textEntry.set_position(textEntry.get_text_length());
           }
         }
       }}
+      marginTop={100}
       css={`
-        background: rgba(0, 0, 0, 0.35);
+        background: none;
       `}
     >
       <box
@@ -88,28 +96,22 @@ export default () => {
         halign={Gtk.Align.CENTER}
         vertical
         css={`
-          margin-top: 8em;
-          margin-bottom: 8em;
+          border: 3px solid @theme_selected_bg_color;
           background-color: @theme_bg_color;
-          box-shadow: 2px 3px 7px 0 rgba(0, 0, 0, 0.4);
           border-radius: 12px;
           padding: 12px;
         `}
       >
-        <entry
-          setup={(self) => {
-            ref = self;
-          }}
-          placeholderText="Search"
-          onChanged={(self) => {
-            text.set(self.text);
-          }}
-          onActivate={onSubmit}
-        />
+        {textEntry}
+
         <box spacing={6} vertical>
-          {list.as((list) =>
-            list.map((app) => (
-              <AppButton onFocus={() => selected.set(app)} app={app} />
+          {list.as((apps) =>
+            apps.map((app) => (
+              <AppButton
+                onClicked={() => run(app)}
+                onFocus={() => selected.set(app)}
+                app={app}
+              />
             ))
           )}
         </box>

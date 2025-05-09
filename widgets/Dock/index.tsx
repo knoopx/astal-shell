@@ -1,9 +1,9 @@
-import { App, Astal, Gtk, type Gdk } from "astal/gtk3";
+import { App, Astal, Gdk, Gtk } from "astal/gtk3";
 import Apps from "gi://AstalApps";
-import { bind, derive, Variable } from "astal";
+import { bind, Binding, Variable } from "astal";
 import niri from "../../support/niri";
 
-function AppButton({ app }: { app: Apps.Application }) {
+const AppButton = ({ app }: { app: Apps.Application }) => {
   return (
     <button
       onPressed={() => {
@@ -24,13 +24,13 @@ function AppButton({ app }: { app: Apps.Application }) {
       />
     </button>
   );
-}
+};
 
-export default (monitor) => {
+export default (monitor: number) => {
   const apps = new Apps.Apps();
 
   const visible = Variable(false);
-  niri.activeWindowId.subscribe((x) => {
+  niri.activeWindowId.subscribe((x: null) => {
     visible.set(x == null);
   });
 

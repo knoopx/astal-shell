@@ -4,9 +4,10 @@ import { Gtk } from "astal/gtk3";
 import networkSpeed from "./networkSpeed";
 import { format } from "../../../support/util";
 
-export default () => {
-  return bind(networkSpeed).as(({ download, upload }) => (
+export default () =>
+  bind(networkSpeed).as(({ download, upload }) => (
     <box
+      widthRequest={60}
       vertical
       valign={Gtk.Align.CENTER}
       css={`
@@ -18,4 +19,3 @@ export default () => {
       <label halign={Gtk.Align.END} label={format(download) + "/s ▼"} />
     </box>
   ));
-};

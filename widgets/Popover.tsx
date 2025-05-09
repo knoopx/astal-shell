@@ -2,20 +2,7 @@ import { Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
 
-type PopoverProps = Pick<
-  Widget.WindowProps,
-  | "name"
-  | "namespace"
-  | "className"
-  | "visible"
-  | "child"
-  | "marginBottom"
-  | "marginTop"
-  | "marginLeft"
-  | "marginRight"
-  | "halign"
-  | "valign"
-> & {
+type PopoverProps = Widget.WindowProps & {
   onClose?(self: Widget.Window): void;
 };
 
@@ -34,9 +21,9 @@ export default ({
     <window
       {...props}
       css="background-color: transparent"
-      keymode={Astal.Keymode.EXCLUSIVE}
       anchor={TOP | LEFT | BOTTOM | RIGHT}
       exclusivity={Astal.Exclusivity.IGNORE}
+      keymode={Astal.Keymode.NONE}
       onNotifyVisible={(self) => {
         if (!self.visible) onClose?.(self);
       }}

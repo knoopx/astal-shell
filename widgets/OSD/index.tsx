@@ -1,4 +1,4 @@
-import { App, Astal, Gdk, Gtk } from "astal/gtk3";
+import { App, Astal, Gtk } from "astal/gtk3";
 import { timeout } from "astal/time";
 import Variable from "astal/variable";
 import Wp from "gi://AstalWp";
@@ -54,7 +54,7 @@ const OnScreenProgress = ({ visible }) => {
   );
 };
 
-export default function OSD({ monitor }: { monitor: Gdk.Monitor }) {
+export default function OSD({ monitor }: { monitor: number }) {
   const visible = Variable(false);
 
   return (
@@ -62,16 +62,15 @@ export default function OSD({ monitor }: { monitor: Gdk.Monitor }) {
       name="osd"
       namespace="osd"
       visible={visible()}
-      setup={(self) => {
-        self.clickThrough = true;
-      }}
+      reactive={false}
       css={`
         background: none;
       `}
       monitor={monitor}
       application={App}
       layer={Astal.Layer.OVERLAY}
-      keymode={Astal.Keymode.ON_DEMAND}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      keymode={Astal.Keymode.NONE}
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.CENTER}
     >
