@@ -7,7 +7,7 @@ import { format } from "../../../support/util";
 export default () =>
   bind(networkSpeed).as(({ download, upload }) => (
     <box
-      widthRequest={60}
+      widthRequest={80}
       vertical
       valign={Gtk.Align.CENTER}
       css={`
