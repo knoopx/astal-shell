@@ -80,8 +80,24 @@ const Label = (props) => (
   />
 );
 
+const levelClass = (value) => {
+  if (value > 0.75) {
+    return "high";
+  }
+  if (value > 0.25) {
+    return "medium";
+  }
+  return "low";
+};
+
 const Meter = (props) => (
-  <levelbar {...props} vertical inverted heightRequest={18} />
+  <levelbar
+    className={levelClass(props.value)}
+    {...props}
+    vertical
+    inverted
+    heightRequest={18}
+  />
 );
 
 export default () => (
@@ -93,15 +109,15 @@ export default () => (
       spacing={8}
       valign={Gtk.Align.CENTER}
     >
-      <Meter value={cpu((v) => v / 100)} />
+      {cpu((v) => <Meter value={v / 100} />)}
       <Label label="CPU" />
-      <Meter value={ram((v) => v / 100)} />
+      {ram((v) => <Meter value={v / 100} />)}
       <Label label="RAM" />
-      <Meter value={gpu((v) => v[1] / 100)} />
+      {gpu((v) => <Meter value={v[1] / 100} />)}
       <Label label="GPU" />
-      <Meter value={gpu((v) => v[2] / v[3])} />
+      {gpu((v) => <Meter value={v[2] / v[3]} />)}
       <Label label="VRAM" />
-      <Meter value={disk(({ use }) => parseInt(use) / 100)} />
+      {disk(({ use }) => <Meter value={parseInt(use) / 100} />)}
       <Label label="HDD" />
     </box>
   </eventbox>

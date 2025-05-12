@@ -24,7 +24,8 @@ export class Niri extends GObject.Object {
   @property(Object)
   declare workspaces: Workspace[];
 
-  activeWindowId: Variable = Variable(-1);
+  overviewIsOpen: Variable<boolean> = Variable(false);
+  activeWindowId: Variable<number> = Variable(-1);
 
   constructor() {
     super();
@@ -39,6 +40,9 @@ export class Niri extends GObject.Object {
     for (const key in event) {
       const value = event[key];
       switch (key) {
+        case "OverviewOpenedOrClosed":
+          this.onOverviewOpenedOrClosed(value.is_open);
+          break;
         case "WindowFocusChanged":
           this.onWindowFocusChanged(value.id);
           break;
@@ -51,6 +55,10 @@ export class Niri extends GObject.Object {
           break;
       }
     }
+  }
+
+  onOverviewOpenedOrClosed(isOpen: boolean) {
+    this.overviewIsOpen.set(isOpen);
   }
 
   onWindowFocusChanged(id: number) {
@@ -84,5 +92,4 @@ export class Niri extends GObject.Object {
   }
 }
 
-
-export default new Niri()
+export default new Niri();

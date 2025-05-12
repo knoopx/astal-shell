@@ -16,10 +16,7 @@ import Shortcuts from "./Shortcuts";
 
 export default ({ monitor }: { monitor: number }) => {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
-  const visible = Variable(false);
-  niri.activeWindowId.subscribe((x) => {
-    visible.set(x != null);
-  });
+  const visible = Variable<boolean>(false);
 
   const LeftModules = (
     <box spacing={8} hexpand halign={Gtk.Align.START}>
@@ -44,7 +41,7 @@ export default ({ monitor }: { monitor: number }) => {
       hexpand
       halign={Gtk.Align.END}
     >
-      <Shortcuts />
+      {/* <Shortcuts /> */}
       <SysTray />
       <Network />
       <Hardware />
@@ -56,11 +53,16 @@ export default ({ monitor }: { monitor: number }) => {
     <window
       name="bar"
       monitor={monitor}
-      exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      visible={false}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      // exclusivity={Astal.Exclusivity.EXCLUSIVE}
       anchor={TOP | LEFT | RIGHT}
       application={App}
+      // background: rgba(0, 0, 0, 0.8);
+      // background-color: black;
       css={`
-        background: rgba(0, 0, 0, 0.5);
+        background-color: @theme_bg_color;
+        border-bottom: 1px solid @unfocused_borders;
       `}
     >
       {/* {bind(visible).as((v) => ( */}
@@ -88,9 +90,10 @@ export default ({ monitor }: { monitor: number }) => {
     </window>
   );
 
-  visible.subscribe((v) => {
-    win.opacity = v ? 1 : 0;
-    win.reactive = v ? 0 : 1;
+  niri.overviewIsOpen.subscribe((v) => {
+    win.set_visible(v);
+    // win.opacity = v ? 1 : 0;
+    // win.opacity = v ? 1 : 0;
   });
 
   return win;

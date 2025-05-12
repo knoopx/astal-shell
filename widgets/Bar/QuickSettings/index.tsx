@@ -4,6 +4,7 @@ import Volume from "./Volume";
 import { execAsync } from "astal/process";
 import { App, Gtk, Gdk } from "astal/gtk3";
 import { confirm } from "../../../support/confirm";
+import GLib from "gi://GLib";
 
 export default ({ monitor }: { monitor: number }) => {
   const visible = Variable(false);
@@ -31,13 +32,34 @@ export default ({ monitor }: { monitor: number }) => {
       `}
     >
       <box spacing={16}>
-        <button hexpand onPressed={logout}>
+        <button
+          hexpand
+          onPressed={logout}
+          css={`
+            color: @theme_bg_color;
+            background-color: @theme_selected_bg_color;
+          `}
+        >
           <icon icon="system-log-out-symbolic" />
         </button>
-        <button hexpand onPressed={reboot}>
+        <button
+          hexpand
+          onPressed={reboot}
+          css={`
+            color: @theme_bg_color;
+            background-color: @theme_selected_bg_color;
+          `}
+        >
           <icon icon="system-reboot-symbolic" />
         </button>
-        <button hexpand onPressed={poweroff}>
+        <button
+          hexpand
+          onPressed={poweroff}
+          css={`
+            color: @theme_bg_color;
+            background-color: @theme_selected_bg_color;
+          `}
+        >
           <icon icon="system-shutdown-symbolic" />
         </button>
       </box>
@@ -46,18 +68,26 @@ export default ({ monitor }: { monitor: number }) => {
   </Popover>;
 
   return (
-    <box>
-      <button
+    <button
+      css={`
+        padding: 0;
+        background: transparent;
+      `}
+      valign={Gtk.Align.CENTER}
+      halign={Gtk.Align.CENTER}
+      onClicked={() => {
+        visible.set(true);
+      }}
+    >
+      <box
         css={`
-          background: transparent;
-          font-size: 1.2em;
+          min-width: 24px;
+          min-height: 24px;
+          background-image: url("${GLib.getenv("HOME")}/.face");
+          background-size: cover;
+          border-radius: 100%;
         `}
-        onClicked={() => {
-          visible.set(true);
-        }}
-      >
-        <icon icon="sidebar-show-right-symbolic" />
-      </button>
-    </box>
+      />
+    </button>
   );
 };

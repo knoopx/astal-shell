@@ -20,7 +20,9 @@ export default ({
   return (
     <window
       {...props}
-      css="background-color: transparent"
+      css={`
+        background-color: transparent;
+      `}
       anchor={TOP | LEFT | BOTTOM | RIGHT}
       exclusivity={Astal.Exclusivity.IGNORE}
       keymode={Astal.Keymode.NONE}
@@ -54,6 +56,7 @@ export default ({
         marginStart={marginLeft}
         marginEnd={marginRight}
         css={`
+          border: 3px solid @theme_selected_bg_color;
           background-color: @theme_bg_color;
           box-shadow: 2px 3px 7px 0 rgba(0, 0, 0, 0.4);
           border-radius: 12px;

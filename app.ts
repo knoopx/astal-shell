@@ -5,11 +5,23 @@ import Launcher from "./widgets/Launcher";
 import Dock from "./widgets/Dock";
 
 App.start({
+  // background-color: @warning_color;
   css: `
     levelbar .filled {
       border-radius: 2px;
       background-clip: padding-box;
-      background-color: @theme_selected_bg_color;
+    }
+
+    levelbar.low .filled {
+      background-color: @success_color;
+    }
+
+    levelbar.medium .filled {
+      background-color: @theme_selected_bg_color
+    }
+
+    levelbar.high .filled {
+      background-color: @error_color;
     }
     `,
   main() {
