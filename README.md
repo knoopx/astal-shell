@@ -1,6 +1,6 @@
 # AGS Widgets
 
-![](./screenshot.png)
+![AGS Widgets](./screenshot.png)
 
 # References/Credits
 
@@ -9,13 +9,3 @@
 - https://docs.gtk.org/gtk3/#classes
 - https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-22/gtk/theme/Adwaita/_colors-public.scss
 - https://github.com/AymanLyesri/ArchEclipse/
-
-# TODO
-
-- screen capture
-- turn QS into sidebar
-
-
-- Launcher
-    - Windows
-    - Launch Other Widgets
