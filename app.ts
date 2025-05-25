@@ -1,5 +1,5 @@
 import { App } from "astal/gtk3";
-import Bar from "./widgets/Bar";
+import TopBar from "./widgets/TopBar";
 import OSD from "./widgets/OSD";
 
 App.start({
@@ -24,7 +24,7 @@ App.start({
     `,
   main() {
     for (const monitor in App.get_monitors()) {
-      Bar({ monitor });
+      TopBar({ monitor });
       OSD({ monitor });
     }
   },
