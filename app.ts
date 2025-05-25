@@ -1,6 +1,7 @@
 import { App } from "astal/gtk3";
 import TopBar from "./widgets/TopBar";
 import OSD from "./widgets/OSD";
+import BottomBar from "./widgets/BottomBar";
 
 App.start({
   // background-color: @warning_color;
@@ -24,8 +25,9 @@ App.start({
     `,
   main() {
     for (const monitor in App.get_monitors()) {
-      TopBar({ monitor });
-      OSD({ monitor });
+      TopBar({ monitor: Number(monitor) });
+      BottomBar({ monitor: Number(monitor) });
+      OSD({ monitor: Number(monitor) });
     }
   },
 });

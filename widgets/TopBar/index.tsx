@@ -45,7 +45,7 @@ export default ({ monitor }: { monitor: number }) => {
 
   const win = (
     <window
-      name="bar"
+      name="top-bar"
       monitor={monitor}
       visible={false}
       exclusivity={Astal.Exclusivity.IGNORE}
