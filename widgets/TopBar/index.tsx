@@ -1,7 +1,6 @@
 import { App, Astal } from "astal/gtk3";
 import { Gtk } from "astal/gtk3";
 import Clock from "./Clock";
-import WorkspaceIndicator from "./WorkspaceIndicator";
 import Playback from "./Playback";
 import Network from "./Network";
 import SysTray from "./SysTray";
@@ -15,8 +14,7 @@ export default ({ monitor }: { monitor: number }) => {
 
   const LeftModules = (
     <box spacing={8} hexpand halign={Gtk.Align.START}>
-      <WorkspaceIndicator />
-      <Playback />
+      {[<Playback />]}
     </box>
   );
 
@@ -57,13 +55,14 @@ export default ({ monitor }: { monitor: number }) => {
       css={`
         background: transparent;
       `}
-    >
-      <centerbox
-        start_widget={LeftModules}
-        center_widget={CenterModules}
-        end_widget={RightModules}
-      />
-    </window>
+      child={
+        <centerbox
+          start_widget={LeftModules}
+          center_widget={CenterModules}
+          end_widget={RightModules}
+        />
+      }
+    />
   );
 
   niri.overviewIsOpen.subscribe((v) => {
