@@ -1,15 +1,18 @@
 import { App, Astal } from "astal/gtk3";
 import { Gtk } from "astal/gtk3";
+import { Variable, bind } from "astal";
 import CenterWidgets from "../CenterWidgets";
 import Playback from "./Playback";
 import Network from "./Network";
 import SysTray from "./SysTray";
 import QuickSettings from "./QuickSettings";
 import Hardware from "./Hardware";
+import Avatar from "./Avatar";
 import niri from "../../support/niri";
 
 export default ({ monitor }: { monitor: number }) => {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
+  const showQuickSettings = Variable(false);
 
   const LeftModules = (
     <box spacing={8} hexpand halign={Gtk.Align.START}>
@@ -29,9 +32,20 @@ export default ({ monitor }: { monitor: number }) => {
       halign={Gtk.Align.END}
     >
       <SysTray />
-      <Network />
-      <Hardware />
-      <QuickSettings monitor={monitor} />
+
+      {showQuickSettings((show) =>
+        show ? (
+          <QuickSettings />
+        ) : (
+          <>
+            <Network />
+            <Hardware />
+          </>
+        )
+      )}
+      <Avatar
+        onToggle={() => showQuickSettings.set(!showQuickSettings.get())}
+      />
     </box>
   );
 

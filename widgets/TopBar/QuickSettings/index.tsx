@@ -1,103 +1,65 @@
 import { Variable } from "astal";
-import Popover from "../../Popover";
 import Volume from "./Volume";
 import { execAsync } from "astal/process";
-import { App, Gtk, Gdk } from "astal/gtk3";
+import { Gtk } from "astal/gtk3";
 import { confirm } from "../../../support/confirm";
-import GLib from "gi://GLib";
 
-export default ({ monitor }: { monitor: number }) => {
-  const visible = Variable(false);
-
+export default () => {
   const logout = () =>
     confirm(() => execAsync(["niri", "msg", "action", "quit", "-s"]));
   const reboot = () => confirm(() => execAsync(["systemctl", "reboot"]));
   const poweroff = () => confirm(() => execAsync(["systemctl", "poweroff"]));
 
-  <Popover
-    visible={visible()}
-    onClose={() => visible.set(false)}
-    marginTop={36}
-    valign={Gtk.Align.START}
-    halign={Gtk.Align.END}
-    application={App}
-    monitor={monitor}
-  >
-    <box
-      widthRequest={320}
-      vertical
-      spacing={16}
-      css={`
-        padding: 8px;
-      `}
-    >
-      <box spacing={16}>
-        <button
-          hexpand
-          onPressed={logout}
-          css={`
-            color: @theme_bg_color;
-            background-color: @theme_selected_bg_color;
-          `}
-        >
-          <icon icon="system-log-out-symbolic" />
-        </button>
-        <button
-          hexpand
-          onPressed={reboot}
-          css={`
-            color: @theme_bg_color;
-            background-color: @theme_selected_bg_color;
-          `}
-        >
-          <icon icon="system-reboot-symbolic" />
-        </button>
-        <button
-          hexpand
-          onPressed={poweroff}
-          css={`
-            color: @theme_bg_color;
-            background-color: @theme_selected_bg_color;
-          `}
-        >
-          <icon icon="system-shutdown-symbolic" />
-        </button>
-      </box>
-      <Volume />
-    </box>
-  </Popover>;
-
   return (
-    <button
+    <box
       css={`
-        padding: 0;
-        background: transparent;
+        margin-left: 8px;
       `}
+      spacing={8}
       valign={Gtk.Align.CENTER}
-      halign={Gtk.Align.CENTER}
-      onClicked={() => {
-        visible.set(true);
-      }}
-      child={
-        <box
+    >
+      <Volume />
+      <box spacing={4} valign={Gtk.Align.CENTER}>
+        <button
+          vexpand={false}
+          hexpand={false}
           css={`
+            padding: 0;
             border-radius: 100%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            min-width: 24px;
+            min-height: 24px;
           `}
-          child={
-            <box
-              css={`
-                min-width: 32px;
-                min-height: 32px;
-                background-image: url("${GLib.getenv("HOME")}/.face");
-                background-size: cover;
-                background-position: center;
-                border-radius: 100%;
-              `}
-            />
-          }
+          onPressed={logout}
+          tooltipText="Logout"
+          child={<icon icon="system-log-out-symbolic" />}
         />
-      }
-    />
+        <button
+          vexpand={false}
+          hexpand={false}
+          css={`
+            padding: 0;
+            border-radius: 100%;
+            min-width: 24px;
+            min-height: 24px;
+          `}
+          onPressed={reboot}
+          tooltipText="Reboot"
+          child={<icon icon="system-reboot-symbolic" />}
+        />
+        <button
+          vexpand={false}
+          hexpand={false}
+          css={`
+            padding: 0;
+            border-radius: 100%;
+            min-width: 24px;
+            min-height: 24px;
+          `}
+          onPressed={poweroff}
+          tooltipText="Shutdown"
+          child={<icon icon="system-shutdown-symbolic" />}
+        />
+      </box>
+    </box>
   );
 };
