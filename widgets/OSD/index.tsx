@@ -37,6 +37,7 @@ const OnScreenProgress = ({ visible }) => {
         border-radius: 9999;
         padding: 0.8em;
         margin: 2em;
+        padding-top: 1em;
       `}
     >
       <levelbar
@@ -45,7 +46,7 @@ const OnScreenProgress = ({ visible }) => {
           border-radius: 0.7em;
         `}
         halign={Gtk.Align.CENTER}
-        heightRequest={176}
+        heightRequest={100}
         value={value()}
         vertical={true}
         inverted={true}
