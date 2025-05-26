@@ -7,6 +7,7 @@ export type Workspace = {
   name: string;
   is_focused: boolean;
   is_active: boolean;
+  urgent?: boolean;
   windows: Window[];
 };
 
@@ -16,6 +17,7 @@ export type Window = {
   app_id: string;
   workspace_id: number;
   is_focused: boolean;
+  urgent?: boolean;
 };
 
 @register({ GTypeName: "Niri" })
@@ -61,7 +63,10 @@ export class Niri extends GObject.Object {
           this.onWorkspacesChanged(value.workspaces);
           break;
         case "WorkspaceActivated":
-          this.onWorkspaceActivated(value.id);
+          this.onWorkspaceActivated(value.id, value.focused);
+          break;
+        case "WorkspaceUrgencyChanged":
+          this.onWorkspaceUrgencyChanged(value.id, value.urgent);
           break;
         case "WorkspaceActiveWindowChanged":
           this.onWorkspaceActiveWindowChanged(
@@ -73,12 +78,19 @@ export class Niri extends GObject.Object {
           this.onWindowsChanged(value.windows);
           break;
         case "WindowOpenedOrChanged":
-          // Check if value has a 'window' property, since niri might wrap the window data
-          const windowData = value?.window || value;
-          this.onWindowOpenedOrChanged(windowData);
+          this.onWindowOpenedOrChanged(value.window);
           break;
         case "WindowClosed":
           this.onWindowClosed(value.id);
+          break;
+        case "WindowUrgencyChanged":
+          this.onWindowUrgencyChanged(value.id, value.urgent);
+          break;
+        case "KeyboardLayoutsChanged":
+          // Handle if needed
+          break;
+        case "KeyboardLayoutSwitched":
+          // Handle if needed
           break;
       }
     }
@@ -214,17 +226,25 @@ export class Niri extends GObject.Object {
     this.notify("windows");
   }
 
-  onWorkspaceActivated(workspaceId: number) {
+  onWorkspaceActivated(workspaceId: number, focused: boolean) {
     // Update focused state
     this.workspaces = this.workspaces.map((workspace) => ({
       ...workspace,
-      is_focused: workspace.id === workspaceId,
+      is_focused: workspace.id === workspaceId && focused,
       is_active: workspace.id === workspaceId,
     }));
 
     this.activeWorkspaceIdx = workspaceId;
     this.notify("workspaces");
     this.notify("windows");
+  }
+
+  onWorkspaceUrgencyChanged(workspaceId: number, urgent: boolean) {
+    this.workspaces = this.workspaces.map((workspace) => ({
+      ...workspace,
+      urgent: workspace.id === workspaceId ? urgent : workspace.urgent,
+    }));
+    this.notify("workspaces");
   }
 
   onWorkspaceActiveWindowChanged(workspaceId: number, windowId: number | null) {
@@ -263,11 +283,19 @@ export class Niri extends GObject.Object {
     const existingIndex = this.windows.findIndex((w) => w.id === window.id);
 
     if (existingIndex >= 0) {
-      // Update existing window
-      this.windows[existingIndex] = window;
+      // Update existing window, preserving focus state from our active window tracking
+      const currentFocus = this.windows[existingIndex].is_focused;
+      this.windows[existingIndex] = {
+        ...window,
+        is_focused: currentFocus,
+      };
     } else {
-      // Add new window
-      this.windows.push(window);
+      // Add new window, setting focus state based on current active window
+      const activeWindowId = this.activeWindowId.get();
+      this.windows.push({
+        ...window,
+        is_focused: activeWindowId !== -1 && window.id === activeWindowId,
+      });
     }
 
     this.updateWorkspaceWindows();
@@ -283,6 +311,18 @@ export class Niri extends GObject.Object {
     if (this.activeWindowId.get() === windowId) {
       this.activeWindowId.set(-1);
     }
+
+    this.updateWorkspaceWindows();
+    this.notify("workspaces");
+    this.notify("windows");
+  }
+
+  onWindowUrgencyChanged(windowId: number, urgent: boolean) {
+    // Update urgency state for the window in both windows array and workspace windows
+    this.windows = this.windows.map((window) => ({
+      ...window,
+      urgent: window.id === windowId ? urgent : window.urgent,
+    }));
 
     this.updateWorkspaceWindows();
     this.notify("workspaces");
