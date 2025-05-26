@@ -22,8 +22,18 @@ export default () => (
         >
           {showNetworkData && (
             <>
-              <NetworkRow value={upload} icon="▲" threshold={threshold} />
-              <NetworkRow value={download} icon="▼" threshold={threshold} />
+              <NetworkRow
+                value={upload}
+                icon="▲"
+                threshold={threshold}
+                color="@error_color"
+              />
+              <NetworkRow
+                value={download}
+                icon="▼"
+                threshold={threshold}
+                color="@success_color"
+              />
             </>
           )}
         </box>
