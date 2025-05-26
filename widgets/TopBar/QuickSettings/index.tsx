@@ -29,10 +29,11 @@ export default () => {
             min-width: 24px;
             min-height: 24px;
           `}
-          onPressed={logout}
-          tooltipText="Logout"
-          child={<icon icon="system-log-out-symbolic" />}
+          onPressed={poweroff}
+          tooltipText="Shutdown"
+          child={<icon icon="system-shutdown-symbolic" />}
         />
+
         <button
           vexpand={false}
           hexpand={false}
@@ -55,9 +56,9 @@ export default () => {
             min-width: 24px;
             min-height: 24px;
           `}
-          onPressed={poweroff}
-          tooltipText="Shutdown"
-          child={<icon icon="system-shutdown-symbolic" />}
+          onPressed={logout}
+          tooltipText="Logout"
+          child={<icon icon="system-log-out-symbolic" />}
         />
       </box>
     </box>

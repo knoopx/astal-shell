@@ -33,16 +33,26 @@ export default ({ monitor }: { monitor: number }) => {
     >
       <SysTray />
 
-      {showQuickSettings((show) =>
-        show ? (
-          <QuickSettings />
-        ) : (
-          <>
-            <Network />
-            <Hardware />
-          </>
-        )
-      )}
+      <box>
+        <revealer
+          revealChild={showQuickSettings((show) => !show)}
+          transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+          transitionDuration={300}
+          child={
+            <box spacing={8}>
+              <Network />
+              <Hardware />
+            </box>
+          }
+        />
+        <revealer
+          revealChild={showQuickSettings((show) => show)}
+          transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+          transitionDuration={300}
+          child={<QuickSettings />}
+        />
+      </box>
+
       <Avatar
         onToggle={() => showQuickSettings.set(!showQuickSettings.get())}
       />
