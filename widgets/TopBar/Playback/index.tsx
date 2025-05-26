@@ -37,7 +37,7 @@ const Player = (player) => (
       />
     </box>
     <GhostButton
-      css={`padding:2`}
+      css={`padding:0.5em`}
       on_clicked={() => player.play_pause()}
       visible={bind(player, "can_play").as((c) => c)}
       child={
@@ -56,7 +56,7 @@ const Player = (player) => (
     />
 
     <GhostButton
-      css={`padding:2`}
+      css={`padding:0.5em`}
       on_clicked={() => player.next()}
       visible={bind(player, "can_go_next").as((c) => c)}
       child={<icon icon={"media-skip-forward-symbolic"} />}
