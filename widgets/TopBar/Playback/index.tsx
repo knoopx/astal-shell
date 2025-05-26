@@ -1,15 +1,19 @@
 import Mpris from "gi://AstalMpris";
 import { bind, Variable } from "astal";
 import { Gtk } from "astal/gtk3";
-import GhostButton from "./GhostButton";
 
 // TODO: Automatically pause multiple playing things
 
 function PlayPauseButton({ player }) {
   return (
-    <GhostButton
+    <button
       css={`
-        background-color: transparent;
+        padding: 0;
+        margin: 0;
+        min-width: 24px;
+        min-height: 24px;
+        border-radius: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
       `}
       on_clicked={() => player.play_pause()}
       visible={bind(player, "can_play").as((c) => c)}
@@ -65,18 +69,6 @@ const Player = (player) => {
               }
             />
             <box
-              className="artwork-overlay"
-              valign={Gtk.Align.CENTER}
-              css={bind(isHovering).as(
-                (hovering) => `
-                min-width: 36px;
-                min-height: 36px;
-                background-color: rgba(0, 0, 0, ${hovering ? 0.6 : 0});
-                border-radius: 4px;
-              `
-              )}
-            />
-            <box
               halign={Gtk.Align.CENTER}
               valign={Gtk.Align.CENTER}
               css={bind(isHovering).as(
@@ -118,9 +110,10 @@ const Player = (player) => {
         />
       </box>
 
-      <GhostButton
+      <button
         css={`
           padding: 0.5em;
+          background-color: transparent;
         `}
         on_clicked={() => player.next()}
         visible={bind(player, "can_go_next").as((c) => c)}
