@@ -1,23 +1,38 @@
+//
+// Niri IPC integration compliant with official niri-ipc API
+// Reference: https://yalter.github.io/niri/niri_ipc/
+//
+// Key compliance updates:
+// - All field types match official API (u64 -> number, Option<String> -> string | null)
+// - Field names use official naming (is_urgent instead of urgent)
+// - Workspace operations use correct parameters (idx for focus, id for move)
+// - Proper handling of optional fields from official API
+//
 import GObject, { register, property } from "astal/gobject";
 import { execAsync, subprocess } from "astal/process";
 import { GLib, Variable } from "astal";
 
 export type Workspace = {
-  id: number;
-  name: string;
-  is_focused: boolean;
+  id: number; // u64 in official API
+  idx: number; // u8 in official API - index on monitor
+  name: string | null; // Option<String> in official API
+  output: string | null; // Option<String> in official API - output name
+  is_urgent: boolean; // renamed from urgent to match official API
   is_active: boolean;
-  urgent?: boolean;
-  windows: Window[];
+  is_focused: boolean;
+  active_window_id: number | null; // Option<u64> in official API
+  windows: Window[]; // Custom field for compatibility
 };
 
 export type Window = {
-  id: number;
-  title: string;
-  app_id: string;
-  workspace_id: number;
+  id: number; // u64 in official API
+  title: string | null; // Option<String> in official API
+  app_id: string | null; // Option<String> in official API
+  pid: number | null; // Option<i32> in official API
+  workspace_id: number | null; // Option<u64> in official API
   is_focused: boolean;
-  urgent?: boolean;
+  is_floating: boolean; // Added missing field from official API
+  is_urgent: boolean; // renamed from urgent to match official API
 };
 
 @register({ GTypeName: "Niri" })
@@ -148,21 +163,27 @@ export class Niri extends GObject.Object {
 
     // Update workspaces but preserve windows and correct focus state
     const existingWorkspaces = this.workspaces || [];
-    const activeWindowId = this.activeWindowId.get();
 
     this.workspaces = workspaces
       .sort((a, b) => a.id - b.id)
       .map((ws) => {
         const existing = existingWorkspaces.find((ews) => ews.id === ws.id);
+        // Normalize workspace data to match official API types
         return {
-          ...ws,
-          is_active: ws.is_focused, // Map is_focused to is_active for compatibility
-          windows: existing?.windows || [],
+          id: ws.id,
+          idx: ws.idx,
+          name: ws.name ?? null,
+          output: ws.output ?? null,
+          is_urgent: ws.is_urgent || false,
+          is_active: ws.is_active || ws.is_focused, // Map is_focused to is_active for compatibility
+          is_focused: ws.is_focused || false,
+          active_window_id: ws.active_window_id ?? null,
+          windows: existing?.windows || [], // Preserve custom windows array
         };
       });
 
     this.activeWorkspaceIdx =
-      this.workspaces.find((workspace) => workspace.is_focused)?.id || 1;
+      this.workspaces.find((workspace) => workspace.is_focused)?.idx || 1;
 
     this.updateWorkspaceWindows();
     this.notify("windows");
@@ -175,8 +196,18 @@ export class Niri extends GObject.Object {
       return;
     }
 
-    // Update windows array while preserving correct focus state
-    this.windows = windows;
+    // Update windows array while preserving correct focus state and normalizing optional fields
+    this.windows = windows.map((window) => ({
+      id: window.id,
+      title: window.title ?? null,
+      app_id: window.app_id ?? null,
+      pid: window.pid ?? null,
+      workspace_id: window.workspace_id ?? null,
+      is_focused: window.is_focused || false,
+      is_floating: window.is_floating || false,
+      is_urgent: window.is_urgent || false,
+    }));
+
     this.updateWorkspaceWindows();
     this.notify("windows");
     this.notify("workspaces");
@@ -196,7 +227,8 @@ export class Niri extends GObject.Object {
     // Add windows in the order they appear in this.windows (which comes from niri)
     this.windows.forEach((window) => {
       const workspaceId = window.workspace_id;
-      if (windowsByWorkspace.has(workspaceId)) {
+      // Handle null workspace_id (floating windows might not have a workspace)
+      if (workspaceId !== null && windowsByWorkspace.has(workspaceId)) {
         windowsByWorkspace.get(workspaceId)!.push(window);
       }
     });
@@ -234,7 +266,12 @@ export class Niri extends GObject.Object {
       is_active: workspace.id === workspaceId,
     }));
 
-    this.activeWorkspaceIdx = workspaceId;
+    // Use idx instead of id for activeWorkspaceIdx
+    const activatedWorkspace = this.workspaces.find((ws) => ws.id === workspaceId);
+    if (activatedWorkspace) {
+      this.activeWorkspaceIdx = activatedWorkspace.idx;
+    }
+
     this.notify("workspaces");
     this.notify("windows");
   }
@@ -242,7 +279,7 @@ export class Niri extends GObject.Object {
   onWorkspaceUrgencyChanged(workspaceId: number, urgent: boolean) {
     this.workspaces = this.workspaces.map((workspace) => ({
       ...workspace,
-      urgent: workspace.id === workspaceId ? urgent : workspace.urgent,
+      is_urgent: workspace.id === workspaceId ? urgent : workspace.is_urgent,
     }));
     this.notify("workspaces");
   }
@@ -279,6 +316,18 @@ export class Niri extends GObject.Object {
       return;
     }
 
+    // Ensure optional fields have proper defaults
+    const normalizedWindow: Window = {
+      id: window.id,
+      title: window.title ?? null,
+      app_id: window.app_id ?? null,
+      pid: window.pid ?? null,
+      workspace_id: window.workspace_id ?? null,
+      is_focused: window.is_focused || false,
+      is_floating: window.is_floating || false,
+      is_urgent: window.is_urgent || false,
+    };
+
     // Update or add the window in our windows array
     const existingIndex = this.windows.findIndex((w) => w.id === window.id);
 
@@ -286,14 +335,14 @@ export class Niri extends GObject.Object {
       // Update existing window, preserving focus state from our active window tracking
       const currentFocus = this.windows[existingIndex].is_focused;
       this.windows[existingIndex] = {
-        ...window,
+        ...normalizedWindow,
         is_focused: currentFocus,
       };
     } else {
       // Add new window, setting focus state based on current active window
       const activeWindowId = this.activeWindowId.get();
       this.windows.push({
-        ...window,
+        ...normalizedWindow,
         is_focused: activeWindowId !== -1 && window.id === activeWindowId,
       });
     }
@@ -321,7 +370,7 @@ export class Niri extends GObject.Object {
     // Update urgency state for the window in both windows array and workspace windows
     this.windows = this.windows.map((window) => ({
       ...window,
-      urgent: window.id === windowId ? urgent : window.urgent,
+      is_urgent: window.id === windowId ? urgent : window.is_urgent,
     }));
 
     this.updateWorkspaceWindows();
@@ -329,8 +378,9 @@ export class Niri extends GObject.Object {
     this.notify("windows");
   }
 
-  focusWorkspace(id: number) {
-    this.action("focus-workspace", String(id)).then(() => {});
+  focusWorkspace(idx: number) {
+    // Use workspace index (idx) for focus actions, not ID
+    this.action("focus-workspace", String(idx)).then(() => {});
   }
 
   focusWindow(id: number) {
@@ -346,6 +396,7 @@ export class Niri extends GObject.Object {
   }
 
   moveWindowToWorkspace(windowId: number, workspaceId: number) {
+    // Use workspace ID for move actions, not index
     this.action(
       "move-window-to-workspace",
       "--id",
