@@ -1,4 +1,6 @@
 import { Gtk } from "astal/gtk3";
+import { bind } from "astal";
+import { blinkState } from "./networkSpeed";
 
 interface NetworkRowProps {
   value: number;
@@ -26,6 +28,7 @@ const formatBytes = (bytes: number) => {
 
 export default ({ value, icon, threshold, color }: NetworkRowProps) => {
   const { value: formattedValue, unit } = formatBytes(value);
+  const isActive = value >= threshold;
 
   return (
     <box halign={Gtk.Align.END}>
@@ -41,7 +44,11 @@ export default ({ value, icon, threshold, color }: NetworkRowProps) => {
       </box>
       <label
         label={icon}
-        css={value >= threshold && color ? `color: ${color};` : ""}
+        css={bind(blinkState).as((blink) =>
+          isActive && color
+            ? `color: ${color}; opacity: ${blink ? "1" : "0.3"};`
+            : ""
+        )}
       />
     </box>
   );

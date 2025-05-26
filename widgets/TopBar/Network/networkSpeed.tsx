@@ -4,10 +4,16 @@ const interval = 1000;
 let lastTotalDownBytes = 0;
 let lastTotalUpBytes = 0;
 
+// Create a blink state that syncs with network polling
+export const blinkState = Variable(true);
+
 const networkSpeed = Variable({
   download: 0,
   upload: 0,
 }).poll(interval, ["cat", "/proc/net/dev"], (content, _) => {
+  // Toggle blink state on each network poll
+  blinkState.set(!blinkState.get());
+
   const lines = content.split("\n");
 
   // Caculate the sum of all interfaces' traffic line by line.
