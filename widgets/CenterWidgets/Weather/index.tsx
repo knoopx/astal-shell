@@ -1,5 +1,6 @@
 import { Variable } from "astal";
 import { execAsync, subprocess } from "astal/process";
+import { Gtk } from "astal/gtk3";
 import niri from "../../../support/niri";
 
 export {
@@ -358,6 +359,7 @@ export default () => {
   return (
     <button
       css="background: transparent; margin: 0; padding: 0; margin-top: -8px;"
+      halign={Gtk.Align.CENTER}
       onClicked={() => {
         niri.toggleOverview();
         subprocess("gnome-weather");
@@ -365,6 +367,7 @@ export default () => {
       child={
         <label
           css="font-size: 0.8em; font-weight: normal; opacity: 0.8;"
+          halign={Gtk.Align.CENTER}
           onDestroy={() => clearInterval(interval)}
           label={weatherVar((w) => w.replaceAll("+", ""))}
         />

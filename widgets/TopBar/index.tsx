@@ -1,14 +1,12 @@
 import { App, Astal } from "astal/gtk3";
 import { Gtk } from "astal/gtk3";
-import Clock from "./Clock";
-import Time from "./Clock/Time";
+import CenterWidgets from "../CenterWidgets";
 import Playback from "./Playback";
 import Network from "./Network";
 import SysTray from "./SysTray";
 import QuickSettings from "./QuickSettings";
 import Hardware from "./Hardware";
 import niri from "../../support/niri";
-import Weather from "./Weather";
 
 export default ({ monitor }: { monitor: number }) => {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
@@ -19,23 +17,7 @@ export default ({ monitor }: { monitor: number }) => {
     </box>
   );
 
-  const CenterModules = (
-    <box
-      orientation={Gtk.Orientation.VERTICAL}
-      halign={Gtk.Align.CENTER}
-      spacing={0}
-      css={`
-        margin: 0;
-        padding: 0;
-      `}
-    >
-      <Clock />
-      <box spacing={2} halign={Gtk.Align.CENTER}>
-        <Time />
-        <Weather />
-      </box>
-    </box>
-  );
+  const CenterModules = <CenterWidgets />;
 
   const RightModules = (
     <box
