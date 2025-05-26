@@ -1,7 +1,6 @@
-import { GLib, Variable, subprocess } from "astal";
-import { Gtk } from "astal/gtk3";
 import { Variable } from "astal";
 import { execAsync, subprocess } from "astal/process";
+import niri from "../../../support/niri";
 
 export {
   EMoonPhase,
@@ -340,7 +339,9 @@ export default () => {
               ? openWeatherWMOToEmoji(weather.current.weather_code).value
               : moonPhaseAlt().icon;
 
-            weatherVar.set(`${emoji} ${round(weather.current.temperature_2m)}°C`);
+            weatherVar.set(
+              `${emoji} ${round(weather.current.temperature_2m)}°C`
+            );
           })
           .catch((e) => {
             console.warn(e);
@@ -358,14 +359,16 @@ export default () => {
     <button
       css="background: transparent; margin: 0; padding: 0; margin-top: -8px;"
       onClicked={() => {
+        niri.toggleOverview();
         subprocess("gnome-weather");
       }}
-    >
-      <label
-        css="font-size: 0.8em; font-weight: normal; opacity: 0.8;"
-        onDestroy={() => clearInterval(interval)}
-        label={weatherVar((w) => w.replaceAll("+", ""))}
-      />
-    </button>
+      child={
+        <label
+          css="font-size: 0.8em; font-weight: normal; opacity: 0.8;"
+          onDestroy={() => clearInterval(interval)}
+          label={weatherVar((w) => w.replaceAll("+", ""))}
+        />
+      }
+    />
   );
 };

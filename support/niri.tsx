@@ -64,7 +64,10 @@ export class Niri extends GObject.Object {
           this.onWorkspaceActivated(value.id);
           break;
         case "WorkspaceActiveWindowChanged":
-          this.onWorkspaceActiveWindowChanged(value.workspace_id, value.active_window_id);
+          this.onWorkspaceActiveWindowChanged(
+            value.workspace_id,
+            value.active_window_id
+          );
           break;
         case "WindowsChanged":
           this.onWindowsChanged(value.windows);
@@ -226,7 +229,7 @@ export class Niri extends GObject.Object {
 
   onWorkspaceActiveWindowChanged(workspaceId: number, windowId: number | null) {
     // Check if this is for the currently active workspace
-    const currentWorkspace = this.workspaces.find(ws => ws.is_focused);
+    const currentWorkspace = this.workspaces.find((ws) => ws.is_focused);
 
     if (currentWorkspace && currentWorkspace.id === workspaceId) {
       // This is for the active workspace - use this as a fallback if WindowFocusChanged isn't received
@@ -240,13 +243,19 @@ export class Niri extends GObject.Object {
 
   onWindowOpenedOrChanged(window: Window) {
     // Check if window data is valid
-    if (!window || typeof window !== 'object') {
-      console.warn("[niri] WindowOpenedOrChanged: Invalid window data received (not an object):", window);
+    if (!window || typeof window !== "object") {
+      console.warn(
+        "[niri] WindowOpenedOrChanged: Invalid window data received (not an object):",
+        window
+      );
       return;
     }
 
     if (window.id === undefined || window.id === null) {
-      console.warn("[niri] WindowOpenedOrChanged: Invalid window data received (missing id):", window);
+      console.warn(
+        "[niri] WindowOpenedOrChanged: Invalid window data received (missing id):",
+        window
+      );
       return;
     }
 
@@ -312,7 +321,11 @@ export class Niri extends GObject.Object {
   }
 
   toggleOverview() {
-    this.action("overview-toggle").then(() => {});
+    if (this.overviewIsOpen.get()) {
+      this.action("close-overview");
+    } else {
+      this.action("open-overview");
+    }
   }
 
   action(...args: string[]) {

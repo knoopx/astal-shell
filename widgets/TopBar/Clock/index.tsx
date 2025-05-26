@@ -1,4 +1,5 @@
 import { GLib, Variable, subprocess } from "astal";
+import niri from "../../../support/niri";
 
 export default ({ format = "<b>%a %d %b %H:%M</b>" }) => {
   const time = Variable<string>("").poll(
@@ -11,11 +12,11 @@ export default ({ format = "<b>%a %d %b %H:%M</b>" }) => {
       <button
         css="background: transparent; margin: 0; padding: 0;"
         onClicked={() => {
+          niri.toggleOverview();
           subprocess("gnome-calendar");
         }}
-      >
-        <label useMarkup onDestroy={() => time.drop()} label={time()} />
-      </button>
+        child={<label useMarkup onDestroy={() => time.drop()} label={time()} />}
+      />
     </box>
   );
 };
