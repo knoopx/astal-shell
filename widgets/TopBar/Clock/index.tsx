@@ -9,7 +9,7 @@ export default ({ format = "<b>%a %d %b %H:%M</b>" }) => {
   return (
     <box>
       <button
-        css="background: transparent;"
+        css="background: transparent; margin: 0; padding: 0;"
         onClicked={() => {
           subprocess("gnome-calendar");
         }}

@@ -10,21 +10,32 @@ const Player = (player) => (
     <box
       valign={Gtk.Align.CENTER}
       css={bind(player, "coverArt").as(
-        (cover) => `min-width: 24px;
-          min-height: 24px;
+        (cover) => `min-width: 36px;
+          min-height: 36px;
           margin-right: 8px;
           background-image: url('${cover}');
           background-size: cover;
-          border-radius: 2px;
+          border-radius: 4px;
           `
       )}
     />
-    <label
-    css={`margin-right: 8px`}
-      label={bind(player, "metadata").as(() =>
-        player.artist ? `${player.artist} - ${player.title}` : player.title
-      )}
-    />
+    <box
+      orientation={Gtk.Orientation.VERTICAL}
+      css={`margin-right: 8px`}
+      valign={Gtk.Align.CENTER}
+    >
+      <label
+        css={`font-size: 0.9em; font-weight: bold;`}
+        label={bind(player, "artist")}
+        halign={Gtk.Align.START}
+        visible={bind(player, "artist").as((artist) => !!artist)}
+      />
+      <label
+        css={`font-size: 0.8em; opacity: 0.8;`}
+        label={bind(player, "title")}
+        halign={Gtk.Align.START}
+      />
+    </box>
     <GhostButton
       css={`padding:2`}
       on_clicked={() => player.play_pause()}

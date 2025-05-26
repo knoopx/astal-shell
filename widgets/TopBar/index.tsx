@@ -19,7 +19,15 @@ export default ({ monitor }: { monitor: number }) => {
   );
 
   const CenterModules = (
-    <box>
+    <box
+      orientation={Gtk.Orientation.VERTICAL}
+      halign={Gtk.Align.CENTER}
+      spacing={0}
+      css={`
+        margin: 0;
+        padding: 0;
+      `}
+    >
       <Clock />
       <Weather />
     </box>

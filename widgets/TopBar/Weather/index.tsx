@@ -356,12 +356,13 @@ export default () => {
 
   return (
     <button
-      css="background: transparent;"
+      css="background: transparent; margin: 0; padding: 0; margin-top: -8px;"
       onClicked={() => {
         subprocess("gnome-weather");
       }}
     >
       <label
+        css="font-size: 0.8em; font-weight: normal; opacity: 0.8;"
         onDestroy={() => clearInterval(interval)}
         label={weatherVar((w) => w.replaceAll("+", ""))}
       />
