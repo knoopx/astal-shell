@@ -2,7 +2,7 @@ import { bind } from "astal";
 import { Gtk } from "astal/gtk3";
 
 import networkSpeed from "./networkSpeed";
-import { format } from "../../../support/util";
+import NetworkRow from "./NetworkRow";
 
 export default () => (
   <box>
@@ -22,16 +22,8 @@ export default () => (
         >
           {showNetworkData && (
             <>
-              <label
-                halign={Gtk.Align.END}
-                label={format(upload) + "/s ▲"}
-                css="color: @theme_selected_bg_color;"
-              />
-              <label
-                halign={Gtk.Align.END}
-                label={format(download) + "/s ▼"}
-                css="color: @theme_selected_bg_color;"
-              />
+              <NetworkRow value={upload} icon="▲" threshold={threshold} />
+              <NetworkRow value={download} icon="▼" threshold={threshold} />
             </>
           )}
         </box>

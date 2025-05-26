@@ -51,8 +51,8 @@ const networkSpeed = Variable({
   if (lastTotalUpBytes === 0) {
     lastTotalUpBytes = totalUpBytes;
   }
-  const downloadSpeed = (totalDownBytes - lastTotalDownBytes) / interval;
-  const uploadSpeed = (totalUpBytes - lastTotalUpBytes) / interval;
+  const downloadSpeed = (totalDownBytes - lastTotalDownBytes) / (interval / 1000);
+  const uploadSpeed = (totalUpBytes - lastTotalUpBytes) / (interval / 1000);
 
   lastTotalDownBytes = totalDownBytes;
   lastTotalUpBytes = totalUpBytes;
