@@ -8,8 +8,7 @@ import GhostButton from "./GhostButton";
 function PlayPauseButton({ player }) {
   return (
     <GhostButton
-
-    css={`
+      css={`
         background-color: transparent;
       `}
       on_clicked={() => player.play_pause()}
@@ -42,33 +41,49 @@ const Player = (player) => {
         child={
           <overlay>
             <box
-              className="artwork"
+              className="artwork-container"
               valign={Gtk.Align.CENTER}
-              css={bind(player, "coverArt").as(
-                (cover) => `min-width: 36px;
-                  min-height: 36px;
-                  background-image: url('${cover}');
-                  background-size: cover;
-                  border-radius: 4px;
-                  `
-              )}
+              css={`
+                min-width: 36px;
+                min-height: 36px;
+                border-radius: 4px;
+                border: 2px solid rgba(255, 255, 255, 0.2);
+              `}
+              child={
+                <box
+                  className="artwork"
+                  css={bind(player, "coverArt").as(
+                    (cover) => `min-width: 36px;
+                      min-height: 36px;
+                      background-image: url('${cover}');
+                      background-size: cover;
+                      background-position: center;
+                      border-radius: 3px;
+                      `
+                  )}
+                />
+              }
             />
             <box
               className="artwork-overlay"
               valign={Gtk.Align.CENTER}
-              css={bind(isHovering).as((hovering) => `
+              css={bind(isHovering).as(
+                (hovering) => `
                 min-width: 36px;
                 min-height: 36px;
                 background-color: rgba(0, 0, 0, ${hovering ? 0.6 : 0});
                 border-radius: 4px;
-              `)}
+              `
+              )}
             />
             <box
               halign={Gtk.Align.CENTER}
               valign={Gtk.Align.CENTER}
-              css={bind(isHovering).as((hovering) => `
+              css={bind(isHovering).as(
+                (hovering) => `
                 opacity: ${hovering ? 1 : 0};
-              `)}
+              `
+              )}
               visible={bind(isHovering)}
               child={<PlayPauseButton player={player} />}
             />

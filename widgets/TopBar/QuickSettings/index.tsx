@@ -78,16 +78,26 @@ export default ({ monitor }: { monitor: number }) => {
       onClicked={() => {
         visible.set(true);
       }}
-    >
-      <box
-        css={`
-          min-width: 28px;
-          min-height: 28px;
-          background-image: url("${GLib.getenv("HOME")}/.face");
-          background-size: cover;
-          border-radius: 100%;
-        `}
-      />
-    </button>
+      child={
+        <box
+          css={`
+            border-radius: 100%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+          `}
+          child={
+            <box
+              css={`
+                min-width: 32px;
+                min-height: 32px;
+                background-image: url("${GLib.getenv("HOME")}/.face");
+                background-size: cover;
+                background-position: center;
+                border-radius: 100%;
+              `}
+            />
+          }
+        />
+      }
+    />
   );
 };
