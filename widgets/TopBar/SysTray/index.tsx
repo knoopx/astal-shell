@@ -13,9 +13,20 @@ export default () => {
             usePopover={false}
             actionGroup={bind(item, "actionGroup").as((ag) => ["dbusmenu", ag])}
             menuModel={bind(item, "menuModel")}
-          >
-            <icon gicon={bind(item, "gicon")} />
-          </menubutton>
+            css={`
+              min-width: 28px;
+              min-height: 28px;
+              padding: 4px;
+            `}
+            child={
+              <icon
+                gicon={bind(item, "gicon")}
+                css={`
+                  font-size: 18px;
+                `}
+              />
+            }
+          />
         ))
       )}
     </box>

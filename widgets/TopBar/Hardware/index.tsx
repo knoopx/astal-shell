@@ -96,7 +96,10 @@ const Meter = (props) => (
     {...props}
     vertical
     inverted
-    heightRequest={18}
+    heightRequest={24}
+    css={`
+      border-radius: 2px;
+    `}
   />
 );
 

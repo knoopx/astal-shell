@@ -7,6 +7,10 @@ import BottomBar from "./widgets/BottomBar";
 App.start({
   // background-color: @warning_color;
   css: `
+    levelbar {
+      border-radius: 2px;
+    }
+
     levelbar .filled {
       border-radius: 2px;
       background-clip: padding-box;

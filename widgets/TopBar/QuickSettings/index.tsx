@@ -81,8 +81,8 @@ export default ({ monitor }: { monitor: number }) => {
     >
       <box
         css={`
-          min-width: 24px;
-          min-height: 24px;
+          min-width: 28px;
+          min-height: 28px;
           background-image: url("${GLib.getenv("HOME")}/.face");
           background-size: cover;
           border-radius: 100%;

@@ -8,12 +8,12 @@ export default () => (
   <box>
     {bind(networkSpeed).as(({ download, upload }) => (
       <box
-        widthRequest={80}
+        widthRequest={90}
         vertical
         valign={Gtk.Align.CENTER}
         css={`
-          font-size: 0.7em;
-          font-weight: bold;
+          font-size: 0.6em;
+          opacity: 0.8;
         `}
       >
         <label halign={Gtk.Align.END} label={format(upload) + "/s ▲"} />
