@@ -8,8 +8,7 @@ export default () => (
   <box>
     {bind(networkSpeed).as(({ download, upload }) => {
       const threshold = 1024; // 1 KB/s threshold
-      const showUpload = upload >= threshold;
-      const showDownload = download >= threshold;
+      const showNetworkData = download >= threshold || upload >= threshold;
 
       return (
         <box
@@ -21,19 +20,19 @@ export default () => (
             opacity: 0.8;
           `}
         >
-          {showUpload && (
-            <label
-              halign={Gtk.Align.END}
-              label={format(upload) + "/s ▲"}
-              css="color: @theme_selected_bg_color;"
-            />
-          )}
-          {showDownload && (
-            <label
-              halign={Gtk.Align.END}
-              label={format(download) + "/s ▼"}
-              css="color: @theme_selected_bg_color;"
-            />
+          {showNetworkData && (
+            <>
+              <label
+                halign={Gtk.Align.END}
+                label={format(upload) + "/s ▲"}
+                css="color: @theme_selected_bg_color;"
+              />
+              <label
+                halign={Gtk.Align.END}
+                label={format(download) + "/s ▼"}
+                css="color: @theme_selected_bg_color;"
+              />
+            </>
           )}
         </box>
       );
