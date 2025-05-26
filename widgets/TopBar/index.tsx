@@ -1,6 +1,7 @@
 import { App, Astal } from "astal/gtk3";
 import { Gtk } from "astal/gtk3";
 import Clock from "./Clock";
+import Time from "./Clock/Time";
 import Playback from "./Playback";
 import Network from "./Network";
 import SysTray from "./SysTray";
@@ -29,7 +30,10 @@ export default ({ monitor }: { monitor: number }) => {
       `}
     >
       <Clock />
-      <Weather />
+      <box spacing={2} halign={Gtk.Align.CENTER}>
+        <Time />
+        <Weather />
+      </box>
     </box>
   );
 

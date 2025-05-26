@@ -1,22 +1,18 @@
-import { GLib, Variable, subprocess } from "astal";
+import { subprocess } from "astal";
 import niri from "../../../support/niri";
+import Date from "./Date";
 
-export default ({ format = "<b>%a %d %b %H:%M</b>" }) => {
-  const time = Variable<string>("").poll(
-    1000,
-    () => GLib.DateTime.new_now_local().format(format)!
-  );
-
+export default ({
+  dateFormat = "<b>%a %d %b</b>"
+}) => {
   return (
-    <box>
-      <button
-        css="background: transparent; margin: 0; padding: 0;"
-        onClicked={() => {
-          niri.toggleOverview();
-          subprocess("gnome-calendar");
-        }}
-        child={<label useMarkup onDestroy={() => time.drop()} label={time()} />}
-      />
-    </box>
+    <button
+      css="background: transparent; margin: 0; padding: 0;"
+      onClicked={() => {
+        niri.toggleOverview();
+        subprocess("gnome-calendar");
+      }}
+      child={<Date format={dateFormat} />}
+    />
   );
 };
