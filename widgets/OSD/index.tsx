@@ -28,27 +28,35 @@ const OnScreenProgress = ({ visible }) => {
         });
       }}
       spacing={16}
-      halign={Gtk.Align.CENTER}
+      halign={Gtk.Align.END}
       valign={Gtk.Align.CENTER}
+      vertical={true}
       css={`
         font-size: 1.5em;
-        background-color: rgba(0, 0, 0, 0.5);
-        border-radius: 2em;
-        padding-top: 1em;
-        padding-bottom: 1em;
-        padding-left: 1em;
-        padding-right: 2em;
+        background-color: rgba(0, 0, 0, 0.8);
+        border-radius: 9999;
+        padding: 0.8em;
+        margin: 2em;
       `}
     >
-      <icon icon={iconName()} />
       <levelbar
         css={`
-          min-height: 0.5em;
-          border-radius: 0.5em;
+          min-width: 0.7em;
+          border-radius: 0.7em;
         `}
-        valign={Gtk.Align.CENTER}
-        widthRequest={176}
+        halign={Gtk.Align.CENTER}
+        heightRequest={176}
         value={value()}
+        vertical={true}
+        inverted={true}
+      />
+      <icon
+        icon={iconName()}
+        setup={(self) => {
+          self.hook(iconName, () => {
+            self.icon = iconName.get();
+          });
+        }}
       />
     </box>
   );
@@ -56,6 +64,7 @@ const OnScreenProgress = ({ visible }) => {
 
 export default function OSD({ monitor }: { monitor: number }) {
   const visible = Variable(false);
+  const { RIGHT } = Astal.WindowAnchor;
 
   return (
     <window
@@ -65,13 +74,15 @@ export default function OSD({ monitor }: { monitor: number }) {
       reactive={false}
       css={`
         background: none;
+        margin: 1em;
       `}
       monitor={monitor}
       application={App}
       layer={Astal.Layer.OVERLAY}
       exclusivity={Astal.Exclusivity.IGNORE}
+      anchor={RIGHT}
       keymode={Astal.Keymode.NONE}
-      halign={Gtk.Align.CENTER}
+      halign={Gtk.Align.END}
       valign={Gtk.Align.CENTER}
     >
       <OnScreenProgress visible={visible} />
