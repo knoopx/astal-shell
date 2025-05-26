@@ -33,7 +33,48 @@ export default ({ monitor }: { monitor: number }) => {
   };
 
   const CenterModules = (
-    <box className="app-icons" spacing={8}>
+    <box
+      className="app-icons"
+      spacing={8}
+      onScrollEvent={(self, event) => {
+        const currentWorkspace = niri.workspaces.find((ws) => ws.is_active);
+        if (!currentWorkspace || currentWorkspace.windows.length === 0) return false;
+
+        const windows = currentWorkspace.windows;
+        const currentFocusedIndex = windows.findIndex((w) => w.is_focused);
+
+        // Get scroll direction from the deltas array
+        let direction = 1; // default forward
+        try {
+          const deltas = event.get_scroll_deltas();
+          // The actual scroll value is in the third element (index 2)
+          if (Array.isArray(deltas) && deltas.length >= 3) {
+            const scrollValue = deltas[2];
+            if (typeof scrollValue === 'number') {
+              direction = scrollValue > 0 ? 1 : -1;
+            }
+          }
+        } catch (e) {
+          // Fallback to default direction if deltas fail
+        }
+
+        let nextIndex: number;
+        if (direction > 0) {
+          // Forward
+          nextIndex = currentFocusedIndex >= windows.length - 1 ? 0 : currentFocusedIndex + 1;
+        } else {
+          // Backward
+          nextIndex = currentFocusedIndex <= 0 ? windows.length - 1 : currentFocusedIndex - 1;
+        }
+
+        const nextWindow = windows[nextIndex];
+        if (nextWindow) {
+          niri.focusWindow(nextWindow.id);
+        }
+
+        return true; // Event handled
+      }}
+    >
       {bind(niri, "workspaces").as((workspaces) => {
         const currentWorkspace = workspaces.find((ws) => ws.is_active);
         if (!currentWorkspace) return [];
@@ -54,9 +95,6 @@ export default ({ monitor }: { monitor: number }) => {
                 opacity: ${window.is_focused ? 1.0 : 0.6};
                 transition: all 0.2s ease-in-out;
               `}
-              // background-color: ${window.is_focused ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
-              // border: ${window.is_focused ? '2px solid rgba(255, 255, 255, 0.3)' : '2px solid transparent'};
-
               tooltip_text={window.title || window.app_id}
               onClicked={() => {
                 niri.focusWindow(window.id);
