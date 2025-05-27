@@ -1,2 +1,7 @@
 node_modules/
 @girs/
+
+# Nix
+result
+result-*
+.direnv/
