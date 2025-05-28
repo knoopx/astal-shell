@@ -26,6 +26,9 @@
 
         # Additional libraries and executables for the shell functionality
         extraPackages = with pkgs; [
+          # Core Astal runtime
+          ags.packages.${system}.gjs
+
           # Astal libraries for specific functionality
           ags.packages.${system}.astal3
           ags.packages.${system}.astal4
