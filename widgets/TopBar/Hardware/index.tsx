@@ -6,10 +6,10 @@ import GPUMeter from "./GPUMeter";
 import VRAMMeter from "./VRAMMeter";
 import DiskMeter from "./DiskMeter";
 
-// Check if nvidia-smi is available
-const hasNvidiaSmi = (() => {
+// Check if NVIDIA GPU is present
+const hasNvidiaGpu = (() => {
   try {
-    subprocess(["which", "nvidia-smi"]);
+    subprocess(["test", "-d", "/proc/driver/nvidia"]);
     return true;
   } catch {
     return false;
@@ -33,7 +33,7 @@ export default () => (
       >
         <CPUMeter />
         <RAMMeter />
-        {hasNvidiaSmi && (
+        {hasNvidiaGpu && (
           <>
             <GPUMeter />
             <VRAMMeter />
