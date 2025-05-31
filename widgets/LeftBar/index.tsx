@@ -2,6 +2,7 @@ import { App, Astal } from "astal/gtk3";
 import { Gtk } from "astal/gtk3";
 import WorkspaceIndicator from "./WorkspaceIndicator";
 import niri from "../../support/niri";
+import { applyOpacityTransition } from "../../support/transitions";
 
 export default ({ monitor }: { monitor: number }) => {
   const { TOP, LEFT, BOTTOM } = Astal.WindowAnchor;
@@ -32,13 +33,7 @@ export default ({ monitor }: { monitor: number }) => {
   );
 
   niri.overviewIsOpen.subscribe((v) => {
-    if (v) {
-      setTimeout(() => {
-        win.set_visible(true);
-      }, 100);
-    } else {
-      win.set_visible(false);
-    }
+    applyOpacityTransition(win, v);
   });
 
   return win;

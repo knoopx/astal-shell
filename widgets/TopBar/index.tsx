@@ -9,6 +9,7 @@ import QuickSettings from "./QuickSettings";
 import Hardware from "./Hardware";
 import Avatar from "./Avatar";
 import niri from "../../support/niri";
+import { applyOpacityTransition } from "../../support/transitions";
 
 export default ({ monitor }: { monitor: number }) => {
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
@@ -84,13 +85,7 @@ export default ({ monitor }: { monitor: number }) => {
   );
 
   niri.overviewIsOpen.subscribe((v) => {
-    if (v) {
-      setTimeout(() => {
-        win.set_visible(true);
-      }, 100);
-    } else {
-      win.set_visible(false);
-    }
+    applyOpacityTransition(win, v);
   });
 
   return win;
