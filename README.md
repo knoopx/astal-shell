@@ -1,6 +1,8 @@
 # Astal Shell
 
-![Astal Shell](./screenshot.png)
+Astal-based shell for my [NixOS configuration](https://github.com/knoopx/nix).
+
+![Screenshot](https://github.com/knoopx/nix/blob/master/screenshot.png)
 
 ## Nix Flake Usage
 
