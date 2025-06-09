@@ -13,9 +13,6 @@ This repository includes a Nix flake for easy packaging and development.
 ```bash
 # Build the main shell
 nix build .#default
-
-# Build the greeter
-nix build .#greeter
 ```
 
 ### Running
@@ -23,9 +20,6 @@ nix build .#greeter
 ```bash
 # Run the main shell
 nix run .#default
-
-# Run the greeter
-nix run .#greeter
 ```
 
 ### Development
@@ -62,7 +56,6 @@ You can use this flake in your NixOS configuration:
           # Install the packages
           environment.systemPackages = with pkgs; [
             astal-shell
-            ags-greeter
           ];
         })
       ];
