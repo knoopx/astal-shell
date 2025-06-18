@@ -60,8 +60,8 @@ export default ({ monitor }: { monitor: number }) => {
     </box>
   );
 
-  const horizontalMargin = 200
-  const verticalMargin = 70
+  const horizontalMargin = 300
+  const verticalMargin = 100
 
   const win = (
     <window
