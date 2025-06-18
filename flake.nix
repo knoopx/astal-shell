@@ -51,6 +51,7 @@
 
           # System monitoring libraries
           libgtop
+          brightnessctl
         ];
       };
     };

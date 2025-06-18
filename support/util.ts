@@ -44,3 +44,5 @@ export const hasNvidiaGpu = (() => {
     return false;
   }
 })();
+
+console.log({hasNvidiaGpu})
