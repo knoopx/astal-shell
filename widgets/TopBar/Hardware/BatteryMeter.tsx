@@ -79,13 +79,20 @@ export default () => {
         // Generate detailed tooltip markup
         const getStateText = (state: number) => {
           switch (state) {
-            case 1: return "Charging";
-            case 2: return "Discharging";
-            case 3: return "Empty";
-            case 4: return "Fully charged";
-            case 5: return "Pending charge";
-            case 6: return "Pending discharge";
-            default: return "Unknown";
+            case 1:
+              return "Charging";
+            case 2:
+              return "Discharging";
+            case 3:
+              return "Empty";
+            case 4:
+              return "Fully charged";
+            case 5:
+              return "Pending charge";
+            case 6:
+              return "Pending discharge";
+            default:
+              return "Unknown";
           }
         };
 
@@ -93,11 +100,15 @@ export default () => {
         tooltipMarkup += `<b>Status:</b> ${getStateText(data.state)}\n`;
 
         if (data.charging && data.timeToFull > 0) {
-          tooltipMarkup += `<b>Time to full:</b> ${data.formatTime(data.timeToFull)}\n`;
+          tooltipMarkup += `<b>Time to full:</b> ${data.formatTime(
+            data.timeToFull
+          )}\n`;
         }
 
         if (!data.charging && data.timeRemaining > 0) {
-          tooltipMarkup += `<b>Time remaining:</b> ${data.formatTime(data.timeRemaining)}\n`;
+          tooltipMarkup += `<b>Time remaining:</b> ${data.formatTime(
+            data.timeRemaining
+          )}\n`;
         }
 
         if (data.capacity > 0) {
@@ -105,11 +116,15 @@ export default () => {
         }
 
         if (data.energy > 0 && data.energyFull > 0) {
-          tooltipMarkup += `<b>Energy:</b> ${data.energy.toFixed(1)}/${data.energyFull.toFixed(1)} Wh\n`;
+          tooltipMarkup += `<b>Energy:</b> ${data.energy.toFixed(
+            1
+          )}/${data.energyFull.toFixed(1)} Wh\n`;
         }
 
         if (data.energyRate > 0) {
-          tooltipMarkup += `<b>Power draw:</b> ${data.energyRate.toFixed(1)} W\n`;
+          tooltipMarkup += `<b>Power draw:</b> ${data.energyRate.toFixed(
+            1
+          )} W\n`;
         }
 
         if (data.voltage > 0) {
@@ -117,7 +132,9 @@ export default () => {
         }
 
         if (data.temperature > 0) {
-          tooltipMarkup += `<b>Temperature:</b> ${data.temperature.toFixed(1)}°C\n`;
+          tooltipMarkup += `<b>Temperature:</b> ${data.temperature.toFixed(
+            1
+          )}°C\n`;
         }
 
         if (data.technology) {
@@ -130,7 +147,7 @@ export default () => {
 
         return (
           <box tooltipMarkup={tooltipMarkup.trim()}>
-            <Meter value={data.percentage} />
+            <Meter invert value={data.percentage} />
           </box>
         );
       })}
