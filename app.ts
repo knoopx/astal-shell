@@ -1,7 +1,8 @@
 import { App } from "astal/gtk3";
 import TopBar from "./widgets/TopBar";
 import LeftBar from "./widgets/LeftBar";
-import OSD from "./widgets/OSD";
+import VolumeOSD from "./widgets/OSD/VolumeOSD";
+import BrightnessOSD from "./widgets/OSD/BrightnessOSD";
 import BottomBar from "./widgets/BottomBar";
 
 App.start({
@@ -33,7 +34,8 @@ App.start({
       TopBar({ monitor: Number(monitor) });
       LeftBar({ monitor: Number(monitor) });
       BottomBar({ monitor: Number(monitor) });
-      OSD({ monitor: Number(monitor) });
+      VolumeOSD({ monitor: Number(monitor) });
+      BrightnessOSD({ monitor: Number(monitor) });
     }
   },
 });

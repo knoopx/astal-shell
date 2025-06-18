@@ -3,7 +3,7 @@ import { timeout } from "astal/time";
 import Variable from "astal/variable";
 import Wp from "gi://AstalWp";
 
-const OnScreenProgress = ({ visible }) => {
+const VolumeProgress = ({ visible }) => {
   const speaker = Wp.get_default()!.get_default_speaker();
   const iconName = Variable("");
   const value = Variable(0);
@@ -63,14 +63,14 @@ const OnScreenProgress = ({ visible }) => {
   );
 };
 
-export default function OSD({ monitor }: { monitor: number }) {
+export default function VolumeOSD({ monitor }: { monitor: number }) {
   const visible = Variable(false);
   const { RIGHT } = Astal.WindowAnchor;
 
   return (
     <window
-      name="osd"
-      namespace="osd"
+      name="volume-osd"
+      namespace="volume-osd"
       visible={visible()}
       reactive={false}
       css={`
@@ -86,7 +86,7 @@ export default function OSD({ monitor }: { monitor: number }) {
       halign={Gtk.Align.END}
       valign={Gtk.Align.CENTER}
     >
-      <OnScreenProgress visible={visible} />
+      <VolumeProgress visible={visible} />
     </window>
   );
 }
