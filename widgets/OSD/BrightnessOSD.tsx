@@ -9,10 +9,10 @@ const BrightnessProgress = ({ visible }) => {
   const value = Variable(0);
   let count = 0;
 
-  function show(v: number, icon: string) {
+  function show(v: number) {
     visible.set(true);
     value.set(v);
-    iconName.set(icon);
+    iconName.set("display-brightness-symbolic");
     count++;
     timeout(1000, () => {
       count--;
@@ -20,18 +20,11 @@ const BrightnessProgress = ({ visible }) => {
     });
   }
 
-  function getBrightnessIcon(level: number): string {
-    if (level === 0) return "display-brightness-off-symbolic";
-    if (level < 0.3) return "display-brightness-low-symbolic";
-    if (level < 0.7) return "display-brightness-medium-symbolic";
-    return "display-brightness-high-symbolic";
-  }
-
   return (
     <box
       setup={(self) => {
         self.hook(brightness, "notify::screen", () => {
-          show(brightness.screen, getBrightnessIcon(brightness.screen));
+          show(brightness.screen);
         });
       }}
       spacing={16}
@@ -72,7 +65,7 @@ const BrightnessProgress = ({ visible }) => {
 
 export default function BrightnessOSD({ monitor }: { monitor: number }) {
   const visible = Variable(false);
-  const { LEFT } = Astal.WindowAnchor;
+  const { RIGHT } = Astal.WindowAnchor;
 
   return (
     <window
@@ -88,9 +81,9 @@ export default function BrightnessOSD({ monitor }: { monitor: number }) {
       application={App}
       layer={Astal.Layer.OVERLAY}
       exclusivity={Astal.Exclusivity.IGNORE}
-      anchor={LEFT}
+      anchor={RIGHT}
       keymode={Astal.Keymode.NONE}
-      halign={Gtk.Align.START}
+      halign={Gtk.Align.END}
       valign={Gtk.Align.CENTER}
     >
       <BrightnessProgress visible={visible} />
