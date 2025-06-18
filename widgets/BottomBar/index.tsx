@@ -39,7 +39,8 @@ export default ({ monitor }: { monitor: number }) => {
       spacing={8}
       onScrollEvent={(self, event) => {
         const currentWorkspace = niri.workspaces.find((ws) => ws.is_active);
-        if (!currentWorkspace || currentWorkspace.windows.length === 0) return false;
+        if (!currentWorkspace || currentWorkspace.windows.length === 0)
+          return false;
 
         const windows = currentWorkspace.windows;
         const currentFocusedIndex = windows.findIndex((w) => w.is_focused);
@@ -51,7 +52,7 @@ export default ({ monitor }: { monitor: number }) => {
           // The actual scroll value is in the third element (index 2)
           if (Array.isArray(deltas) && deltas.length >= 3) {
             const scrollValue = deltas[2];
-            if (typeof scrollValue === 'number') {
+            if (typeof scrollValue === "number") {
               direction = scrollValue > 0 ? 1 : -1;
             }
           }
@@ -62,10 +63,16 @@ export default ({ monitor }: { monitor: number }) => {
         let nextIndex: number;
         if (direction > 0) {
           // Forward
-          nextIndex = currentFocusedIndex >= windows.length - 1 ? 0 : currentFocusedIndex + 1;
+          nextIndex =
+            currentFocusedIndex >= windows.length - 1
+              ? 0
+              : currentFocusedIndex + 1;
         } else {
           // Backward
-          nextIndex = currentFocusedIndex <= 0 ? windows.length - 1 : currentFocusedIndex - 1;
+          nextIndex =
+            currentFocusedIndex <= 0
+              ? windows.length - 1
+              : currentFocusedIndex - 1;
         }
 
         const nextWindow = windows[nextIndex];
@@ -87,8 +94,6 @@ export default ({ monitor }: { monitor: number }) => {
                 window.is_focused ? "focused" : "unfocused"
               }`}
               css={`
-                min-width: 32px;
-                min-height: 32px;
                 border-radius: 4px;
                 padding: 4px;
                 background-color: transparent;
@@ -112,7 +117,7 @@ export default ({ monitor }: { monitor: number }) => {
                   <icon
                     icon={getAppIcon(window.app_id)}
                     css={`
-                      font-size: 48px;
+                      font-size: 42px;
                       color: ${window.is_focused
                         ? "rgba(255, 255, 255, 1.0)"
                         : "rgba(255, 255, 255, 0.7)"};
@@ -137,6 +142,9 @@ export default ({ monitor }: { monitor: number }) => {
     </box>
   );
 
+  const horizontalMargin = 200;
+  const verticalMargin = 70;
+
   const win = (
     <window
       name="bottom-bar"
@@ -144,9 +152,9 @@ export default ({ monitor }: { monitor: number }) => {
       visible={false}
       exclusivity={Astal.Exclusivity.IGNORE}
       anchor={BOTTOM | LEFT | RIGHT}
-      marginBottom={96}
-      marginLeft={300}
-      marginRight={300}
+      marginBottom={verticalMargin}
+      marginLeft={horizontalMargin}
+      marginRight={horizontalMargin}
       application={App}
       css={`
         background: transparent;

@@ -60,6 +60,9 @@ export default ({ monitor }: { monitor: number }) => {
     </box>
   );
 
+  const horizontalMargin = 200
+  const verticalMargin = 70
+
   const win = (
     <window
       name="top-bar"
@@ -67,9 +70,9 @@ export default ({ monitor }: { monitor: number }) => {
       visible={false}
       exclusivity={Astal.Exclusivity.IGNORE}
       anchor={TOP | LEFT | RIGHT}
-      marginTop={104}
-      marginLeft={300}
-      marginRight={300}
+      marginTop={verticalMargin}
+      marginLeft={horizontalMargin}
+      marginRight={horizontalMargin}
       application={App}
       css={`
         background: transparent;
