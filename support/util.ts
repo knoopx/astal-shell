@@ -1,4 +1,5 @@
 import { exec, readFile, writeFile } from "astal";
+import { subprocess } from "astal";
 
 export const format = (bytes: number): string => {
   if (!Number.isFinite(bytes) || bytes < 0)
@@ -33,3 +34,13 @@ export function writeJSONFile(filePath: string, data: any) {
     console.log(e);
   }
 }
+
+// NVIDIA GPU detection utility
+export const hasNvidiaGpu = (() => {
+  try {
+    subprocess(["test", "-d", "/proc/driver/nvidia"]);
+    return true;
+  } catch {
+    return false;
+  }
+})();
