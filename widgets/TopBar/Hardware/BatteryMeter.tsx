@@ -147,7 +147,7 @@ export default () => {
 
         return (
           <box tooltipMarkup={tooltipMarkup.trim()}>
-            <Meter invert value={data.percentage} />
+            <Meter invert value={data.percentage / 100} />
           </box>
         );
       })}
