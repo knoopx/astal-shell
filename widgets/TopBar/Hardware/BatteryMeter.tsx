@@ -1,4 +1,4 @@
-import { Variable } from "astal";
+import { Variable, bind } from "astal";
 import { Astal, Gtk } from "astal/gtk3";
 import Battery from "gi://AstalBattery";
 import Meter from "./Meter";
@@ -15,22 +15,43 @@ const hasBattery = (() => {
   }
 })();
 
+// Setup binding to battery device properties
+const batteryDevice = Battery.get_default();
 const battery = Variable.derive(
   [
-    Variable(null).poll(5000, () => {
-      if (!hasBattery) return null;
-      try {
-        const device = Battery.get_default();
-        return device;
-      } catch {
-        return null;
-      }
-    }),
+    bind(batteryDevice, "percentage"),
+    bind(batteryDevice, "charging"),
+    bind(batteryDevice, "state"),
+    bind(batteryDevice, "time_remaining"),
+    bind(batteryDevice, "time_to_full"),
+    bind(batteryDevice, "capacity"),
+    bind(batteryDevice, "energy"),
+    bind(batteryDevice, "energy_full"),
+    bind(batteryDevice, "energy_rate"),
+    bind(batteryDevice, "voltage"),
+    bind(batteryDevice, "temperature"),
+    bind(batteryDevice, "technology"),
+    bind(batteryDevice, "vendor"),
+    bind(batteryDevice, "model"),
+    bind(batteryDevice, "serial"),
   ],
-  (device) => {
-    if (!device || !device.is_battery) return null;
-
-    // Format time remaining
+  ([
+    percentage,
+    charging,
+    state,
+    timeRemaining,
+    timeToFull,
+    capacity,
+    energy,
+    energyFull,
+    energyRate,
+    voltage,
+    temperature,
+    technology,
+    vendor,
+    model,
+    serial,
+  ]) => {
     const formatTime = (seconds: number) => {
       if (seconds <= 0) return "Unknown";
       const hours = Math.floor(seconds / 3600);
@@ -42,24 +63,21 @@ const battery = Variable.derive(
     };
 
     return {
-      percentage:
-        device.energy_full > 0 && device.energy >= 0
-          ? (device.energy / device.energy_full) * 100
-          : device.percentage,
-      charging: device.charging,
-      state: device.state,
-      timeRemaining: device.time_remaining,
-      timeToFull: device.time_to_full,
-      capacity: device.capacity,
-      energy: device.energy,
-      energyFull: device.energy_full,
-      energyRate: device.energy_rate,
-      voltage: device.voltage,
-      temperature: device.temperature,
-      technology: device.technology,
-      vendor: device.vendor,
-      model: device.model,
-      serial: device.serial,
+      percentage,
+      charging,
+      state,
+      timeRemaining,
+      timeToFull,
+      capacity,
+      energy,
+      energyFull,
+      energyRate,
+      voltage,
+      temperature,
+      technology,
+      vendor,
+      model,
+      serial,
       formatTime,
     };
   }
