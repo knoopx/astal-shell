@@ -5,6 +5,7 @@ import RAMMeter from "./RAMMeter";
 import GPUMeter from "./GPUMeter";
 import VRAMMeter from "./VRAMMeter";
 import DiskMeter from "./DiskMeter";
+import BatteryMeter from "./BatteryMeter";
 
 // Check if NVIDIA GPU is present
 const hasNvidiaGpu = (() => {
@@ -40,6 +41,7 @@ export default () => (
           </>
         )}
         <DiskMeter />
+        <BatteryMeter />
       </box>
     }
   />

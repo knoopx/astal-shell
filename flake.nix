@@ -38,6 +38,7 @@
           ags.packages.${system}.network
           ags.packages.${system}.tray
           ags.packages.${system}.wireplumber
+          ags.packages.${system}.battery
 
           # System utilities used in the configuration
           gnome-weather
