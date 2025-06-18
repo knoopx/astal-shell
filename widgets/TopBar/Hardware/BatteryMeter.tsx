@@ -42,7 +42,10 @@ const battery = Variable.derive(
     };
 
     return {
-      percentage: device.percentage,
+      percentage:
+        device.energy_full > 0 && device.energy >= 0
+          ? (device.energy / device.energy_full) * 100
+          : device.percentage,
       charging: device.charging,
       state: device.state,
       timeRemaining: device.time_remaining,
