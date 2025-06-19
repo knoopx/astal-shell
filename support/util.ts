@@ -1,4 +1,5 @@
 import { exec, readFile, writeFile } from "astal";
+import Battery from "gi://AstalBattery";
 
 export const format = (bytes: number): string => {
   if (!Number.isFinite(bytes) || bytes < 0)
@@ -38,6 +39,15 @@ export const hasNvidiaGpu = (() => {
   try {
     const [out, err] = exec(["test", "-d", "/proc/driver/nvidia"]);
     return !err;
+  } catch {
+    return false;
+  }
+})();
+
+export const hasBattery = (() => {
+  try {
+    const device = Battery.get_default();
+    return device !== null && device.is_battery;
   } catch {
     return false;
   }

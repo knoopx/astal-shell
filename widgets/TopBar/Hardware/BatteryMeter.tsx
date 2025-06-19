@@ -4,65 +4,28 @@ import Battery from "gi://AstalBattery";
 import Meter from "./Meter";
 import Label from "./Label";
 
-// Check if battery is available
-const hasBattery = (() => {
-  try {
-    const device = Battery.get_default();
-    // Use the is_battery property from the documentation
-    return device !== null && device.is_battery;
-  } catch {
-    return false;
-  }
-})();
-
-// Setup binding to battery device properties
-const batteryDevice = Battery.get_default();
-const battery = Variable.derive(
-  [
-    bind(batteryDevice, "percentage"),
-    bind(batteryDevice, "charging"),
-    bind(batteryDevice, "state"),
-    bind(batteryDevice, "time_remaining"),
-    bind(batteryDevice, "time_to_full"),
-    bind(batteryDevice, "capacity"),
-    bind(batteryDevice, "energy"),
-    bind(batteryDevice, "energy_full"),
-    bind(batteryDevice, "energy_rate"),
-    bind(batteryDevice, "voltage"),
-    bind(batteryDevice, "temperature"),
-    bind(batteryDevice, "technology"),
-    bind(batteryDevice, "vendor"),
-    bind(batteryDevice, "model"),
-    bind(batteryDevice, "serial"),
-  ],
-  ([
-    percentage,
-    charging,
-    state,
-    timeRemaining,
-    timeToFull,
-    capacity,
-    energy,
-    energyFull,
-    energyRate,
-    voltage,
-    temperature,
-    technology,
-    vendor,
-    model,
-    serial,
-  ]) => {
-    const formatTime = (seconds: number) => {
-      if (seconds <= 0) return "Unknown";
-      const hours = Math.floor(seconds / 3600);
-      const minutes = Math.floor((seconds % 3600) / 60);
-      if (hours > 0) {
-        return `${hours}h ${minutes}m`;
-      }
-      return `${minutes}m`;
-    };
-
-    return {
+export default () => {
+  // Setup binding to battery device properties
+  const batteryDevice = Battery.get_default();
+  const battery = Variable.derive(
+    [
+      bind(batteryDevice, "percentage"),
+      bind(batteryDevice, "charging"),
+      bind(batteryDevice, "state"),
+      bind(batteryDevice, "time_remaining"),
+      bind(batteryDevice, "time_to_full"),
+      bind(batteryDevice, "capacity"),
+      bind(batteryDevice, "energy"),
+      bind(batteryDevice, "energy_full"),
+      bind(batteryDevice, "energy_rate"),
+      bind(batteryDevice, "voltage"),
+      bind(batteryDevice, "temperature"),
+      bind(batteryDevice, "technology"),
+      bind(batteryDevice, "vendor"),
+      bind(batteryDevice, "model"),
+      bind(batteryDevice, "serial"),
+    ],
+    (
       percentage,
       charging,
       state,
@@ -77,18 +40,38 @@ const battery = Variable.derive(
       technology,
       vendor,
       model,
-      serial,
-      formatTime,
-    };
-  }
-);
+      serial
+    ) => {
+      const formatTime = (seconds: number) => {
+        if (seconds <= 0) return "Unknown";
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        if (hours > 0) {
+          return `${hours}h ${minutes}m`;
+        }
+        return `${minutes}m`;
+      };
 
-export default () => {
-  // Don't render if no battery is present
-  if (!hasBattery) {
-    return null;
-  }
-
+      return {
+        percentage,
+        charging,
+        state,
+        timeRemaining,
+        timeToFull,
+        capacity,
+        energy,
+        energyFull,
+        energyRate,
+        voltage,
+        temperature,
+        technology,
+        vendor,
+        model,
+        serial,
+        formatTime,
+      };
+    }
+  );
   return (
     <box halign={Astal.WindowAnchor.CENTER}>
       {battery((data) => {
@@ -114,7 +97,13 @@ export default () => {
           }
         };
 
-        let tooltipMarkup = `<b>Battery: ${Math.round(data.percentage)}%</b>\n`;
+        // Handle percentage - check if it's in 0-1 range or 0-100 range
+        const percentageValue =
+          data.percentage > 1 ? data.percentage : data.percentage * 100;
+        const capacityValue =
+          data.capacity > 1 ? data.capacity : data.capacity * 100;
+
+        let tooltipMarkup = `<b>Battery: ${Math.round(percentageValue)}%</b>\n`;
         tooltipMarkup += `<b>Status:</b> ${getStateText(data.state)}\n`;
 
         if (data.charging && data.timeToFull > 0) {
@@ -130,7 +119,7 @@ export default () => {
         }
 
         if (data.capacity > 0) {
-          tooltipMarkup += `<b>Capacity:</b> ${Math.round(data.capacity)}%\n`;
+          tooltipMarkup += `<b>Capacity:</b> ${Math.round(capacityValue)}%\n`;
         }
 
         if (data.energy > 0 && data.energyFull > 0) {
@@ -165,7 +154,12 @@ export default () => {
 
         return (
           <box tooltipMarkup={tooltipMarkup.trim()}>
-            <Meter invert value={data.percentage / 100} />
+            <Meter
+              invert
+              value={
+                data.percentage > 1 ? data.percentage / 100 : data.percentage
+              }
+            />
           </box>
         );
       })}

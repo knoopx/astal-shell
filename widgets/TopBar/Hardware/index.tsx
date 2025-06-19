@@ -1,6 +1,6 @@
 import { subprocess } from "astal";
 import { Astal, Gtk } from "astal/gtk3";
-import { hasNvidiaGpu } from "../../../support/util";
+import { hasNvidiaGpu, hasBattery } from "../../../support/util";
 import CPUMeter from "./CPUMeter";
 import RAMMeter from "./RAMMeter";
 import GPUMeter from "./GPUMeter";
@@ -25,14 +25,10 @@ export default () => (
       >
         <CPUMeter />
         <RAMMeter />
-        {hasNvidiaGpu && (
-          <>
-            <GPUMeter />
-            <VRAMMeter />
-          </>
-        )}
+        {hasNvidiaGpu && <GPUMeter />}
+        {hasNvidiaGpu && <VRAMMeter />}
         <DiskMeter />
-        <BatteryMeter />
+        {hasBattery && <BatteryMeter />}
       </box>
     }
   />
