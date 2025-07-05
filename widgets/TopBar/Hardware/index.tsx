@@ -1,6 +1,6 @@
 import { exec } from "ags/process";
 import { Gtk } from "ags/gtk3";
-import { hasNvidiaGpu } from "../../../support/util";
+import { hasNvidiaGpu, hasBattery } from "../../../support/util";
 import CPUMeter from "./CPUMeter";
 import RAMMeter from "./RAMMeter";
 import GPUMeter from "./GPUMeter";
@@ -38,7 +38,7 @@ export default () => (
         </box>
       )}
       <DiskMeter />
-      <BatteryMeter />
+      {hasBattery && <BatteryMeter />}
     </box>
   </eventbox>
 );

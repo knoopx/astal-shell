@@ -4,22 +4,7 @@ import Battery from "gi://AstalBattery";
 import Meter from "./Meter";
 import Label from "./Label";
 
-// Check if battery is available
-const hasBattery = (() => {
-  try {
-    const device = Battery.get_default();
-    return device !== null;
-  } catch {
-    return false;
-  }
-})();
-
 export default () => {
-  // Don't render if no battery is present
-  if (!hasBattery) {
-    return null;
-  }
-
   const batteryDevice = Battery.get_default();
   const percentage = createBinding(batteryDevice, "percentage");
   const charging = createBinding(batteryDevice, "charging");

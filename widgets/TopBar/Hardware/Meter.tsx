@@ -20,7 +20,7 @@ const levelClass = (value, invert = false) => {
 
 export const Meter = (props) => {
   const { invert = false, value, ...levelbarProps } = props;
-  
+
   return (
     <levelbar
       class={value.as((v) => levelClass(v, invert))}

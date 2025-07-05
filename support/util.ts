@@ -1,5 +1,6 @@
 import { exec } from "ags/process";
 import { readFile, writeFile } from "ags/file";
+import Battery from "gi://AstalBattery";
 
 export const format = (bytes: number): string => {
   if (!Number.isFinite(bytes) || bytes < 0)
@@ -47,7 +48,7 @@ export const hasNvidiaGpu = (() => {
 export const hasBattery = (() => {
   try {
     const device = Battery.get_default();
-    return device !== null && device.is_battery;
+    return device !== null && device.isPresent === true;
   } catch {
     return false;
   }
