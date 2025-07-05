@@ -78,15 +78,15 @@
            runHook postInstall
         '';
       };
+    };
 
-      apps.${system}.default = {
-        type = "app";
-        program = "${self.packages.${system}.default}/bin/astal-shell";
-      };
+    apps.${system}.default = {
+      type = "app";
+      program = "${self.packages.${system}.default}/bin/astal-shell";
+    };
 
-      overlays.default = final: prev: {
-        astal-shell = self.packages.${system}.default;
-      };
+    overlays.default = final: prev: {
+      astal-shell = self.packages.${system}.default;
     };
   };
 }
