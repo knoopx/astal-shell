@@ -21,6 +21,7 @@ const gpu = createPoll(
   }
 );
 
+const GPUMeter = () => {
   return (
     <box halign={Gtk.Align.CENTER}>
       <Meter value={gpu((v) => v[1] / 100)} />
@@ -28,3 +29,5 @@ const gpu = createPoll(
     </box>
   );
 };
+
+export default GPUMeter;
