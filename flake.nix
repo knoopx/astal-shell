@@ -2,9 +2,12 @@
   description = "AGS Shell Configuration";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
-    ags.url = "github:aylur/ags";
-    ags.inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+
+    ags = {
+      url = "github:aylur/ags";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -14,57 +17,69 @@
   }: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+
+    astalPackages = with ags.packages.${system}; [
+      io
+      astal3
+      battery
+      apps
+      mpris
+      network
+      tray
+      wireplumber
+    ];
+
+    extraPackages =
+      astalPackages
+      ++ (with pkgs; [
+        gnome-weather
+        gnome-calendar
+        mission-center
+        curl
+        systemd
+        libgtop
+        brightnessctl
+        libadwaita
+        libsoup_3
+        gjs
+        glib
+      ]);
   in {
-    packages.${system} = {
-      # Main shell package
-      default = ags.lib.bundle {
-        inherit pkgs;
-        src = ./.;
-        name = "astal-shell";
-        entry = "app.ts";
-        gtk4 = false;
+    packages.${system}.default = pkgs.stdenv.mkDerivation rec {
+      name = "astal-shell";
+      pname = "astal-shell";
+      entry = "app.ts";
 
-        # Additional libraries and executables for the shell functionality
-        extraPackages = with pkgs; [
-          # Core Astal runtime
-          ags.packages.${system}.gjs
+      src = ./.;
+      nativeBuildInputs = with pkgs; [
+        wrapGAppsHook
+        gobject-introspection
+        (
+          ags.packages.${system}.default
+          .override
+          {
+            inherit extraPackages;
+          }
+        )
+      ];
+      buildInputs = extraPackages;
+      installPhase = ''
+        runHook preInstall
 
-          # Astal libraries for specific functionality
-          ags.packages.${system}.astal3
-          ags.packages.${system}.astal4
-          ags.packages.${system}.io
-          ags.packages.${system}.apps
-          ags.packages.${system}.mpris
-          ags.packages.${system}.network
-          ags.packages.${system}.tray
-          ags.packages.${system}.wireplumber
-          ags.packages.${system}.battery
+         mkdir -p $out/bin
+         mkdir -p $out/share
+         cp -r * $out/share
+         ags bundle --gtk 3 ${entry} $out/bin/${pname} -d "SRC='$out/share'"
 
-          # System utilities used in the configuration
-          gnome-weather
-          gnome-calendar
-          mission-center
-          curl
-
-          # System control utilities (for power management)
-          systemd
-
-          # System monitoring libraries
-          libgtop
-          brightnessctl
-        ];
-      };
+         runHook postInstall
+      '';
     };
 
-    # Apps for easy running
-    apps.${system} = {
-      default = {
-        type = "app";
-        program = "${self.packages.${system}.default}/bin/astal-shell";
-      };
+    apps.${system}.default = {
+      type = "app";
+      program = "${self.packages.${system}.default}/bin/astal-shell";
     };
 
-    # Overlay for using in NixOS configurations
     overlays.default = final: prev: {
       astal-shell = self.packages.${system}.default;
     };

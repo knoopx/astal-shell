@@ -4,11 +4,11 @@
     "": {
       "name": "astal-shell",
       "dependencies": {
-        "astal": "/home/knoopx/.local/share/ags",
+        "astal": "/nix/store/b14r7hfi6vihnha9xiqybh498zplm44i-astal-gjs-0-unstable-2025-05-12/share/astal/gjs",
       },
     },
   },
   "packages": {
-    "astal": ["astal@file:../../.local/share/ags", {}],
+    "astal": ["astal@file:../../../../nix/store/b14r7hfi6vihnha9xiqybh498zplm44i-astal-gjs-0-unstable-2025-05-12/share/astal/gjs", {}],
   }
 }

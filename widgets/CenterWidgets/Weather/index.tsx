@@ -1,6 +1,7 @@
-import { Variable } from "astal";
-import { execAsync, subprocess } from "astal/process";
-import { Gtk } from "astal/gtk3";
+import { createState } from "ags";
+import { execAsync, subprocess } from "ags/process";
+import { Gtk } from "ags/gtk3";
+import GLib from "gi://GLib";
 import niri from "../../../support/niri";
 
 export {
@@ -325,32 +326,24 @@ export function openWeatherWMOToEmoji(
 }
 
 export default () => {
-  const weatherVar = new Variable("");
+  const [weather, setWeather] = createState<string>("");
 
-  const updateWeather = () => {
-    execAsync('curl "http://ip-api.com/json?fields=lat,lon"')
-      .then((res) => {
-        const loc = JSON.parse(res);
-        execAsync(
-          `curl https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,is_day,weather_code&models=gem_seamless`
-        )
-          .then((weather_res) => {
-            const weather = JSON.parse(weather_res);
-            const emoji = weather.current.is_day
-              ? openWeatherWMOToEmoji(weather.current.weather_code).value
-              : moonPhaseAlt().icon;
+  const updateWeather = async () => {
+    try {
+      const res = await execAsync('curl "http://ip-api.com/json?fields=lat,lon"');
+      const loc = JSON.parse(res);
+      const weatherRes = await execAsync(
+        `curl https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,is_day,weather_code&models=gem_seamless`
+      );
+      const weatherData = JSON.parse(weatherRes);
+      const emoji = weatherData.current.is_day
+        ? openWeatherWMOToEmoji(weatherData.current.weather_code).value
+        : moonPhaseAlt().icon;
 
-            weatherVar.set(
-              `${emoji} ${round(weather.current.temperature_2m)}°C`
-            );
-          })
-          .catch((e) => {
-            console.warn(e);
-          });
-      })
-      .catch((e) => {
-        console.warn(e);
-      });
+      setWeather(() => `${emoji} ${round(weatherData.current.temperature_2m)}°C`);
+    } catch (e) {
+      console.warn("Failed to update weather:", e);
+    }
   };
 
   const interval = setInterval(updateWeather, 300e3);
@@ -364,14 +357,13 @@ export default () => {
         niri.toggleOverview();
         subprocess("gnome-weather");
       }}
-      child={
-        <label
-          css="font-size: 0.8em; font-weight: normal; opacity: 0.8;"
-          halign={Gtk.Align.CENTER}
-          onDestroy={() => clearInterval(interval)}
-          label={weatherVar((w) => w.replaceAll("+", ""))}
-        />
-      }
-    />
+    >
+      <label
+        css="font-size: 0.8em; font-weight: normal; opacity: 0.8;"
+        halign={Gtk.Align.CENTER}
+        onDestroy={() => clearInterval(interval)}
+        label={weather}
+      />
+    </button>
   );
 };

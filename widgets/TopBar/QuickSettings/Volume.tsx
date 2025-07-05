@@ -1,18 +1,20 @@
 import Wp from "gi://AstalWp";
-import { bind } from "astal";
-import { Gtk } from "astal/gtk3";
+import { createBinding } from "ags";
+import { Gtk } from "ags/gtk3";
 
 export default () => {
   const speaker = Wp.get_default()?.audio.defaultSpeaker!;
+  const volumeIcon = createBinding(speaker, "volumeIcon");
+  const volume = createBinding(speaker, "volume");
 
   return (
     <box spacing={4} valign={Gtk.Align.CENTER} >
-      <icon icon={bind(speaker, "volumeIcon")} />
+      <icon icon={volumeIcon} />
       <slider
       widthRequest={100}
 
         onDragged={({ value }) => (speaker.volume = value)}
-        value={bind(speaker, "volume")}
+        value={volume}
       />
     </box>
   );

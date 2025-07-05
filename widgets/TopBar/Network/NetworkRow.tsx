@@ -1,5 +1,4 @@
-import { Gtk } from "astal/gtk3";
-import { bind } from "astal";
+import { Gtk } from "ags/gtk3";
 import { blinkState } from "./networkSpeed";
 
 interface NetworkRowProps {
@@ -44,7 +43,7 @@ export default ({ value, icon, threshold, color }: NetworkRowProps) => {
       </box>
       <label
         label={icon}
-        css={bind(blinkState).as((blink) =>
+        css={blinkState((blink) =>
           isActive && color
             ? `color: ${color}; opacity: ${blink ? "1" : "0.3"};`
             : ""

@@ -1,22 +1,18 @@
-import { Variable } from "astal";
-import { Astal } from "astal/gtk3";
+import { createPoll } from "ags/time";
+import { Gtk } from "ags/gtk3";
 import GTop from "gi://GTop";
 import Meter from "./Meter";
 import Label from "./Label";
 
-export default () => {
-  const ram = Variable(0).poll(2000, () => {
-    const memory = new GTop.glibtop_mem();
-    GTop.glibtop_get_mem(memory);
-    return (memory.user / memory.total) * 100;
-  });
+const ram = createPoll(0, 2000, () => {
+  const memory = new GTop.glibtop_mem();
+  GTop.glibtop_get_mem(memory);
+  return (memory.user / memory.total) * 100;
+});
 
-  return (
-    <box halign={Astal.WindowAnchor.CENTER}>
-      {ram((v) => (
-        <Meter value={v / 100} />
-      ))}
-      <Label label="RAM" />
-    </box>
-  );
-};
+export default () => (
+  <box halign={Gtk.Align.CENTER}>
+    <Meter value={ram((v) => v / 100)} />
+    <Label label="RAM" />
+  </box>
+);

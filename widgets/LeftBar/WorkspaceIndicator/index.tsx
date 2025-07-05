@@ -1,9 +1,10 @@
-import Niri from "../../../support/niri";
-import { Gtk } from "astal/gtk3";
-import { bind } from "astal";
+import { Gtk } from "ags/gtk3";
+import { createBinding, For } from "ags";
 import niri from "../../../support/niri";
 
 export default () => {
+  const workspaces = createBinding(niri, "workspaces");
+
   return (
     <box
       css={`
@@ -13,25 +14,27 @@ export default () => {
       halign={Gtk.Align.CENTER}
       spacing={6}
     >
-      {bind(niri, "workspaces").as((workspaces) =>
-        workspaces?.map((workspace) => {
-          return (
-            <button
-              css={`
-                padding: 0;
-                background: none;
-                border: none;
-                min-width: 6px;
-                min-height: 24px;
-                border-radius: 3px;
-                background-color: ${workspace.is_focused ? '@theme_selected_bg_color' : 'rgba(255, 255, 255, 0.9)'};
-                transition: all 0.2s ease;
-              `}
-              onClicked={() => niri.focusWorkspace(workspace.id)}
-            />
-          );
-        })
-      )}
+      <For each={workspaces}>
+        {(workspace: any) => (
+          <button
+            css={createBinding(workspace, "is_focused").as(focused => `
+              padding: 0;
+              background: none;
+              border: none;
+              min-width: 6px;
+              min-height: 24px;
+              border-radius: 3px;
+              background-color: ${focused
+                ? "@theme_selected_bg_color"
+                : "rgba(255, 255, 255, 0.9)"};
+              transition: all 0.2s ease;
+            `)}
+            onClicked={() => {
+              niri.focusWorkspace(workspace.idx);
+            }}
+          />
+        )}
+      </For>
     </box>
   );
 };

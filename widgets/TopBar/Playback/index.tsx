@@ -1,10 +1,13 @@
 import Mpris from "gi://AstalMpris";
-import { bind, Variable } from "astal";
-import { Gtk } from "astal/gtk3";
+import { createBinding, createState, With, For } from "ags";
+import { Gtk } from "ags/gtk3";
 
 // TODO: Automatically pause multiple playing things
 
 function PlayPauseButton({ player }) {
+  const canPlay = createBinding(player, "can_play");
+  const playbackStatus = createBinding(player, "playbackStatus");
+
   return (
     <button
       css={`
@@ -15,73 +18,72 @@ function PlayPauseButton({ player }) {
         border-radius: 100%;
         background-color: rgba(0, 0, 0, 0.6);
       `}
-      on_clicked={() => player.play_pause()}
-      visible={bind(player, "can_play").as((c) => c)}
-      child={
-        <icon
-          icon={bind(player, "playbackStatus").as((s) => {
-            switch (s) {
-              case Mpris.PlaybackStatus.PLAYING:
-                return "media-playback-pause-symbolic";
-              case Mpris.PlaybackStatus.PAUSED:
-              case Mpris.PlaybackStatus.STOPPED:
-                return "media-playback-start-symbolic";
-            }
-          })}
-        />
-      }
-    />
+      onClicked={() => player.play_pause()}
+      visible={canPlay}
+    >
+      <icon
+        icon={playbackStatus((s) => {
+          switch (s) {
+            case Mpris.PlaybackStatus.PLAYING:
+              return "media-playback-pause-symbolic";
+            case Mpris.PlaybackStatus.PAUSED:
+            case Mpris.PlaybackStatus.STOPPED:
+              return "media-playback-start-symbolic";
+          }
+        })}
+      />
+    </button>
   );
 }
 
 const Player = (player) => {
-  const isHovering = Variable(false);
+  const [isHovering, setIsHovering] = createState(false);
+  const coverArt = createBinding(player, "coverArt");
+  const artist = createBinding(player, "artist");
+  const title = createBinding(player, "title");
+  const canGoNext = createBinding(player, "can_go_next");
 
   return (
     <box>
       <eventbox
-        onHover={() => isHovering.set(true)}
-        onHoverLost={() => isHovering.set(false)}
-        child={
-          <overlay>
+        onHover={() => setIsHovering(true)}
+        onHoverLost={() => setIsHovering(false)}
+      >
+        <overlay>
+          <box
+            class="artwork-container"
+            valign={Gtk.Align.CENTER}
+            css={`
+              min-width: 36px;
+              min-height: 36px;
+              border-radius: 4px;
+              border: 2px solid rgba(255, 255, 255, 0.2);
+            `}
+          >
             <box
-              className="artwork-container"
-              valign={Gtk.Align.CENTER}
-              css={`
-                min-width: 36px;
+              class="artwork"
+              css={coverArt((cover) => `min-width: 36px;
                 min-height: 36px;
-                border-radius: 4px;
-                border: 2px solid rgba(255, 255, 255, 0.2);
-              `}
-              child={
-                <box
-                  className="artwork"
-                  css={bind(player, "coverArt").as(
-                    (cover) => `min-width: 36px;
-                      min-height: 36px;
-                      background-image: url('${cover}');
-                      background-size: cover;
-                      background-position: center;
-                      border-radius: 3px;
-                      `
-                  )}
-                />
-              }
-            />
-            <box
-              halign={Gtk.Align.CENTER}
-              valign={Gtk.Align.CENTER}
-              css={bind(isHovering).as(
-                (hovering) => `
-                opacity: ${hovering ? 1 : 0};
-              `
+                background-image: url('${cover}');
+                background-size: cover;
+                background-position: center;
+                border-radius: 3px;
+                `
               )}
-              visible={bind(isHovering)}
-              child={<PlayPauseButton player={player} />}
             />
-          </overlay>
-        }
-      />
+          </box>
+          <box
+            halign={Gtk.Align.CENTER}
+            valign={Gtk.Align.CENTER}
+            css={isHovering((hovering) => `
+              opacity: ${hovering ? 1 : 0};
+            `)}
+            visible={isHovering}
+          >
+            <PlayPauseButton player={player} />
+          </box>
+        </overlay>
+      </eventbox>
 
       <box
         orientation={Gtk.Orientation.VERTICAL}
@@ -96,16 +98,16 @@ const Player = (player) => {
             font-size: 0.9em;
             font-weight: bold;
           `}
-          label={bind(player, "artist")}
+          label={artist}
           halign={Gtk.Align.START}
-          visible={bind(player, "artist").as((artist) => !!artist)}
+          visible={artist((artist) => !!artist)}
         />
         <label
           css={`
             font-size: 0.8em;
             opacity: 0.8;
           `}
-          label={bind(player, "title")}
+          label={title}
           halign={Gtk.Align.START}
         />
       </box>
@@ -115,15 +117,26 @@ const Player = (player) => {
           padding: 0.5em;
           background-color: transparent;
         `}
-        on_clicked={() => player.next()}
-        visible={bind(player, "can_go_next").as((c) => c)}
-        child={<icon icon={"media-skip-forward-symbolic"} />}
-      />
+        onClicked={() => player.next()}
+        visible={canGoNext}
+      >
+        <icon icon={"media-skip-forward-symbolic"} />
+      </button>
     </box>
   );
 };
 
 export default () => {
   const mpris = Mpris.get_default();
-  return <box>{bind(mpris, "players").as((x) => x.map(Player))}</box>;
+  const players = createBinding(mpris, "players");
+
+  return (
+    <box>
+      <box>
+        <For each={players}>
+          {(player: any) => Player(player)}
+        </For>
+      </box>
+    </box>
+  );
 };

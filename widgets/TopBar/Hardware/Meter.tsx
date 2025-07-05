@@ -18,17 +18,21 @@ const levelClass = (value, invert = false) => {
   }
 };
 
-export const Meter = (props) => (
-  <levelbar
-    className={levelClass(props.value, props.invert)}
-    {...props}
-    vertical
-    inverted
-    heightRequest={24}
-    css={`
-      border-radius: 2px;
-    `}
-  />
-);
+export const Meter = (props) => {
+  const { invert, ...levelbarProps } = props;
+  return (
+    <levelbar
+      class={levelClass(props.value, props.invert)}
+      {...levelbarProps}
+      vertical
+      inverted
+      heightRequest={24}
+      widthRequest={8}
+      css={`
+        border-radius: 2px;
+      `}
+    />
+  );
+};
 
 export default Meter;

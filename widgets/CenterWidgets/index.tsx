@@ -1,4 +1,4 @@
-import { Gtk } from "astal/gtk3";
+import { Gtk } from "ags/gtk3";
 import Date from "./Date";
 import Time from "./Time";
 import Weather from "./Weather";

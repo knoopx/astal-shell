@@ -1,14 +1,14 @@
-import { subprocess } from "astal";
-import { GLib, Variable } from "astal";
-import { Gtk } from "astal/gtk3";
+import { subprocess } from "ags/process";
+import { createPoll } from "ags/time";
+import { Gtk } from "ags/gtk3";
+import GLib from "gi://GLib";
 import niri from "../../../support/niri";
 
-export default ({
+export default function DateWidget({
   dateFormat = "<b>%a %d %b</b>"
-}) => {
-  const date = Variable<string>("").poll(
-    60000, // Update every minute since date changes less frequently
-    () => GLib.DateTime.new_now_local().format(dateFormat)!
+}) {
+  const date = createPoll("", 60000, () =>
+    GLib.DateTime.new_now_local().format(dateFormat)!
   );
 
   return (
@@ -19,14 +19,12 @@ export default ({
         niri.toggleOverview();
         subprocess("gnome-calendar");
       }}
-      child={
-        <label
-          useMarkup
-          halign={Gtk.Align.CENTER}
-          onDestroy={() => date.drop()}
-          label={date()}
-        />
-      }
-    />
+    >
+      <label
+        useMarkup
+        halign={Gtk.Align.CENTER}
+        label={date}
+      />
+    </button>
   );
-};
+}

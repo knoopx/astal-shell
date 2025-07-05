@@ -1,7 +1,6 @@
-import { Variable } from "astal";
 import Volume from "./Volume";
-import { execAsync } from "astal/process";
-import { Gtk } from "astal/gtk3";
+import { execAsync } from "ags/process";
+import { Gtk } from "ags/gtk3";
 import { confirm } from "../../../support/confirm";
 
 export default () => {
@@ -31,8 +30,9 @@ export default () => {
           `}
           onPressed={poweroff}
           tooltipText="Shutdown"
-          child={<icon icon="system-shutdown-symbolic" />}
-        />
+        >
+          <icon icon="system-shutdown-symbolic" />
+        </button>
 
         <button
           vexpand={false}
@@ -45,8 +45,9 @@ export default () => {
           `}
           onPressed={reboot}
           tooltipText="Reboot"
-          child={<icon icon="system-reboot-symbolic" />}
-        />
+        >
+          <icon icon="system-reboot-symbolic" />
+        </button>
         <button
           vexpand={false}
           hexpand={false}
@@ -58,8 +59,9 @@ export default () => {
           `}
           onPressed={logout}
           tooltipText="Logout"
-          child={<icon icon="system-log-out-symbolic" />}
-        />
+        >
+          <icon icon="system-log-out-symbolic" />
+        </button>
       </box>
     </box>
   );

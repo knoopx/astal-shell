@@ -1,24 +1,29 @@
-import { Variable } from "astal";
-import { Astal } from "astal/gtk3";
+import { createPoll } from "ags/time";
+import { Gtk } from "ags/gtk3";
+import { exec } from "ags/process";
 import Meter from "./Meter";
 import Label from "./Label";
 
-export default () => {
-  const gpu = Variable([0, 0, 0, 0]).poll(
-    2000,
-    [
-      "bash",
-      "-c",
-      "nvidia-smi --query-gpu=temperature.gpu,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits",
-    ],
-    (out, prev) => out.split(", ").map(Number)
-  );
+const gpu = createPoll(
+  [0, 0, 0, 0],
+  2000,
+  () => {
+    try {
+      const out = exec([
+        "bash",
+        "-c",
+        "nvidia-smi --query-gpu=temperature.gpu,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits",
+      ]);
+      return out.split(", ").map(Number);
+    } catch {
+      return [0, 0, 0, 0];
+    }
+  }
+);
 
   return (
-    <box halign={Astal.WindowAnchor.CENTER}>
-      {gpu((v) => (
-        <Meter value={v[1] / 100} />
-      ))}
+    <box halign={Gtk.Align.CENTER}>
+      <Meter value={gpu((v) => v[1] / 100)} />
       <Label label="GPU" />
     </box>
   );

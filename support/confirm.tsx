@@ -1,37 +1,38 @@
-import { Astal, Gdk, Gtk } from "astal/gtk3";
+import { createState } from "ags";
+import { Gtk } from "ags/gtk3";
+import Gdk from "gi://Gdk?version=3.0";
 
-export async function confirm(handler): Promise<boolean> {
-  const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
-  const { IGNORE } = Astal.Exclusivity;
-  const { EXCLUSIVE } = Astal.Keymode;
-  const { CENTER } = Gtk.Align;
+export function confirm(handler: () => void) {
+  const [visible, setVisible] = createState(false);
 
   function yes() {
-    dialogWindow.close();
+    setVisible(false);
     handler();
   }
 
   function no() {
-    dialogWindow.close();
+    setVisible(false);
   }
 
-  function onKeyPress(w: Astal.Window, event: Gdk.Event) {
-    if (event.get_keyval()[1] === Gdk.KEY_Escape) {
-      dialogWindow.close();
+  function onKeyPress(self: Gtk.Window, event: Gdk.EventKey) {
+    if (event.keyval === Gdk.KEY_Escape) {
+      setVisible(false);
     }
   }
 
-  const dialogWindow = (
+  const dialog = (
     <window
       name="confirm"
-      namespace={"dialog"}
-      onKeyPressEvent={onKeyPress}
-      exclusivity={IGNORE}
-      keymode={EXCLUSIVE}
-      anchor={TOP | BOTTOM | LEFT | RIGHT}
+      onKeyPressEvent={(self, event) => onKeyPress(self, event)}
+      visible={visible}
     >
-      <box halign={CENTER} valign={CENTER} vertical spacing={16}>
-        <label css={`font-weight: bold`} label="Are you sure?" />
+      <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} vertical spacing={16}>
+        <label
+          css={`
+            font-weight: bold;
+          `}
+          label="Are you sure?"
+        />
         <box homogeneous spacing={16}>
           <button onClicked={no}>No</button>
           <button
@@ -48,7 +49,7 @@ export async function confirm(handler): Promise<boolean> {
     </window>
   );
 
-  dialogWindow.show();
-
-  return dialogWindow;
+  // Show the dialog
+  setVisible(true);
+  return dialog;
 }

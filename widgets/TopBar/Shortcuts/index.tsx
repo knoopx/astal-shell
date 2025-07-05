@@ -1,6 +1,5 @@
-import { App, Astal, Gdk, Gtk } from "astal/gtk3";
+import { Gtk } from "ags/gtk3";
 import Apps from "gi://AstalApps";
-import { bind, Binding, Variable } from "astal";
 
 const AppButton = ({ app }: { app: Apps.Application }) => {
   return (

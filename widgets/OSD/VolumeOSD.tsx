@@ -1,32 +1,39 @@
-import { App, Astal, Gtk } from "astal/gtk3";
-import { timeout } from "astal/time";
-import Variable from "astal/variable";
+import { Gtk, Astal } from "ags/gtk3";
+import app from "ags/gtk3/app";
+import { timeout } from "ags/time";
+import { createState, onCleanup } from "ags";
 import Wp from "gi://AstalWp";
 
-const VolumeProgress = ({ visible }) => {
-  const speaker = Wp.get_default()!.get_default_speaker();
-  const iconName = Variable("");
-  const value = Variable(0);
+const VolumeProgress = ({ visible, setVisible }) => {
+  const speaker = Wp.get_default()?.audio.defaultSpeaker!;
+  const [iconName, setIconName] = createState(
+    speaker.volumeIcon || "audio-volume-muted"
+  );
+  const [value, setValue] = createState(speaker.volume || 0);
   let count = 0;
 
   function show(v: number, icon: string) {
-    visible.set(true);
-    value.set(v);
-    iconName.set(icon);
+    setVisible(true);
+    setValue(v);
+    setIconName(icon);
     count++;
     timeout(1000, () => {
       count--;
-      if (count === 0) visible.set(false);
+      if (count === 0) setVisible(false);
     });
   }
 
+  const connectionId = speaker.connect("notify::volume", () => {
+    show(speaker.volume, speaker.volumeIcon);
+  });
+
+  // Clean up the connection when component is destroyed
+  onCleanup(() => {
+    speaker.disconnect(connectionId);
+  });
+
   return (
     <box
-      setup={(self) => {
-        self.hook(speaker, "notify::volume", () => {
-          show(speaker.volume, speaker.volumeIcon);
-        });
-      }}
       spacing={16}
       halign={Gtk.Align.END}
       valign={Gtk.Align.CENTER}
@@ -34,7 +41,7 @@ const VolumeProgress = ({ visible }) => {
       css={`
         font-size: 1.5em;
         background-color: rgba(0, 0, 0, 0.8);
-        border-radius: 9999;
+        border-radius: 9999px;
         padding: 0.8em;
         margin: 2em;
         padding-top: 1em;
@@ -47,38 +54,30 @@ const VolumeProgress = ({ visible }) => {
         `}
         halign={Gtk.Align.CENTER}
         heightRequest={100}
-        value={value()}
+        value={value}
         vertical={true}
         inverted={true}
       />
-      <icon
-        icon={iconName()}
-        setup={(self) => {
-          self.hook(iconName, () => {
-            self.icon = iconName.get();
-          });
-        }}
-      />
+      <icon icon={iconName} />
     </box>
   );
 };
 
 export default function VolumeOSD({ monitor }: { monitor: number }) {
-  const visible = Variable(false);
+  const [visible, setVisible] = createState(false);
   const { RIGHT } = Astal.WindowAnchor;
 
   return (
     <window
       name="volume-osd"
       namespace="volume-osd"
-      visible={visible()}
-      reactive={false}
+      application={app}
+      visible={visible}
       css={`
         background: none;
         margin: 1em;
       `}
       monitor={monitor}
-      application={App}
       layer={Astal.Layer.OVERLAY}
       exclusivity={Astal.Exclusivity.IGNORE}
       anchor={RIGHT}
@@ -86,7 +85,7 @@ export default function VolumeOSD({ monitor }: { monitor: number }) {
       halign={Gtk.Align.END}
       valign={Gtk.Align.CENTER}
     >
-      <VolumeProgress visible={visible} />
+      <VolumeProgress visible={visible} setVisible={setVisible} />
     </window>
   );
 }

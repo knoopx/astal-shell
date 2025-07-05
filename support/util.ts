@@ -1,5 +1,5 @@
-import { exec, readFile, writeFile } from "astal";
-import Battery from "gi://AstalBattery";
+import { exec } from "ags/process";
+import { readFile, writeFile } from "ags/file";
 
 export const format = (bytes: number): string => {
   if (!Number.isFinite(bytes) || bytes < 0)

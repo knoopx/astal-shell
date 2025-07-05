@@ -1,5 +1,5 @@
-import GLib from "gi://GLib?version=2.0";
-import { Widget } from "astal/gtk3";
+import GLib from "gi://GLib";
+import Gtk from "gi://Gtk";
 
 export interface TransitionOptions {
   fadeInDuration?: number;
@@ -14,7 +14,7 @@ const defaultOptions: Required<TransitionOptions> = {
 };
 
 export function applyOpacityTransition(
-  widget: Widget.Window,
+  widget: any,
   visible: boolean,
   options: TransitionOptions = {}
 ) {
@@ -49,9 +49,7 @@ export function applyOpacityTransition(
       return false;
     });
   } else {
-    // Start fade-out animation
     const startTime = Date.now();
-    const startOpacity = widget.get_opacity();
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
@@ -59,8 +57,7 @@ export function applyOpacityTransition(
 
       // Ease-in cubic function for smooth transition
       const easeIn = Math.pow(progress, 3);
-      const opacity = startOpacity * (1 - easeIn);
-      widget.set_opacity(opacity);
+      widget.set_opacity(1 - easeIn);
 
       if (progress < 1) {
         GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
