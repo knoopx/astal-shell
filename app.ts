@@ -22,7 +22,7 @@ app.start({
     }
 
     levelbar.medium .filled {
-      background-color: @theme_selected_bg_color
+      background-color: @theme_selected_bg_color;
     }
 
     levelbar.high .filled {

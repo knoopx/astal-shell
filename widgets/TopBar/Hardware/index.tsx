@@ -32,7 +32,7 @@ export default () => (
       <CPUMeter />
       <RAMMeter />
       {hasNvidiaGpu && (
-        <box>
+        <box spacing={8}>
           <GPUMeter />
           <VRAMMeter />
         </box>

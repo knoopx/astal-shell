@@ -19,10 +19,12 @@ const levelClass = (value, invert = false) => {
 };
 
 export const Meter = (props) => {
-  const { invert, ...levelbarProps } = props;
+  const { invert = false, value, ...levelbarProps } = props;
+  
   return (
     <levelbar
-      class={levelClass(props.value, props.invert)}
+      class={value.as((v) => levelClass(v, invert))}
+      value={value}
       {...levelbarProps}
       vertical
       inverted
