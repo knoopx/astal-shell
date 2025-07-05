@@ -19,7 +19,7 @@ function PlayPauseButton({ player }) {
         background-color: rgba(0, 0, 0, 0.6);
       `}
       onClicked={() => player.play_pause()}
-      visible={canPlay((c) => c)}
+      visible={canPlay}
     >
       <icon
         icon={playbackStatus((s) => {
@@ -74,6 +74,7 @@ const Player = (player) => {
             />
           </box>
           <box
+            $type="overlay"
             halign={Gtk.Align.CENTER}
             valign={Gtk.Align.CENTER}
             css={isHovering(
@@ -81,7 +82,7 @@ const Player = (player) => {
               opacity: ${hovering ? 1 : 0};
             `
             )}
-            visible={isHovering((hovering) => hovering)}
+            visible={isHovering}
           >
             <PlayPauseButton player={player} />
           </box>
@@ -121,7 +122,7 @@ const Player = (player) => {
           background-color: transparent;
         `}
         onClicked={() => player.next()}
-        visible={canGoNext((c) => c)}
+        visible={canGoNext}
       >
         <icon icon={"media-skip-forward-symbolic"} />
       </button>
