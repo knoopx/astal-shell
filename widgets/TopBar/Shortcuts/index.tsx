@@ -4,7 +4,7 @@ import Apps from "gi://AstalApps";
 const AppButton = ({ app }: { app: Apps.Application }) => {
   return (
     <button
-      onPressed={() => {
+      onClicked={() => {
         app.launch();
       }}
       name={app.name}

@@ -28,7 +28,7 @@ export default () => {
             min-width: 24px;
             min-height: 24px;
           `}
-          onPressed={poweroff}
+          onClicked={poweroff}
           tooltipText="Shutdown"
         >
           <icon icon="system-shutdown-symbolic" />
@@ -43,7 +43,7 @@ export default () => {
             min-width: 24px;
             min-height: 24px;
           `}
-          onPressed={reboot}
+          onClicked={reboot}
           tooltipText="Reboot"
         >
           <icon icon="system-reboot-symbolic" />
@@ -57,7 +57,7 @@ export default () => {
             min-width: 24px;
             min-height: 24px;
           `}
-          onPressed={logout}
+          onClicked={logout}
           tooltipText="Logout"
         >
           <icon icon="system-log-out-symbolic" />
