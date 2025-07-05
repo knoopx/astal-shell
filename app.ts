@@ -34,7 +34,7 @@ app.start({
       const monitorNum = Number(monitor);
       TopBar({ monitor: monitorNum });
       LeftBar({ monitor: monitorNum });
-      BottomBar({ monitor: monitorNum });
+      // BottomBar({ monitor: monitorNum });
       VolumeOSD({ monitor: monitorNum });
       BrightnessOSD({ monitor: monitorNum });
     }
