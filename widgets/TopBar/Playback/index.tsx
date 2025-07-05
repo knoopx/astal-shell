@@ -1,5 +1,5 @@
 import Mpris from "gi://AstalMpris";
-import { createBinding, createState, With, For } from "ags";
+import { createBinding, createState, For } from "ags";
 import { Gtk } from "ags/gtk3";
 
 // TODO: Automatically pause multiple playing things
@@ -19,7 +19,7 @@ function PlayPauseButton({ player }) {
         background-color: rgba(0, 0, 0, 0.6);
       `}
       onClicked={() => player.play_pause()}
-      visible={canPlay}
+      visible={canPlay((c) => c)}
     >
       <icon
         icon={playbackStatus((s) => {
@@ -62,7 +62,8 @@ const Player = (player) => {
           >
             <box
               class="artwork"
-              css={coverArt((cover) => `min-width: 36px;
+              css={coverArt(
+                (cover) => `min-width: 36px;
                 min-height: 36px;
                 background-image: url('${cover}');
                 background-size: cover;
@@ -75,10 +76,12 @@ const Player = (player) => {
           <box
             halign={Gtk.Align.CENTER}
             valign={Gtk.Align.CENTER}
-            css={isHovering((hovering) => `
+            css={isHovering(
+              (hovering) => `
               opacity: ${hovering ? 1 : 0};
-            `)}
-            visible={isHovering}
+            `
+            )}
+            visible={isHovering((hovering) => hovering)}
           >
             <PlayPauseButton player={player} />
           </box>
@@ -118,7 +121,7 @@ const Player = (player) => {
           background-color: transparent;
         `}
         onClicked={() => player.next()}
-        visible={canGoNext}
+        visible={canGoNext((c) => c)}
       >
         <icon icon={"media-skip-forward-symbolic"} />
       </button>
@@ -132,11 +135,7 @@ export default () => {
 
   return (
     <box>
-      <box>
-        <For each={players}>
-          {(player: any) => Player(player)}
-        </For>
-      </box>
+      <For each={players}>{(player: any) => Player(player)}</For>
     </box>
   );
 };

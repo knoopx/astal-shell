@@ -44,44 +44,49 @@
         gjs
         glib
       ]);
-  in {
-    packages.${system}.default = pkgs.stdenv.mkDerivation rec {
-      name = "astal-shell";
-      pname = "astal-shell";
-      entry = "app.ts";
 
-      src = ./.;
-      nativeBuildInputs = with pkgs; [
-        wrapGAppsHook
-        gobject-introspection
-        (
-          ags.packages.${system}.default
+    agsCustom = (
+      ags.packages.${system}.default
           .override
-          {
-            inherit extraPackages;
-          }
-        )
-      ];
-      buildInputs = extraPackages;
-      installPhase = ''
-        runHook preInstall
+      {
+        inherit extraPackages;
+      }
+    );
+  in {
+    packages.${system} = {
+      ags = agsCustom;
+      default = pkgs.stdenv.mkDerivation rec {
+        name = "astal-shell";
+        pname = "astal-shell";
+        entry = "app.ts";
 
-         mkdir -p $out/bin
-         mkdir -p $out/share
-         cp -r * $out/share
-         ags bundle --gtk 3 ${entry} $out/bin/${pname} -d "SRC='$out/share'"
+        src = ./.;
+        nativeBuildInputs = with pkgs; [
+          wrapGAppsHook
+          gobject-introspection
+          agsCustom
+        ];
+        buildInputs = extraPackages;
+        installPhase = ''
+          runHook preInstall
 
-         runHook postInstall
-      '';
-    };
+           mkdir -p $out/bin
+           mkdir -p $out/share
+           cp -r * $out/share
+           ags bundle --gtk 3 ${entry} $out/bin/${pname} -d "SRC='$out/share'"
 
-    apps.${system}.default = {
-      type = "app";
-      program = "${self.packages.${system}.default}/bin/astal-shell";
-    };
+           runHook postInstall
+        '';
+      };
 
-    overlays.default = final: prev: {
-      astal-shell = self.packages.${system}.default;
+      apps.${system}.default = {
+        type = "app";
+        program = "${self.packages.${system}.default}/bin/astal-shell";
+      };
+
+      overlays.default = final: prev: {
+        astal-shell = self.packages.${system}.default;
+      };
     };
   };
 }
