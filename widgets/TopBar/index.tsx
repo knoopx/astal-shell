@@ -1,4 +1,4 @@
-import { createState, With } from "ags";
+import { createState, With, onCleanup } from "ags";
 import app from "ags/gtk3/app";
 import { Gtk, Astal } from "ags/gtk3";
 import CenterWidgets from "../CenterWidgets";
@@ -37,29 +37,25 @@ export default ({ monitor }: { monitor: number }) => {
     >
       <SysTray />
       <box>
-        <With value={showQuickSettings}>
-          {(isOpen) => (
-            <box>
-              <revealer
-                revealChild={!isOpen}
-                transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
-                transitionDuration={300}
-              >
-                <box spacing={8}>
-                  <Network />
-                  <Hardware />
-                </box>
-              </revealer>
-              <revealer
-                revealChild={isOpen}
-                transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
-                transitionDuration={300}
-              >
-                <QuickSettings />
-              </revealer>
+        <box>
+          <revealer
+            revealChild={showQuickSettings((isOpen) => !isOpen)}
+            transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
+            transitionDuration={300}
+          >
+            <box spacing={8}>
+              <Network />
+              <Hardware />
             </box>
-          )}
-        </With>
+          </revealer>
+          <revealer
+            revealChild={showQuickSettings}
+            transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+            transitionDuration={300}
+          >
+            <QuickSettings />
+          </revealer>
+        </box>
       </box>
       <Avatar onToggle={() => setShowQuickSettings((prev) => !prev)} />
     </box>
@@ -92,8 +88,20 @@ export default ({ monitor }: { monitor: number }) => {
     </window>
   );
 
-  niri.connect("notify::overview-is-open", (obj) => {
+  // Connect signals and store IDs for cleanup
+  const overviewSignalId = niri.connect("notify::overview-is-open", (obj) => {
     applyOpacityTransition(win, obj.overviewIsOpen);
+  });
+
+  // Register cleanup to disconnect signals when component is destroyed
+  onCleanup(() => {
+    try {
+      if (overviewSignalId) {
+        niri.disconnect(overviewSignalId);
+      }
+    } catch (error) {
+      console.warn("Error disconnecting signal:", error);
+    }
   });
 
   return win;
