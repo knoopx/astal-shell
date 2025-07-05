@@ -6,7 +6,6 @@ const safeExec = (command: string, fallback: string = "0"): string => {
   try {
     return exec(command);
   } catch (error) {
-    console.warn(`Command failed: ${command}`, error);
     return fallback;
   }
 };
@@ -17,7 +16,10 @@ const get = (args: string) => {
 };
 
 const getScreen = () => {
-  const result = safeExec(`bash -c "ls -w1 /sys/class/backlight | head -1"`, "");
+  const result = safeExec(
+    `bash -c "ls -w1 /sys/class/backlight | head -1"`,
+    ""
+  );
   return result.trim();
 };
 
@@ -49,20 +51,25 @@ export default class Brightness extends GObject.Object {
     // Only set up monitoring if we have a valid screen device
     if (this.#screenName && this.#screenMax > 0) {
       try {
-        monitorFile(`/sys/class/backlight/${this.#screenName}/brightness`, async (f) => {
-          try {
-            const v = await readFileAsync(f);
-            this.#screen = Number(v) / this.#screenMax;
-            this.notify("screen");
-          } catch (error) {
-            console.warn("Failed to read brightness file:", error);
+        monitorFile(
+          `/sys/class/backlight/${this.#screenName}/brightness`,
+          async (f) => {
+            try {
+              const v = await readFileAsync(f);
+              this.#screen = Number(v) / this.#screenMax;
+              this.notify("screen");
+            } catch (error) {
+              console.warn("Failed to read brightness file:", error);
+            }
           }
-        });
+        );
       } catch (error) {
         console.warn("Failed to monitor brightness file:", error);
       }
     } else {
-      console.warn("Brightness control not available: brightnessctl not found or no backlight devices");
+      console.warn(
+        "Brightness control not available: brightnessctl not found or no backlight devices"
+      );
     }
   }
 }

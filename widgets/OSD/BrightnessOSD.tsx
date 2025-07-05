@@ -1,7 +1,7 @@
 import { Gtk, Astal } from "ags/gtk3";
 import app from "ags/gtk3/app";
 import { timeout } from "ags/time";
-import { createState, createBinding, onCleanup } from "ags";
+import { createState, onCleanup } from "ags";
 import Brightness from "../../support/brightness";
 
 const BrightnessProgress = ({ visible, setVisible }) => {
@@ -25,7 +25,6 @@ const BrightnessProgress = ({ visible, setVisible }) => {
   // Only set up monitoring if brightness is available
   if (brightness.screenValue !== undefined) {
     // Set up brightness monitoring with proper cleanup
-    const brightnessValue = createBinding(brightness, "screen");
     connectionId = brightness.connect("notify::screen", () => {
       show(brightness.screen);
     });
