@@ -1,5 +1,6 @@
 import Mpris from "gi://AstalMpris";
 import { createBinding, createState, For } from "ags";
+import Pango from 'gi://Pango';
 import { Gtk } from "ags/gtk3";
 
 // TODO: Automatically pause multiple playing things
@@ -105,6 +106,8 @@ const Player = (player) => {
           label={artist}
           halign={Gtk.Align.START}
           visible={artist((artist) => !!artist)}
+          ellipsize={Pango.EllipsizeMode.END}
+          max-width-chars={20}
         />
         <label
           css={`
@@ -113,6 +116,8 @@ const Player = (player) => {
           `}
           label={title}
           halign={Gtk.Align.START}
+          ellipsize={Pango.EllipsizeMode.END}
+          max-width-chars={20}
         />
       </box>
 
