@@ -63,7 +63,7 @@ export default () => {
     const vend = vendor.get();
     const mod = model.get();
 
-    let markup = `<b>Battery: ${Math.round(p)}%</b>\n`;
+    let markup = `<b>Battery: ${Math.round(p * 100)}%</b>\n`;
     markup += `<b>Status:</b> ${getStateText(s)}\n`;
 
     if (c && ttf > 0) {
