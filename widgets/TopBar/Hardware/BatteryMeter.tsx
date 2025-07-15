@@ -104,7 +104,7 @@ export default () => {
   return (
     <box halign={Gtk.Align.CENTER}>
       <box tooltipMarkup={tooltipMarkup}>
-        <Meter invert value={percentage((p) => p / 100)} />
+        <Meter invert value={percentage} />
       </box>
       <Label label="BAT" />
     </box>
