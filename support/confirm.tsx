@@ -1,5 +1,6 @@
 import { createState } from "ags";
-import { Gtk } from "ags/gtk3";
+import { Gtk, Astal } from "ags/gtk3";
+
 import Gdk from "gi://Gdk?version=3.0";
 
 export function confirm(handler: () => void) {
@@ -23,10 +24,21 @@ export function confirm(handler: () => void) {
   const dialog = (
     <window
       name="confirm"
+      anchor={
+        Astal.WindowAnchor.TOP |
+        Astal.WindowAnchor.BOTTOM |
+        Astal.WindowAnchor.LEFT |
+        Astal.WindowAnchor.RIGHT
+      }
       onKeyPressEvent={(self, event) => onKeyPress(self, event)}
       visible={visible}
     >
-      <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER} vertical spacing={16}>
+      <box
+        halign={Gtk.Align.CENTER}
+        valign={Gtk.Align.CENTER}
+        vertical
+        spacing={16}
+      >
         <label
           css={`
             font-weight: bold;
