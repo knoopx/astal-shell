@@ -6,6 +6,14 @@ import { execAsync, subprocess } from "ags/process";
 import { createState } from "ags";
 import GLib from "gi://GLib";
 
+export type WindowLayout = {
+  pos_in_scrolling_layout?: [number, number] | null;
+  tile_size: [number, number];
+  window_size: [number, number];
+  tile_pos_in_workspace_view?: [number, number] | null;
+  window_offset_in_tile: [number, number];
+};
+
 export type WindowData = {
   id: number;
   title: string | null;
@@ -15,6 +23,7 @@ export type WindowData = {
   is_focused: boolean;
   is_floating: boolean;
   is_urgent: boolean;
+  layout: WindowLayout;
 };
 
 // @ts-ignore: TypeScript has conflicts with AGS GObject decorators for this class
@@ -54,6 +63,16 @@ export class NiriWindow extends GObject.Object {
   @property(Boolean)
   is_urgent = false;
 
+  // @ts-ignore
+  @property(Object)
+  layout: WindowLayout = {
+    pos_in_scrolling_layout: null,
+    tile_size: [0, 0],
+    window_size: [0, 0],
+    tile_pos_in_workspace_view: null,
+    window_offset_in_tile: [0, 0],
+  };
+
   constructor(data: WindowData) {
     super();
     this.updateFromData(data);
@@ -68,6 +87,7 @@ export class NiriWindow extends GObject.Object {
     this.is_focused = data.is_focused || false;
     this.is_floating = data.is_floating || false;
     this.is_urgent = data.is_urgent || false;
+    this.layout = data.layout ?? this.layout;
   }
 }
 
@@ -201,6 +221,9 @@ export class Niri extends GObject.Object {
         case "WindowUrgencyChanged":
           this.onWindowUrgencyChanged(value.id, value.urgent);
           break;
+        case "WindowLayoutsChanged":
+          this.onWindowLayoutsChanged(value.changes);
+          break;
         case "KeyboardLayoutsChanged":
           // Handle if needed
           break;
@@ -230,8 +253,12 @@ export class Niri extends GObject.Object {
   }
 
   onWindowFocusChanged(id: number | null) {
+    // Ignore WindowFocusChanged events with id=null (do not clear focus)
+    if (id === null) {
+      return;
+    }
     // This is the authoritative source for window focus
-    const newActiveId = id || -1;
+    const newActiveId = id;
     this.setActiveWindowId(newActiveId);
 
     // Update the focused state for all windows across all workspaces
@@ -239,20 +266,22 @@ export class Niri extends GObject.Object {
   }
 
   private updateWindowFocusState(activeWindowId: number) {
-    // Update workspace windows
-    this.workspaces.forEach((workspace) => {
-      workspace.windows.forEach((window) => {
-        window.is_focused =
-          activeWindowId !== -1 && window.id === activeWindowId;
+    // Only update focus state for windows if activeWindowId is not null/undefined
+    if (activeWindowId !== undefined && activeWindowId !== null) {
+      this.workspaces.forEach((workspace) => {
+        workspace.windows.forEach((window) => {
+          window.is_focused = window.id === activeWindowId;
+        });
       });
+      this.windows.forEach((window) => {
+        window.is_focused = window.id === activeWindowId;
+      });
+    }
+    // After updating is_focused, reassign array references to trigger AGS reactivity
+    this.workspaces.forEach((workspace) => {
+      workspace.windows = [...workspace.windows]; // keep GObject instances
     });
-
-    // Update global windows array
-    this.windows.forEach((window) => {
-      window.is_focused = activeWindowId !== -1 && window.id === activeWindowId;
-    });
-
-    // Force notification to update UI bindings
+    this.windows = [...this.windows]; // keep GObject instances
     this.notify("workspaces");
     this.notify("windows");
   }
@@ -320,9 +349,16 @@ export class Niri extends GObject.Object {
         app_id: window.app_id ?? null,
         pid: window.pid ?? null,
         workspace_id: window.workspace_id ?? null,
-        is_focused: window.is_focused || false,
+        is_focused: false, // Do NOT set focus here
         is_floating: window.is_floating || false,
         is_urgent: window.is_urgent || false,
+        layout: window.layout ?? {
+          pos_in_scrolling_layout: null,
+          tile_size: [0, 0],
+          window_size: [0, 0],
+          tile_pos_in_workspace_view: null,
+          window_offset_in_tile: [0, 0],
+        },
       };
 
       // Create a new NiriWindow GObject
@@ -367,13 +403,8 @@ export class Niri extends GObject.Object {
       // This gives a predictable order that users can rely on
       windows = windows.sort((a, b) => a.id - b.id);
 
-      // Apply current focus state to all windows
-      windows.forEach((window) => {
-        window.is_focused =
-          activeWindowId !== -1 && window.id === activeWindowId;
-      });
-
-      workspace.windows = windows;
+      // Do NOT reset focus state here; only update window arrays
+      workspace.windows = [...windows]; // Replace array reference for AGS reactivity
     });
 
     this.notify("workspaces");
@@ -409,15 +440,14 @@ export class Niri extends GObject.Object {
   }
 
   onWorkspaceActiveWindowChanged(workspaceId: number, windowId: number | null) {
-    // Check if this is for the currently active workspace
     const currentWorkspace = this.workspaces.find((ws) => ws.is_focused);
 
     if (currentWorkspace && currentWorkspace.id === workspaceId) {
       // This is for the active workspace - use this as a fallback if WindowFocusChanged isn't received
-      const newActiveWindowId = windowId || -1;
-
-      this.setActiveWindowId(newActiveWindowId);
-      this.updateWindowFocusState(newActiveWindowId);
+      if (windowId !== null && windowId !== undefined) {
+        this.setActiveWindowId(windowId);
+        this.updateWindowFocusState(windowId);
+      }
     }
   }
 
@@ -449,6 +479,13 @@ export class Niri extends GObject.Object {
       is_focused: window.is_focused || false,
       is_floating: window.is_floating || false,
       is_urgent: window.is_urgent || false,
+      layout: window.layout ?? {
+        pos_in_scrolling_layout: null,
+        tile_size: [0, 0],
+        window_size: [0, 0],
+        tile_pos_in_workspace_view: null,
+        window_offset_in_tile: [0, 0],
+      },
     };
 
     // Update or add the window in our windows map (like official Astal)
@@ -456,16 +493,16 @@ export class Niri extends GObject.Object {
     const activeWindowId = this.activeWindowId();
 
     if (existing) {
-      // Update existing window GObject, preserving focus state from our active window tracking
+      // Update existing window GObject, do NOT touch is_focused here
       existing.updateFromData({
         ...normalizedWindow,
-        is_focused: activeWindowId !== -1 && window.id === activeWindowId,
+        is_focused: existing.is_focused,
       });
     } else {
-      // Add new window GObject, setting focus state based on current active window
+      // Add new window GObject, do NOT set is_focused here
       const niriWindow = new NiriWindow({
         ...normalizedWindow,
-        is_focused: activeWindowId !== -1 && window.id === activeWindowId,
+        is_focused: false,
       });
       this.windowsMap.set(window.id, niriWindow);
     }
@@ -495,16 +532,31 @@ export class Niri extends GObject.Object {
     this.notify("windows");
   }
 
+  onWindowLayoutsChanged(changes: Array<[number, WindowLayout]>) {
+    // Update layout for each window in the map
+    changes.forEach(([id, layout]) => {
+      const win = this.windowsMap.get(id);
+      if (win) {
+        win.layout = layout;
+      }
+    });
+    // Update the reactive array from the map
+    this.windows = Array.from(this.windowsMap.values());
+    this.updateWorkspaceWindows();
+
+    this.notify("workspaces");
+    this.notify("windows");
+  }
+
   onWindowUrgencyChanged(windowId: number, urgent: boolean) {
     // Update urgency state for the window in the map (like official Astal)
     const window = this.windowsMap.get(windowId);
     if (window) {
       window.is_urgent = urgent;
-
+      // Do NOT touch is_focused here
       // Update the reactive array from the map
       this.windows = Array.from(this.windowsMap.values());
     }
-
     this.updateWorkspaceWindows();
     this.notify("workspaces");
     this.notify("windows");
