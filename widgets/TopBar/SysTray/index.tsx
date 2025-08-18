@@ -21,9 +21,9 @@ export default () => {
                 usePopover={false}
                 menuModel={menuModel}
                 css={`
-                  min-width: 28px;
-                  min-height: 28px;
-                  padding: 4px;
+                  padding: 0;
+                  margin: 0;
+                  background: none;
                 `}
               >
                 <icon
