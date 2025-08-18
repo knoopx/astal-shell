@@ -46,6 +46,11 @@ export const hasNvidiaGpu = (() => {
 })();
 
 export const hasBattery = (() => {
+
+export function getHomeDir(): string {
+  return process.env.HOME || process.env.USERPROFILE || '';
+}
+
   try {
     const device = Battery.get_default();
     return device !== null && device.isPresent === true;
