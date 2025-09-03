@@ -1,4 +1,5 @@
 import Volume from "./Volume";
+import ScreenRecording from "./ScreenRecording";
 import { execAsync } from "ags/process";
 import { Gtk } from "ags/gtk3";
 import { confirm } from "../../../support/confirm";
@@ -34,6 +35,7 @@ export default () => {
           tooltipText="Logout"
           onClicked={logout}
         />
+        <ScreenRecording />
       </box>
     </box>
   );
