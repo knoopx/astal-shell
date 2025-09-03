@@ -4,6 +4,7 @@ import niri from "../../support/niri";
 import AstalApps from "gi://AstalApps";
 import { applyOpacityTransition } from "../../support/transitions";
 import { Gtk, Astal } from "ags/gtk3";
+import { getDisplayId, getBarMargins } from "../../support/util";
 
 export default ({ monitor }: { monitor: number }) => {
   const apps = new AstalApps.Apps();
@@ -154,8 +155,8 @@ const WindowButton = ({ window }: { window: any }) => {
      </box>
    );
 
-  const horizontalMargin = 300;
-  const verticalMargin = 100;
+  const displayId = getDisplayId(monitor);
+  const margins = getBarMargins(displayId);
   const { BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
 
   const win = (
@@ -166,9 +167,9 @@ const WindowButton = ({ window }: { window: any }) => {
       visible={false}
       exclusivity={Astal.Exclusivity.IGNORE}
       anchor={BOTTOM | LEFT | RIGHT}
-      marginBottom={verticalMargin}
-      marginLeft={horizontalMargin}
-      marginRight={horizontalMargin}
+      marginBottom={margins.vertical}
+      marginLeft={margins.horizontal}
+      marginRight={margins.horizontal}
       css={`
         background: transparent;
       `}

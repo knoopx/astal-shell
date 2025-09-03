@@ -10,6 +10,7 @@ import Hardware from "./Hardware";
 import Avatar from "./Avatar";
 import niri from "../../support/niri";
 import { applyOpacityTransition } from "../../support/transitions";
+import { getDisplayId, getBarMargins } from "../../support/util";
 
 export default ({ monitor }: { monitor: number }) => {
   const [showQuickSettings, setShowQuickSettings] = createState(false);
@@ -61,8 +62,8 @@ export default ({ monitor }: { monitor: number }) => {
     </box>
   );
 
-  const horizontalMargin = 300;
-  const verticalMargin = 100;
+  const displayId = getDisplayId(monitor);
+  const margins = getBarMargins(displayId);
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
 
   const win = (
@@ -73,9 +74,9 @@ export default ({ monitor }: { monitor: number }) => {
       visible={false}
       exclusivity={Astal.Exclusivity.IGNORE}
       anchor={TOP | LEFT | RIGHT}
-      marginTop={verticalMargin}
-      marginLeft={horizontalMargin}
-      marginRight={horizontalMargin}
+      marginTop={margins.vertical}
+      marginLeft={margins.horizontal}
+      marginRight={margins.horizontal}
       css={`
         background: transparent;
       `}

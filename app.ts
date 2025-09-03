@@ -4,6 +4,7 @@ import LeftBar from "./widgets/LeftBar";
 import VolumeOSD from "./widgets/OSD/VolumeOSD";
 import BrightnessOSD from "./widgets/OSD/BrightnessOSD";
 import BottomBar from "./widgets/BottomBar";
+import { initializeConfigFile } from "./support/util";
 
 app.start({
   css: `
@@ -30,6 +31,9 @@ app.start({
     }
     `,
   main() {
+    // Initialize configuration file on startup
+    initializeConfigFile();
+
     for (const monitor in app.get_monitors()) {
       const monitorNum = Number(monitor);
       TopBar({ monitor: monitorNum });
