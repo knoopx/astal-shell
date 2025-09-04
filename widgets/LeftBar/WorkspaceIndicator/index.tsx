@@ -19,18 +19,20 @@ export default () => {
       <For each={workspaces}>
         {(workspace: any) => (
           <button
-            css={createBinding(workspace, "is_focused").as(focused => `
+            css={createBinding(workspace, "is_focused").as(
+              (focused) => `
               padding: 0;
               background: none;
               border: none;
               min-width: 6px;
               min-height: 24px;
               border-radius: ${theme.borderRadius.small};
-              background-color: ${focused
-                ? theme.accent.secondary
-                : theme.accent.primary};
+              background-color: ${
+                focused ? theme.accent.primary : theme.accent.secondary
+              };
               transition: all 0.2s ease;
-            `)}
+            `
+            )}
             onClicked={() => {
               niri.focusWorkspace(workspace.idx);
             }}
