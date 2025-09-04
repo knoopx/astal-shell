@@ -1,8 +1,10 @@
 import { createPoll } from "ags/time";
 import { Gtk } from "ags/gtk3";
 import GLib from "gi://GLib";
+import { getCurrentTheme } from "../../support/theme";
 
 export default ({ format = "%H:%M" }) => {
+  const theme = getCurrentTheme();
   const time = createPoll("", 1000, () =>
     GLib.DateTime.new_now_local().format(format)!
   );
@@ -13,7 +15,7 @@ export default ({ format = "%H:%M" }) => {
       halign={Gtk.Align.CENTER}
     >
       <label
-        css="font-size: 0.8em; font-weight: normal; opacity: 0.8;"
+        css={`font-size: ${theme.font.size.small}; font-weight: ${theme.font.weight.normal}; opacity: ${theme.opacity.medium};`}
         halign={Gtk.Align.CENTER}
         useMarkup
         label={time}

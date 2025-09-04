@@ -3,6 +3,7 @@ import app from "ags/gtk3/app";
 import { timeout } from "ags/time";
 import { createState, onCleanup } from "ags";
 import Wp from "gi://AstalWp";
+import { getCurrentTheme } from "../../support/theme";
 
 const VolumeProgress = ({ visible, setVisible }) => {
   const speaker = Wp.get_default()?.audio.defaultSpeaker!;
@@ -32,6 +33,7 @@ const VolumeProgress = ({ visible, setVisible }) => {
     speaker.disconnect(connectionId);
   });
 
+  const theme = getCurrentTheme();
   return (
     <box
       spacing={16}
@@ -39,9 +41,9 @@ const VolumeProgress = ({ visible, setVisible }) => {
       valign={Gtk.Align.CENTER}
       vertical={true}
       css={`
-        font-size: 1.5em;
-        background-color: rgba(0, 0, 0, 0.8);
-        border-radius: 9999px;
+        font-size: ${theme.font.size.large};
+        background-color: ${theme.background.primary};
+        border-radius: ${theme.borderRadius.large};
         padding: 0.8em;
         margin: 2em;
         padding-top: 1em;

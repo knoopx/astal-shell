@@ -5,6 +5,7 @@ import VolumeOSD from "./widgets/OSD/VolumeOSD";
 import BrightnessOSD from "./widgets/OSD/BrightnessOSD";
 import BottomBar from "./widgets/BottomBar";
 import { initializeConfigFile } from "./support/util";
+import { loadTheme } from "./support/theme";
 
 app.start({
   css: `
@@ -33,6 +34,9 @@ app.start({
   main() {
     // Initialize configuration file on startup
     initializeConfigFile();
+
+    // Load theme on startup
+    loadTheme();
 
     for (const monitor in app.get_monitors()) {
       const monitorNum = Number(monitor);

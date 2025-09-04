@@ -1,3 +1,5 @@
+import { getCurrentTheme } from "../../../support/theme";
+
 type ActionButtonProps = {
   icon: string;
   tooltipText: string;
@@ -11,13 +13,14 @@ export default function ActionButton({
   onClicked,
   css: additionalCss = "",
 }: ActionButtonProps) {
+  const theme = getCurrentTheme();
   const baseCss = `
     padding: 0;
     margin: 0;
-    border-radius: 100%;
+    border-radius: ${theme.borderRadius.large};
     min-width: 24px;
     min-height: 24px;
-    background-color: rgba(255, 255, 255, 0.12);
+    background-color: ${theme.background.secondary};
   `;
   const css = additionalCss ? `${baseCss}${additionalCss}` : baseCss;
 

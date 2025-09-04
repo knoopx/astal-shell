@@ -1,8 +1,8 @@
 import { createState } from "ags";
 import { execAsync, subprocess } from "ags/process";
 import { Gtk } from "ags/gtk3";
-import GLib from "gi://GLib";
 import niri from "../../../support/niri";
+import { getCurrentTheme } from "../../../support/theme";
 
 export {
   EMoonPhase,
@@ -330,7 +330,9 @@ export default () => {
 
   const updateWeather = async () => {
     try {
-      const res = await execAsync('curl "http://ip-api.com/json?fields=lat,lon"');
+      const res = await execAsync(
+        'curl "http://ip-api.com/json?fields=lat,lon"'
+      );
       const loc = JSON.parse(res);
       const weatherRes = await execAsync(
         `curl https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,is_day,weather_code&models=gem_seamless`
@@ -340,7 +342,9 @@ export default () => {
         ? openWeatherWMOToEmoji(weatherData.current.weather_code).value
         : moonPhaseAlt().icon;
 
-      setWeather(() => `${emoji} ${round(weatherData.current.temperature_2m)}°C`);
+      setWeather(
+        () => `${emoji} ${round(weatherData.current.temperature_2m)}°C`
+      );
     } catch (e) {
       console.warn("Failed to update weather:", e);
     }
@@ -349,6 +353,7 @@ export default () => {
   const interval = setInterval(updateWeather, 300e3);
   updateWeather();
 
+  const theme = getCurrentTheme();
   return (
     <button
       css="background: transparent; margin: 0; padding: 0; margin-top: -8px;"
@@ -359,7 +364,11 @@ export default () => {
       }}
     >
       <label
-        css="font-size: 0.8em; font-weight: normal; opacity: 0.8;"
+        css={`
+          font-size: ${theme.font.size.small};
+          font-weight: ${theme.font.weight.normal};
+          opacity: ${theme.opacity.medium};
+        `}
         halign={Gtk.Align.CENTER}
         onDestroy={() => clearInterval(interval)}
         label={weather}

@@ -1,8 +1,10 @@
 import { Gtk } from "ags/gtk3";
 import { createBinding, For } from "ags";
 import niri from "../../../support/niri";
+import { getCurrentTheme } from "../../../support/theme";
 
 export default () => {
+  const theme = getCurrentTheme();
   const workspaces = createBinding(niri, "workspaces");
 
   return (
@@ -23,10 +25,10 @@ export default () => {
               border: none;
               min-width: 6px;
               min-height: 24px;
-              border-radius: 3px;
+              border-radius: ${theme.borderRadius.small};
               background-color: ${focused
-                ? "@theme_selected_bg_color"
-                : "rgba(255, 255, 255, 0.9)"};
+                ? theme.accent.secondary
+                : theme.accent.primary};
               transition: all 0.2s ease;
             `)}
             onClicked={() => {

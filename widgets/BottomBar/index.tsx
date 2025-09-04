@@ -5,6 +5,7 @@ import AstalApps from "gi://AstalApps";
 import { applyOpacityTransition } from "../../support/transitions";
 import { Gtk, Astal } from "ags/gtk3";
 import { getDisplayId, getBarMargins } from "../../support/util";
+import { getCurrentTheme } from "../../support/theme";
 
 export default ({ monitor }: { monitor: number }) => {
   const apps = new AstalApps.Apps();
@@ -42,19 +43,20 @@ export default ({ monitor }: { monitor: number }) => {
 
   // Window button component
 const WindowButton = ({ window }: { window: any }) => {
+  const theme = getCurrentTheme();
   const isFocused = createBinding(window, "is_focused");
   return (
     <button
       class={isFocused((f) => `app-icon ${f ? "focused" : "unfocused"}`)}
-      css={isFocused((f) => `
-        border-radius: 4px;
-        padding: 4px;
-        background-color: transparent;
-        border: none;
-        box-shadow: none;
-        opacity: ${f ? 1.0 : 0.6};
-        transition: all 0.2s ease-in-out;
-      `)}
+        css={isFocused((f) => `
+          border-radius: ${theme.borderRadius.medium};
+          padding: ${theme.spacing.small};
+          background-color: transparent;
+          border: none;
+          box-shadow: none;
+          opacity: ${f ? theme.opacity.high : theme.opacity.low};
+          transition: all 0.2s ease-in-out;
+        `)}
       tooltipText={window.title || window.app_id}
       onClicked={() => {
         niri.focusWindow(window.id);
@@ -74,8 +76,8 @@ const WindowButton = ({ window }: { window: any }) => {
         css={isFocused((f) => `
           font-size: 42px;
           color: ${f
-            ? "rgba(255, 255, 255, 1.0)"
-            : "rgba(255, 255, 255, 0.7)"};
+            ? theme.text.focused
+            : theme.text.unfocused};
           transition: color 0.2s;
         `)}
       />
@@ -170,9 +172,9 @@ const WindowButton = ({ window }: { window: any }) => {
       marginBottom={margins.vertical}
       marginLeft={margins.horizontal}
       marginRight={margins.horizontal}
-      css={`
-        background: transparent;
-      `}
+        css={`
+         background: transparent;
+       `}
     >
       <centerbox>{CenterModules}</centerbox>
     </window>
