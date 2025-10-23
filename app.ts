@@ -4,12 +4,20 @@ import LeftBar from "./widgets/LeftBar";
 import VolumeOSD from "./widgets/OSD/VolumeOSD";
 import BrightnessOSD from "./widgets/OSD/BrightnessOSD";
 import BottomBar from "./widgets/BottomBar";
-import { initializeConfigFile } from "./support/util";
+import { getAllDisplays, initializeDisplaysConfig } from "./support/util";
 import { loadTheme } from "./support/theme";
-import { Astal } from "ags/gtk3";
 
 // Store references to bar windows for monitor change updates
-const barWindows = new Map<number, { topBar?: any; bottomBar?: any; leftBar?: any; volumeOSD?: any; brightnessOSD?: any }>();
+const barWindows = new Map<
+  number,
+  {
+    topBar?: any;
+    bottomBar?: any;
+    leftBar?: any;
+    volumeOSD?: any;
+    brightnessOSD?: any;
+  }
+>();
 
 function createBarsForMonitor(monitor: number) {
   const monitorNum = Number(monitor);
@@ -19,7 +27,13 @@ function createBarsForMonitor(monitor: number) {
   const volumeOSD = VolumeOSD({ monitor: monitorNum });
   const brightnessOSD = BrightnessOSD({ monitor: monitorNum });
 
-  barWindows.set(monitorNum, { topBar, bottomBar, leftBar, volumeOSD, brightnessOSD });
+  barWindows.set(monitorNum, {
+    topBar,
+    bottomBar,
+    leftBar,
+    volumeOSD,
+    brightnessOSD,
+  });
 
   return { topBar, leftBar, bottomBar, volumeOSD, brightnessOSD };
 }
@@ -49,8 +63,8 @@ app.start({
     }
     `,
   main() {
-    // Initialize configuration file on startup
-    initializeConfigFile();
+    // Initialize displays configuration on startup
+    initializeDisplaysConfig();
 
     // Load theme on startup
     loadTheme();
@@ -60,29 +74,8 @@ app.start({
       createBarsForMonitor(monitor);
     }
 
-    // Connect to monitor change signals
-    app.connect("monitor-added", (app, monitor) => {
-      console.log(`Monitor ${monitor} added, recreating all widgets`);
-
-      // Clear existing widgets
-      barWindows.clear();
-
-      // Recreate all widgets for all current monitors
-      for (const monitor in app.get_monitors()) {
-        createBarsForMonitor(monitor);
-      }
-    });
-
-    app.connect("monitor-removed", (app, monitor) => {
-      console.log(`Monitor ${monitor} removed, recreating all widgets`);
-
-      // Clear existing widgets
-      barWindows.clear();
-
-      // Recreate all widgets for all current monitors
-      for (const monitor in app.get_monitors()) {
-        createBarsForMonitor(monitor);
-      }
-    });
+    // TODO: Implement monitor change handling
+    // Monitor signals need to be handled differently in AGS v3
+    // For now, widgets are created for existing monitors on startup
   },
 });

@@ -88,6 +88,25 @@ export function getDisplayId(monitor: number): string {
   return `monitor_${monitor}`;
 }
 
+const DISPLAYS_CONFIG_PATH = `${GLib.get_home_dir()}/.config/astal-shell/displays.json`;
+
+let displaysConfig: Record<string, [number, number]> | null = null;
+
+function loadDisplaysConfig(): Record<string, [number, number]> {
+  if (displaysConfig !== null) {
+    return displaysConfig;
+  }
+
+  try {
+    displaysConfig = readJSONFile(DISPLAYS_CONFIG_PATH);
+  } catch (error) {
+    console.warn("Failed to load displays config:", error);
+    displaysConfig = {};
+  }
+
+  return displaysConfig;
+}
+
 export function getAllDisplays(): Record<string, [number, number]> {
   const displays: Record<string, [number, number]> = {};
 
@@ -103,12 +122,10 @@ export function getAllDisplays(): Record<string, [number, number]> {
   return displays;
 }
 
-export function initializeConfigFile(): void {
-  const configPath = `${GLib.get_home_dir()}/.config/astal-shell/displays.json`;
-
+export function initializeDisplaysConfig(): void {
   // Check if file already exists
   try {
-    if (readFile(configPath) !== "") {
+    if (readFile(DISPLAYS_CONFIG_PATH) !== "") {
       return; // File already exists, don't overwrite
     }
   } catch (e) {
@@ -116,7 +133,7 @@ export function initializeConfigFile(): void {
   }
 
   // Create config directory if it doesn't exist
-  const configDir = configPath.split("/").slice(0, -1).join("/");
+  const configDir = DISPLAYS_CONFIG_PATH.split("/").slice(0, -1).join("/");
   try {
     exec(`mkdir -p "${configDir}"`);
   } catch (error) {
@@ -125,7 +142,7 @@ export function initializeConfigFile(): void {
 
   // Get all displays and create config
   const displays = getAllDisplays();
-  writeJSONFile(configPath, displays);
+  writeJSONFile(DISPLAYS_CONFIG_PATH, displays);
 
   console.log(
     `Initialized displays.json with default margins for ${
@@ -135,22 +152,16 @@ export function initializeConfigFile(): void {
 }
 
 export function getBarMargins(displayId: string): { horizontal: number; vertical: number } {
-  const configPath = `${GLib.get_home_dir()}/.config/astal-shell/displays.json`;
+  const config = loadDisplaysConfig();
 
-  try {
-    const config = readJSONFile(configPath);
-    const margins = config[displayId];
+  const margins = config[displayId];
 
-    if (margins && Array.isArray(margins) && margins.length >= 2) {
-      return {
-        horizontal: margins[0],
-        vertical: margins[1]
-      };
-    }
-  } catch (error) {
-    console.warn("Failed to read margins from config:", error);
+  if (margins && Array.isArray(margins) && margins.length >= 2) {
+    return {
+      horizontal: margins[0],
+      vertical: margins[1]
+    };
   }
 
-  // Return default margins if config is missing or invalid
   return { horizontal: 300, vertical: 100 };
 }
