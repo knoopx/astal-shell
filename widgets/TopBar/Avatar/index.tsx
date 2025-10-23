@@ -1,5 +1,6 @@
 import { Gtk } from "ags/gtk3";
 import GLib from "gi://GLib";
+import { getCurrentTheme } from "../../../support/theme";
 
 export default ({ onToggle }: { onToggle: () => void }) => {
   return (
@@ -16,7 +17,7 @@ export default ({ onToggle }: { onToggle: () => void }) => {
       <box
         css={`
           border-radius: 100%;
-          border: 2px solid rgba(255, 255, 255, 0.2);
+          border: 2px solid ${getCurrentTheme().accent.border};
         `}
       >
         <box

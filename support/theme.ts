@@ -16,6 +16,8 @@ export interface Theme {
   accent: {
     primary: string;
     secondary: string;
+    border: string;
+    overlay: string;
   };
   status: {
     success: string;
@@ -71,12 +73,14 @@ export const defaultTheme: Theme = {
   },
   accent: {
     primary: "rgba(255, 255, 255, 0.9)",
-    secondary: "@theme_selected_bg_color",
+    secondary: "rgba(100, 149, 237, 0.8)",
+    border: "rgba(255, 255, 255, 0.2)",
+    overlay: "rgba(0, 0, 0, 0.6)",
   },
   status: {
-    success: "@success_color",
-    warning: "@warning_color",
-    error: "@error_color",
+    success: "rgba(40, 167, 69, 0.8)",
+    warning: "rgba(255, 193, 7, 0.8)",
+    error: "rgba(220, 53, 69, 0.8)",
   },
   opacity: {
     high: 1.0,

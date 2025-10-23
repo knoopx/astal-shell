@@ -2,6 +2,7 @@ import Mpris from "gi://AstalMpris";
 import { createBinding, createState, For } from "ags";
 import Pango from 'gi://Pango';
 import { Gtk } from "ags/gtk3";
+import { getCurrentTheme } from "../../../support/theme";
 
 // TODO: Automatically pause multiple playing things
 
@@ -17,7 +18,7 @@ function PlayPauseButton({ player }) {
         min-width: 24px;
         min-height: 24px;
         border-radius: 100%;
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: ${getCurrentTheme().accent.overlay};
       `}
       onClicked={() => player.play_pause()}
       visible={canPlay}
@@ -58,7 +59,7 @@ const Player = (player) => {
               min-width: 36px;
               min-height: 36px;
               border-radius: 4px;
-              border: 2px solid rgba(255, 255, 255, 0.2);
+              border: 2px solid ${getCurrentTheme().accent.border};
             `}
           >
             <box

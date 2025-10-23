@@ -1,6 +1,7 @@
 import { createState, onCleanup, With } from "ags";
 import { execAsync } from "ags/process";
 import ActionButton from "./ActionButton";
+import { getCurrentTheme } from "../../../support/theme";
 
 const sendNotification = async (
   summary: string,
@@ -188,8 +189,8 @@ export default () => {
           css={
             recording
               ? `
-                  background-color: rgba(220, 53, 69, 0.8);
-                  border: 1px solid rgba(220, 53, 69, 0.5);
+                  background-color: ${getCurrentTheme().status.error};
+                  border: 1px solid ${getCurrentTheme().status.error.replace('0.8', '0.5')};
                 `
               : ""
           }
