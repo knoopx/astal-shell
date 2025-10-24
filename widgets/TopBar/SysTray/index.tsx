@@ -23,6 +23,12 @@ export default () => {
                 margin: 0;
                 background: none;
               `}
+              $={(self) => {
+                self.insert_action_group("dbusmenu", item.actionGroup);
+                item.connect("notify::action-group", () => {
+                  self.insert_action_group("dbusmenu", item.actionGroup);
+                });
+              }}
             >
               <icon
                 gicon={gicon}
