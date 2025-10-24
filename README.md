@@ -19,7 +19,7 @@ You can use this flake in your NixOS configuration:
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    astal-shell.url = "github:knoopx/ags";
+    astal-shell.url = "github:knoopx/astal-shell";
   };
 
   outputs = { nixpkgs, astal-shell, ... }: {
@@ -46,27 +46,52 @@ You can use this flake in your NixOS configuration:
 
 ```nix
 { inputs, pkgs, ... }: {
-  imports = [ inputs.ags.homeManagerModules.default ];
+  imports = [ inputs.astal-shell.homeManagerModules.default ];
 
-  programs.ags = {
+services.astal-shell = {
     enable = true;
-    configDir = null;  # Don't symlink since we're using the bundled version
-    extraPackages = with pkgs; [
-      inputs.astal-shell.packages.${pkgs.system}.default
-    ];
+
+    # Optional: configure display margins
+    displays = {
+      "LG HDR 4K" = [390 145];
+      "DP-1" = [250 80];
+    };
+
+    # Optional: configure theme
+    theme = {
+      background = {
+        primary = "rgba(30, 30, 46, 1.0)";
+        secondary = "rgba(24, 24, 37, 1.0)";
+      };
+      text = {
+        primary = "rgba(205, 214, 244, 1.0)";
+        secondary = "rgba(186, 194, 222, 0.7)";
+      };
+      # ... other theme options
+    };
+
+    # Optional: use a different package
+    package = pkgs.astal-shell;
+  };
+
+    # Optional: customize theme
+    theme = {
+      background = {
+        primary = "rgba(30, 30, 46, 1.0)";
+        secondary = "rgba(24, 24, 37, 1.0)";
+      };
+      # ... other theme options
+    };
+
+    # Optional: use a different package
+    package = pkgs.astal-shell;
   };
 }
 ```
 
 ## Configuration
 
-### Display Configuration
-
-Display settings are stored in:
-
-- **Configuration File**: `~/.config/astal-shell/displays.json`
-
-#### Default Display Configuration
+### Display/Margins Configuration
 
 Monitors are identified using:
 
@@ -74,9 +99,7 @@ Monitors are identified using:
 2. Model information
 3. Fallback to `monitor_{number}` naming
 
-#### Per-Display Customization
-
-You can customize margins for specific displays:
+You can customize margins for specific displays in `~/.config/astal-shell/displays.json`:
 
 ```json
 {
@@ -85,13 +108,9 @@ You can customize margins for specific displays:
 }
 ```
 
-### Theming System
+### Theming
 
-The shell uses a comprehensive theming system with JSON-based configuration. Theme settings are stored in:
-
-- **Theme File**: `~/.config/astal-shell/theme.json`
-
-#### Default Theme Structure
+The shell uses a JSON-based configuration. Theme settings are stored in `~/.config/astal-shell/theme.json`:
 
 ```json
 {

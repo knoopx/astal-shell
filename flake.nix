@@ -88,5 +88,7 @@
     overlays.default = final: prev: {
       astal-shell = self.packages.${system}.default;
     };
+
+    homeManagerModules.default = ./home-manager.nix;
   };
 }
