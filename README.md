@@ -11,37 +11,6 @@ Astal-based shell for my [NixOS configuration](https://github.com/knoopx/nix).
 nix run path:.
 ```
 
-### Using in NixOS
-
-You can use this flake in your NixOS configuration:
-
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    astal-shell.url = "github:knoopx/astal-shell";
-  };
-
-  outputs = { nixpkgs, astal-shell, ... }: {
-    nixosConfigurations.yourhostname = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        # Your other modules
-        ({ pkgs, ... }: {
-          # Add the overlay
-          nixpkgs.overlays = [ astal-shell.overlays.default ];
-
-          # Install the packages
-          environment.systemPackages = with pkgs; [
-            astal-shell
-          ];
-        })
-      ];
-    };
-  };
-}
-```
-
 ### Using with Home Manager
 
 ```nix
@@ -66,19 +35,6 @@ services.astal-shell = {
       text = {
         primary = "rgba(205, 214, 244, 1.0)";
         secondary = "rgba(186, 194, 222, 0.7)";
-      };
-      # ... other theme options
-    };
-
-    # Optional: use a different package
-    package = pkgs.astal-shell;
-  };
-
-    # Optional: customize theme
-    theme = {
-      background = {
-        primary = "rgba(30, 30, 46, 1.0)";
-        secondary = "rgba(24, 24, 37, 1.0)";
       };
       # ... other theme options
     };
