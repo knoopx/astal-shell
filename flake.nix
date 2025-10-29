@@ -62,7 +62,7 @@
 
         src = ./.;
         nativeBuildInputs = with pkgs; [
-          wrapGAppsHook
+          wrapGAppsHook3
           gobject-introspection
           agsCustom
         ];
