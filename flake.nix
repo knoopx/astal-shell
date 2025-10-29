@@ -2,7 +2,7 @@
   description = "AGS Shell Configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "nixpkgs/nixos-25.05-small";
 
     ags = {
       url = "github:aylur/ags";
