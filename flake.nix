@@ -5,7 +5,7 @@
     nixpkgs.url = "nixpkgs/nixpkgs-unstable";
 
     ags = {
-      url = "github:aylur/ags";
+      url = "github:knoopx/ags";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
