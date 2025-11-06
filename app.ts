@@ -42,15 +42,15 @@ function createBarsForMonitor(monitor: number) {
 function destroyBarsForMonitor(monitor: number) {
   const monitorNum = Number(monitor);
   const bars = barWindows.get(monitorNum);
-  
+
   if (bars) {
     // Destroy each widget if it has a destroy method
-    Object.values(bars).forEach(bar => {
-      if (bar && typeof bar.destroy === 'function') {
+    Object.values(bars).forEach((bar) => {
+      if (bar && typeof bar.destroy === "function") {
         bar.destroy();
       }
     });
-    
+
     // Remove from the map
     barWindows.delete(monitorNum);
   }
@@ -65,12 +65,12 @@ function setupMonitorChangeHandling() {
 
   // Connect to the 'monitor-added' and 'monitor-removed' signals
   // These are the proper signals for monitor change detection in GTK
-  display.connect('monitor-added', (disp, monitor) => {
+  display.connect("monitor-added", (disp, monitor) => {
     console.log("Monitor added");
     handleMonitorChange();
   });
 
-  display.connect('monitor-removed', (disp, monitor) => {
+  display.connect("monitor-removed", (disp, monitor) => {
     console.log("Monitor removed");
     handleMonitorChange();
   });
@@ -78,7 +78,7 @@ function setupMonitorChangeHandling() {
   function handleMonitorChange() {
     const currentMonitors = app.get_monitors();
     const currentMonitorIds = new Set(Object.keys(currentMonitors).map(Number));
-    
+
     // Find monitors that were removed
     for (const [monitorId, bars] of barWindows.entries()) {
       if (!currentMonitorIds.has(monitorId)) {
@@ -86,7 +86,7 @@ function setupMonitorChangeHandling() {
         destroyBarsForMonitor(monitorId);
       }
     }
-    
+
     // Find monitors that were added
     for (const monitorId of currentMonitorIds) {
       if (!barWindows.has(monitorId)) {
@@ -94,7 +94,7 @@ function setupMonitorChangeHandling() {
         createBarsForMonitor(monitorId);
       }
     }
-    
+
     // Reinitialize displays config to include new monitors
     initializeDisplaysConfig();
   }
@@ -127,6 +127,7 @@ app.start({
     }
     `,
   main() {
+    console.log("Displays", getAllDisplays());
     // Initialize displays configuration on startup
     initializeDisplaysConfig();
 
