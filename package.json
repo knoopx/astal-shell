@@ -1,5 +1,4 @@
 {
-  "dependencies": {
-    "ags": "*"
-  }
+  "name": "astal-shell",
+  "dependencies": {}
 }
