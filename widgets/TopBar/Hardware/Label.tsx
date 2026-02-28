@@ -1,6 +1,12 @@
-export const Label = (props) => (
+type LabelProps = {
+  label: string;
+  [key: string]: any;
+};
+
+export default ({ label, ...rest }: LabelProps) => (
   <label
-    {...props}
+    {...rest}
+    label={label}
     angle={90.0}
     css={`
       font-size: 0.5em;
@@ -8,5 +14,3 @@ export const Label = (props) => (
     `}
   />
 );
-
-export default Label;

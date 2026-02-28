@@ -1,5 +1,6 @@
 import { Gtk } from "ags/gtk3";
 import { blinkState } from "./networkSpeed";
+import { formatBytes } from "../../../support/util";
 
 interface NetworkRowProps {
   value: number;
@@ -7,23 +8,6 @@ interface NetworkRowProps {
   threshold: number;
   color?: string;
 }
-
-const formatBytes = (bytes: number) => {
-  if (!Number.isFinite(bytes) || bytes < 0) return { value: "0", unit: "B" };
-  if (bytes === 0) return { value: "0", unit: "B" };
-
-  const sizes = ["B", "KB", "MB", "GB", "TB", "PB"];
-  const i = Math.max(
-    0,
-    Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)))
-  );
-  const value = bytes / Math.pow(1024, i);
-  return {
-    value: Math.round(value).toString(),
-    // value: parseFloat(value.toFixed(2)).toString(),
-    unit: sizes[i],
-  };
-};
 
 export default ({ value, icon, threshold, color }: NetworkRowProps) => {
   const { value: formattedValue, unit } = formatBytes(value);
@@ -46,7 +30,7 @@ export default ({ value, icon, threshold, color }: NetworkRowProps) => {
         css={blinkState((blink) =>
           isActive && color
             ? `color: ${color}; opacity: ${blink ? "1" : "0.3"};`
-            : ""
+            : "",
         )}
       />
     </box>

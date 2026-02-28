@@ -21,14 +21,13 @@ const barWindows = new Map<
 >();
 
 function createBarsForMonitor(monitor: number) {
-  const monitorNum = Number(monitor);
-  const topBar = TopBar({ monitor: monitorNum });
-  const leftBar = LeftBar({ monitor: monitorNum });
-  const bottomBar = BottomBar({ monitor: monitorNum });
-  const volumeOSD = VolumeOSD({ monitor: monitorNum });
-  const brightnessOSD = BrightnessOSD({ monitor: monitorNum });
+  const topBar = TopBar({ monitor });
+  const leftBar = LeftBar({ monitor });
+  const bottomBar = BottomBar({ monitor });
+  const volumeOSD = VolumeOSD({ monitor });
+  const brightnessOSD = BrightnessOSD({ monitor });
 
-  barWindows.set(monitorNum, {
+  barWindows.set(monitor, {
     topBar,
     bottomBar,
     leftBar,
@@ -40,20 +39,16 @@ function createBarsForMonitor(monitor: number) {
 }
 
 function destroyBarsForMonitor(monitor: number) {
-  const monitorNum = Number(monitor);
-  const bars = barWindows.get(monitorNum);
+  const bars = barWindows.get(monitor);
+  if (!bars) return;
 
-  if (bars) {
-    // Destroy each widget if it has a destroy method
-    Object.values(bars).forEach((bar) => {
-      if (bar && typeof bar.destroy === "function") {
-        bar.destroy();
-      }
-    });
+  Object.values(bars).forEach((bar) => {
+    if (bar && typeof bar.destroy === "function") {
+      bar.destroy();
+    }
+  });
 
-    // Remove from the map
-    barWindows.delete(monitorNum);
-  }
+  barWindows.delete(monitor);
 }
 
 function setupMonitorChangeHandling() {

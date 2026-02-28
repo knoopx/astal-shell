@@ -4,15 +4,6 @@ import { Gtk } from "ags/gtk3";
 import niri from "../../../support/niri";
 import { getCurrentTheme } from "../../../support/theme";
 
-export {
-  EMoonPhase,
-  moonIcons,
-  moonPhaseAlt,
-  EMoonPhaseName,
-  MOON_PHASE_NAMES,
-  moonPhase,
-};
-
 const { round, trunc: truncate } = Math;
 
 enum EMoonPhase {
@@ -35,7 +26,7 @@ const moonIcons: [
   Full: string,
   WaningGibbous: string,
   LastQuarter: string,
-  WaningCrescent: string
+  WaningCrescent: string,
 ] = ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"];
 
 enum EMoonPhaseName {
@@ -124,9 +115,9 @@ function moonPhase(year: number, month: number, day: number): IResult {
   return { phase, name: MOON_PHASE_NAMES[phase], icon: moonIcons[phase] };
 }
 
-export function openWeatherWMOToEmoji(
+function openWeatherWMOToEmoji(
   weatherCode: number = -1,
-  daylight = true
+  daylight = true,
 ): { value: string; originalNumericCode: number; description: string } {
   switch (weatherCode) {
     case 0:
@@ -331,11 +322,11 @@ export default () => {
   const updateWeather = async () => {
     try {
       const res = await execAsync(
-        'curl "http://ip-api.com/json?fields=lat,lon"'
+        'curl "http://ip-api.com/json?fields=lat,lon"',
       );
       const loc = JSON.parse(res);
       const weatherRes = await execAsync(
-        `curl https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,is_day,weather_code&models=gem_seamless`
+        `curl https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,is_day,weather_code&models=gem_seamless`,
       );
       const weatherData = JSON.parse(weatherRes);
       const emoji = weatherData.current.is_day
@@ -343,7 +334,7 @@ export default () => {
         : moonPhaseAlt().icon;
 
       setWeather(
-        () => `${emoji} ${round(weatherData.current.temperature_2m)}°C`
+        () => `${emoji} ${round(weatherData.current.temperature_2m)}°C`,
       );
     } catch (e) {
       console.warn("Failed to update weather:", e);

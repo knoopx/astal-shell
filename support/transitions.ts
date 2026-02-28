@@ -1,7 +1,6 @@
 import GLib from "gi://GLib";
-import Gtk from "gi://Gtk";
 
-export interface TransitionOptions {
+interface TransitionOptions {
   fadeInDuration?: number;
   fadeOutDuration?: number;
   fadeInDelay?: number;
@@ -13,10 +12,36 @@ const defaultOptions: Required<TransitionOptions> = {
   fadeInDelay: 10,
 };
 
+function animateOpacity(
+  widget: any,
+  duration: number,
+  easeFn: (progress: number) => number,
+  onComplete?: () => void,
+) {
+  const startTime = Date.now();
+
+  const step = () => {
+    const progress = Math.min((Date.now() - startTime) / duration, 1);
+    widget.set_opacity(easeFn(progress));
+
+    if (progress < 1) {
+      GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
+        step();
+        return false;
+      });
+    } else {
+      onComplete?.();
+    }
+    return false;
+  };
+
+  step();
+}
+
 export function applyOpacityTransition(
   widget: any,
   visible: boolean,
-  options: TransitionOptions = {}
+  options: TransitionOptions = {},
 ) {
   const opts = { ...defaultOptions, ...options };
 
@@ -25,51 +50,19 @@ export function applyOpacityTransition(
     widget.set_opacity(0);
 
     GLib.timeout_add(GLib.PRIORITY_DEFAULT, opts.fadeInDelay, () => {
-      // Start fade-in animation
-      const startTime = Date.now();
-
-      const animate = () => {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / opts.fadeInDuration, 1);
-
-        // Ease-out cubic function for smooth transition
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        widget.set_opacity(easeOut);
-
-        if (progress < 1) {
-          GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-            animate();
-            return false;
-          });
-        }
-        return false;
-      };
-
-      animate();
+      animateOpacity(
+        widget,
+        opts.fadeInDuration,
+        (p) => 1 - Math.pow(1 - p, 3),
+      );
       return false;
     });
   } else {
-    const startTime = Date.now();
-
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / opts.fadeOutDuration, 1);
-
-      // Ease-in cubic function for smooth transition
-      const easeIn = Math.pow(progress, 3);
-      widget.set_opacity(1 - easeIn);
-
-      if (progress < 1) {
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-          animate();
-          return false;
-        });
-      } else {
-        widget.set_visible(false);
-      }
-      return false;
-    };
-
-    animate();
+    animateOpacity(
+      widget,
+      opts.fadeOutDuration,
+      (p) => 1 - Math.pow(p, 3),
+      () => widget.set_visible(false),
+    );
   }
 }

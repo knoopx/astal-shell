@@ -1,57 +1,42 @@
-import { exec } from "ags/process";
-import { readFile, writeFile, monitorFile } from "ags/file";
+import { readFile, writeFile } from "ags/file";
 import app from "ags/gtk3/app";
 import Battery from "gi://AstalBattery";
 import GLib from "gi://GLib";
 import Gdk from "gi://Gdk";
 
-export const format = (bytes: number): string => {
-  if (!Number.isFinite(bytes) || bytes < 0)
-    throw new Error("Invalid byte value");
-  if (bytes === 0) return "0 B";
-  const sizes = ["B", "KB", "MB", "GB", "TB", "PB"];
+const BYTE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"];
+
+export function formatBytes(bytes: number): { value: string; unit: string } {
+  if (!Number.isFinite(bytes) || bytes < 0 || bytes === 0)
+    return { value: "0", unit: "B" };
+
   const i = Math.max(
     0,
-    Math.min(sizes.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)))
+    Math.min(
+      BYTE_UNITS.length - 1,
+      Math.floor(Math.log(bytes) / Math.log(1024)),
+    ),
   );
-  const value = bytes / Math.pow(1024, i);
-  return `${parseFloat(value.toFixed(2))} ${sizes[i]}`;
-};
+  const scaled = bytes / Math.pow(1024, i);
+  return { value: Math.round(scaled).toString(), unit: BYTE_UNITS[i] };
+}
 
 export function readJSONFile(filePath: string): any {
-  try {
-    const data = readFile(filePath);
-    if (data == "") return {};
-    return data.trim() ? JSON.parse(data) : {};
-  } catch (e) {
-    // File doesn't exist or can't be read
-    return {};
-  }
+  const data = readFile(filePath);
+  if (!data || !data.trim()) return {};
+  return JSON.parse(data);
 }
 
 export function writeJSONFile(filePath: string, data: any) {
-  try {
-    if (readFile(filePath) == "")
-      exec(`mkdir -p ${filePath.split("/").slice(0, -1).join("/")}`);
-  } catch (e) {
-    // File doesn't exist, create directory
-    exec(`mkdir -p ${filePath.split("/").slice(0, -1).join("/")}`);
-  }
-  try {
-    writeFile(filePath, JSON.stringify(data, null, 4));
-  } catch (e) {
-    console.log(e);
-  }
+  const dir = filePath.substring(0, filePath.lastIndexOf("/"));
+  GLib.mkdir_with_parents(dir, 0o755);
+  writeFile(filePath, JSON.stringify(data, null, 4));
 }
 
-export const hasNvidiaGpu = (() => {
-  try {
-    const [out, err] = exec(["test", "-d", "/proc/driver/nvidia"]);
-    return !err;
-  } catch {
-    return false;
-  }
-})();
+export const hasNvidiaGpu = GLib.file_test(
+  "/proc/driver/nvidia",
+  GLib.FileTest.IS_DIR,
+);
 
 export const hasBattery = (() => {
   try {
@@ -123,35 +108,26 @@ export function getAllDisplays(): Record<string, [number, number]> {
 }
 
 export function initializeDisplaysConfig(): void {
-  // Check if file already exists
   try {
-    if (readFile(DISPLAYS_CONFIG_PATH) !== "") {
-      return; // File already exists, don't overwrite
-    }
-  } catch (e) {
+    if (readFile(DISPLAYS_CONFIG_PATH) !== "") return;
+  } catch {
     // File doesn't exist, continue with initialization
   }
 
-  // Create config directory if it doesn't exist
-  const configDir = DISPLAYS_CONFIG_PATH.split("/").slice(0, -1).join("/");
-  try {
-    exec(`mkdir -p "${configDir}"`);
-  } catch (error) {
-    console.warn("Failed to create config directory:", error);
-  }
-
-  // Get all displays and create config
   const displays = getAllDisplays();
   writeJSONFile(DISPLAYS_CONFIG_PATH, displays);
 
   console.log(
     `Initialized displays.json with default margins for ${
       Object.keys(displays).length
-    } display(s)`
+    } display(s)`,
   );
 }
 
-export function getBarMargins(displayId: string): { horizontal: number; vertical: number } {
+export function getBarMargins(displayId: string): {
+  horizontal: number;
+  vertical: number;
+} {
   const config = loadDisplaysConfig();
 
   const margins = config[displayId];
@@ -159,7 +135,7 @@ export function getBarMargins(displayId: string): { horizontal: number; vertical
   if (margins && Array.isArray(margins) && margins.length >= 2) {
     return {
       horizontal: margins[0],
-      vertical: margins[1]
+      vertical: margins[1],
     };
   }
 

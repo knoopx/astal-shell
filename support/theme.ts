@@ -1,7 +1,7 @@
 import GLib from "gi://GLib";
 import { readJSONFile, writeJSONFile } from "./util";
 
-export interface Theme {
+interface Theme {
   // Colors
   background: {
     primary: string;
@@ -60,7 +60,7 @@ export interface Theme {
   };
 }
 
-export const defaultTheme: Theme = {
+const defaultTheme: Theme = {
   background: {
     primary: "rgba(0, 0, 0, 0.8)",
     secondary: "rgba(255, 255, 255, 0.12)",
@@ -135,7 +135,7 @@ export function loadTheme(): Theme {
   return currentTheme;
 }
 
-export function saveTheme(theme: Theme): void {
+function saveTheme(theme: Theme): void {
   const themePath = `${GLib.get_home_dir()}/.config/astal-shell/theme.json`;
   writeJSONFile(themePath, theme);
 }
@@ -146,7 +146,7 @@ export function getCurrentTheme(): Theme {
 
 function deepMerge<T extends Record<string, any>>(
   target: T,
-  source: Partial<T>
+  source: Partial<T>,
 ): T {
   const result = { ...target };
 
