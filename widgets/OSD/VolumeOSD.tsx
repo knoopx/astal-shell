@@ -2,7 +2,7 @@ import Wp from "gi://AstalWp";
 import OSDWindow from "./OSDWindow";
 
 export default function VolumeOSD({ monitor }: { monitor: number }) {
-  const speaker = Wp.get_default()?.audio.defaultSpeaker!;
+  const speaker = Wp.get_default()!.audio.defaultSpeaker;
 
   return (
     <OSDWindow

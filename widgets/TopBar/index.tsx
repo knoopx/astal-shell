@@ -1,4 +1,4 @@
-import { createState, With, onCleanup } from "ags";
+import { createState, onCleanup } from "ags";
 import app from "ags/gtk3/app";
 import { Gtk, Astal } from "ags/gtk3";
 import CenterWidgets from "../CenterWidgets";

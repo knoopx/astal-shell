@@ -1,7 +1,11 @@
+interface Binding<T> {
+  as<U>(fn: (v: T) => U): Binding<U>;
+}
+
 type MeterProps = {
-  value: any;
+  value: Binding<number>;
   invert?: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 const levelClass = (value: number, invert: boolean) => {

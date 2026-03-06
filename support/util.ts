@@ -4,30 +4,13 @@ import Battery from "gi://AstalBattery";
 import GLib from "gi://GLib";
 import Gdk from "gi://Gdk";
 
-const BYTE_UNITS = ["B", "KB", "MB", "GB", "TB", "PB"];
-
-export function formatBytes(bytes: number): { value: string; unit: string } {
-  if (!Number.isFinite(bytes) || bytes < 0 || bytes === 0)
-    return { value: "0", unit: "B" };
-
-  const i = Math.max(
-    0,
-    Math.min(
-      BYTE_UNITS.length - 1,
-      Math.floor(Math.log(bytes) / Math.log(1024)),
-    ),
-  );
-  const scaled = bytes / Math.pow(1024, i);
-  return { value: Math.round(scaled).toString(), unit: BYTE_UNITS[i] };
-}
-
-export function readJSONFile(filePath: string): any {
+export function readJSONFile(filePath: string): unknown {
   const data = readFile(filePath);
   if (!data || !data.trim()) return {};
   return JSON.parse(data);
 }
 
-export function writeJSONFile(filePath: string, data: any) {
+export function writeJSONFile(filePath: string, data: unknown) {
   const dir = filePath.substring(0, filePath.lastIndexOf("/"));
   GLib.mkdir_with_parents(dir, 0o755);
   writeFile(filePath, JSON.stringify(data, null, 4));
@@ -49,18 +32,13 @@ export const hasBattery = (() => {
 
 export function getDisplayId(monitor: number): string {
   try {
-    // Try to get monitor information from GTK
     const display = Gdk.Display.get_default();
     if (display) {
       const monitorObj = display.get_monitor(monitor);
       if (monitorObj) {
-        // In GJS, GObject properties are accessed directly, not through getter methods
-        // Try different properties that might contain the display identifier
         if (monitorObj.connector) return monitorObj.connector;
         if (monitorObj.model) return monitorObj.model;
         if (monitorObj.manufacturer) return monitorObj.manufacturer;
-
-        // Try alternative property names that might be used in GJS
         if (monitorObj.output) return monitorObj.output;
         if (monitorObj.name) return monitorObj.name;
       }
@@ -69,7 +47,6 @@ export function getDisplayId(monitor: number): string {
     console.warn("Failed to get display ID:", error);
   }
 
-  // Fallback to monitor number as string
   return `monitor_${monitor}`;
 }
 
@@ -83,7 +60,10 @@ function loadDisplaysConfig(): Record<string, [number, number]> {
   }
 
   try {
-    displaysConfig = readJSONFile(DISPLAYS_CONFIG_PATH);
+    displaysConfig = readJSONFile(DISPLAYS_CONFIG_PATH) as Record<
+      string,
+      [number, number]
+    >;
   } catch (error) {
     console.warn("Failed to load displays config:", error);
     displaysConfig = {};

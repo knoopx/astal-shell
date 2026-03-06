@@ -2,8 +2,12 @@ import { Gtk } from "ags/gtk3";
 import Meter from "./Meter";
 import Label from "./Label";
 
+interface Binding<T> {
+  as<U>(fn: (v: T) => U): Binding<U>;
+}
+
 type LabeledMeterProps = {
-  value: any;
+  value: Binding<number>;
   label: string;
   invert?: boolean;
 };

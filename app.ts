@@ -8,17 +8,20 @@ import { getAllDisplays, initializeDisplaysConfig } from "./support/util";
 import { loadTheme } from "./support/theme";
 import Gdk from "gi://Gdk";
 
+interface Destroyable {
+  destroy?: () => void;
+}
+
+interface BarWindows {
+  topBar?: Destroyable;
+  bottomBar?: Destroyable;
+  leftBar?: Destroyable;
+  volumeOSD?: Destroyable;
+  brightnessOSD?: Destroyable;
+}
+
 // Store references to bar windows for monitor change updates
-const barWindows = new Map<
-  number,
-  {
-    topBar?: any;
-    bottomBar?: any;
-    leftBar?: any;
-    volumeOSD?: any;
-    brightnessOSD?: any;
-  }
->();
+const barWindows = new Map<number, BarWindows>();
 
 function createBarsForMonitor(monitor: number) {
   const topBar = TopBar({ monitor });
@@ -60,12 +63,12 @@ function setupMonitorChangeHandling() {
 
   // Connect to the 'monitor-added' and 'monitor-removed' signals
   // These are the proper signals for monitor change detection in GTK
-  display.connect("monitor-added", (disp, monitor) => {
+  display.connect("monitor-added", (_disp, _monitor) => {
     console.log("Monitor added");
     handleMonitorChange();
   });
 
-  display.connect("monitor-removed", (disp, monitor) => {
+  display.connect("monitor-removed", (_disp, _monitor) => {
     console.log("Monitor removed");
     handleMonitorChange();
   });
@@ -75,7 +78,7 @@ function setupMonitorChangeHandling() {
     const currentMonitorIds = new Set(Object.keys(currentMonitors).map(Number));
 
     // Find monitors that were removed
-    for (const [monitorId, bars] of barWindows.entries()) {
+    for (const [monitorId] of barWindows.entries()) {
       if (!currentMonitorIds.has(monitorId)) {
         console.log(`Monitor ${monitorId} disconnected, destroying bars`);
         destroyBarsForMonitor(monitorId);
@@ -131,7 +134,7 @@ app.start({
 
     // Create bars for all current monitors
     for (const monitor in app.get_monitors()) {
-      createBarsForMonitor(monitor);
+      createBarsForMonitor(Number(monitor));
     }
 
     // Setup monitor change handling

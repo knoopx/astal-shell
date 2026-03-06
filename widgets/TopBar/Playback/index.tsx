@@ -1,12 +1,10 @@
 import Mpris from "gi://AstalMpris";
 import { createBinding, createState, For } from "ags";
-import Pango from 'gi://Pango';
+import Pango from "gi://Pango";
 import { Gtk } from "ags/gtk3";
 import { getCurrentTheme } from "../../../support/theme";
 
-// TODO: Automatically pause multiple playing things
-
-function PlayPauseButton({ player }) {
+function PlayPauseButton({ player }: { player: Mpris.Player }) {
   const canPlay = createBinding(player, "can_play");
   const playbackStatus = createBinding(player, "playbackStatus");
 
@@ -38,7 +36,7 @@ function PlayPauseButton({ player }) {
   );
 }
 
-const Player = (player) => {
+const Player = (player: Mpris.Player) => {
   const [isHovering, setIsHovering] = createState(false);
   const coverArt = createBinding(player, "coverArt");
   const artist = createBinding(player, "artist");
@@ -71,7 +69,7 @@ const Player = (player) => {
                 background-size: cover;
                 background-position: center;
                 border-radius: 3px;
-                `
+                `,
               )}
             />
           </box>
@@ -82,7 +80,7 @@ const Player = (player) => {
             css={isHovering(
               (hovering) => `
               opacity: ${hovering ? 1 : 0};
-            `
+            `,
             )}
             visible={isHovering}
           >
@@ -142,7 +140,7 @@ export default () => {
 
   return (
     <box>
-      <For each={players}>{(player: any) => Player(player)}</For>
+      <For each={players}>{(player: Mpris.Player) => Player(player)}</For>
     </box>
   );
 };

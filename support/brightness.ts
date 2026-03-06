@@ -5,7 +5,7 @@ import { exec } from "ags/process";
 const safeExec = (command: string, fallback: string = "0"): string => {
   try {
     return exec(command);
-  } catch (error) {
+  } catch {
     return fallback;
   }
 };
@@ -18,7 +18,7 @@ const get = (args: string) => {
 const getScreen = () => {
   const result = safeExec(
     `bash -c "ls -w1 /sys/class/backlight | head -1"`,
-    ""
+    "",
   );
   return result.trim();
 };
@@ -61,14 +61,14 @@ export default class Brightness extends GObject.Object {
             } catch (error) {
               console.warn("Failed to read brightness file:", error);
             }
-          }
+          },
         );
       } catch (error) {
         console.warn("Failed to monitor brightness file:", error);
       }
     } else {
       console.warn(
-        "Brightness control not available: brightnessctl not found or no backlight devices"
+        "Brightness control not available: brightnessctl not found or no backlight devices",
       );
     }
   }

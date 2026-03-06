@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk3";
 import { createBinding, For } from "ags";
-import niri from "../../../support/niri";
+import niri, { NiriWorkspace } from "../../../support/niri";
 import { getCurrentTheme } from "../../../support/theme";
 
 export default () => {
@@ -17,7 +17,7 @@ export default () => {
       spacing={6}
     >
       <For each={workspaces}>
-        {(workspace: any) => (
+        {(workspace: NiriWorkspace) => (
           <button
             css={createBinding(workspace, "is_focused").as(
               (focused) => `
@@ -31,7 +31,7 @@ export default () => {
                 focused ? theme.accent.primary : theme.accent.secondary
               };
               transition: all 0.2s ease;
-            `
+            `,
             )}
             onClicked={() => {
               niri.focusWorkspace(workspace.idx);

@@ -8,7 +8,7 @@ export default () => {
   return (
     <box class="SysTray" spacing={8}>
       <For each={items}>
-        {(item: any) => {
+        {(item: Tray.TrayItem) => {
           const tooltipMarkup = createBinding(item, "tooltipMarkup");
           const menuModel = createBinding(item, "menuModel");
           const gicon = createBinding(item, "gicon");

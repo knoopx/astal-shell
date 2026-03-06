@@ -1,9 +1,9 @@
-import { createBinding, With, For, onCleanup } from "ags";
+import { createBinding, For, onCleanup } from "ags";
 import app from "ags/gtk3/app";
-import niri from "../../support/niri";
+import niri, { NiriWindow } from "../../support/niri";
 import AstalApps from "gi://AstalApps";
 import { applyOpacityTransition } from "../../support/transitions";
-import { Gtk, Astal, Gdk } from "ags/gtk3";
+import { Astal, Gdk } from "ags/gtk3";
 import { getDisplayId, getBarMargins } from "../../support/util";
 import { getCurrentTheme } from "../../support/theme";
 
@@ -41,7 +41,7 @@ export default ({ monitor }: { monitor: number }) => {
   };
 
   // Window button component
-  const WindowButton = ({ window }: { window: any }) => {
+  const WindowButton = ({ window }: { window: NiriWindow }) => {
     const theme = getCurrentTheme();
     const isFocused = createBinding(window, "is_focused");
     return (
@@ -109,7 +109,9 @@ export default ({ monitor }: { monitor: number }) => {
         // Get scroll direction from the deltas array
         let direction = 1; // default forward
         try {
-          const deltas = (event as any).get_scroll_deltas();
+          const deltas = (
+            event as Gdk.EventScroll & { get_scroll_deltas(): unknown[] }
+          ).get_scroll_deltas();
           // The actual scroll value is in the third element (index 2)
           if (Array.isArray(deltas) && deltas.length >= 3) {
             const scrollValue = deltas[2];
@@ -117,7 +119,7 @@ export default ({ monitor }: { monitor: number }) => {
               direction = scrollValue > 0 ? 1 : -1;
             }
           }
-        } catch (e) {
+        } catch {
           // Fallback to event.direction if deltas fail
           if (event.direction === 0) {
             // UP
@@ -160,7 +162,7 @@ export default ({ monitor }: { monitor: number }) => {
           });
         })}
       >
-        {(window: any) => <WindowButton window={window} />}
+        {(window: NiriWindow) => <WindowButton window={window} />}
       </For>
     </box>
   );

@@ -1,6 +1,6 @@
 type LabelProps = {
   label: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export default ({ label, ...rest }: LabelProps) => (

@@ -1,6 +1,6 @@
 import { Gtk } from "ags/gtk3";
 import { blinkState } from "./networkSpeed";
-import { formatBytes } from "../../../support/util";
+import { formatBytes } from "../../../support/formatBytes";
 
 interface NetworkRowProps {
   value: number;
