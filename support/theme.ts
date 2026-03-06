@@ -1,5 +1,6 @@
 import GLib from "gi://GLib";
 import { readJSONFile, writeJSONFile } from "./util";
+import { deepMerge } from "./deepMerge";
 
 interface Theme {
   // Colors
@@ -119,7 +120,7 @@ export function loadTheme(): Theme {
     const userTheme = readJSONFile(themePath);
     if (userTheme && typeof userTheme === "object") {
       // Deep merge user theme with default theme
-      currentTheme = deepMerge(defaultTheme, userTheme);
+      currentTheme = deepMerge(defaultTheme, userTheme as Partial<Theme>);
       console.log("Loaded custom theme from:", themePath);
     } else {
       // Create default theme file if it doesn't exist
@@ -142,30 +143,4 @@ function saveTheme(theme: Theme): void {
 
 export function getCurrentTheme(): Theme {
   return currentTheme;
-}
-
-function deepMerge<T extends Record<string, any>>(
-  target: T,
-  source: Partial<T>,
-): T {
-  const result = { ...target };
-
-  for (const key in source) {
-    if (source.hasOwnProperty(key)) {
-      const sourceValue = source[key];
-      const targetValue = result[key];
-
-      if (isObject(sourceValue) && isObject(targetValue)) {
-        result[key] = deepMerge(targetValue, sourceValue);
-      } else if (sourceValue !== undefined) {
-        result[key] = sourceValue;
-      }
-    }
-  }
-
-  return result;
-}
-
-function isObject(value: any): value is Record<string, any> {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }

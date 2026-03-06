@@ -1,5 +1,10 @@
 import GLib from "gi://GLib";
 
+interface TransitionWidget {
+  set_opacity(opacity: number): void;
+  set_visible(visible: boolean): void;
+}
+
 interface TransitionOptions {
   fadeInDuration?: number;
   fadeOutDuration?: number;
@@ -13,7 +18,7 @@ const defaultOptions: Required<TransitionOptions> = {
 };
 
 function animateOpacity(
-  widget: any,
+  widget: TransitionWidget,
   duration: number,
   easeFn: (progress: number) => number,
   onComplete?: () => void,
@@ -39,7 +44,7 @@ function animateOpacity(
 }
 
 export function applyOpacityTransition(
-  widget: any,
+  widget: TransitionWidget,
   visible: boolean,
   options: TransitionOptions = {},
 ) {
