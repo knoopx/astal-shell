@@ -348,19 +348,23 @@ class Niri extends GObject.Object {
   // Actions
 
   focusWorkspace(idx: number) {
-    this.action("focus-workspace", String(idx));
+    return this.action("focus-workspace", String(idx));
   }
 
   focusWindow(id: number) {
-    this.action("focus-window", "--id", String(id));
+    return this.action("focus-window", "--id", String(id));
   }
 
   closeWindow(id: number) {
-    this.action("close-window", "--id", String(id));
+    return this.action("close-window", "--id", String(id));
+  }
+
+  centerColumn() {
+    return this.action("center-column");
   }
 
   moveWindowToWorkspace(windowId: number, workspaceIdx: number) {
-    this.action(
+    return this.action(
       "move-window-to-workspace",
       "--window-id",
       String(windowId),
@@ -369,7 +373,7 @@ class Niri extends GObject.Object {
   }
 
   toggleOverview() {
-    this.action("toggle-overview");
+    return this.action("toggle-overview");
   }
 
   action(...args: string[]) {

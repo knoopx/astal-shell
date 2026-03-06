@@ -50,7 +50,7 @@ export default ({ monitor }: { monitor: number }) => {
         onButtonPressEvent={(self, event) => {
           const btn = event.get_button()[1];
           if (btn === Gdk.BUTTON_PRIMARY) {
-            niri.focusWindow(window.id);
+            niri.focusWindow(window.id).then(() => niri.centerColumn());
             return true;
           }
           if (btn === Gdk.BUTTON_MIDDLE) {
