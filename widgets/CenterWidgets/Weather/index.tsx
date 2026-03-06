@@ -26,7 +26,7 @@ export default () => {
         : moonPhaseFromDate().icon;
 
       setWeather(
-        () => `${emoji} ${round(weatherData.current.temperature_2m)}°C`,
+        () => `${emoji} ${Math.round(weatherData.current.temperature_2m)}°C`,
       );
     } catch (e) {
       console.warn("Failed to update weather:", e);
