@@ -1,4 +1,18 @@
 {
   "name": "astal-shell",
-  "dependencies": {}
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "test": "bun vitest run",
+    "test:watch": "bun vitest"
+  },
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.0.2",
+    "globals": "^17.4.0",
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.0.18"
+  }
 }
