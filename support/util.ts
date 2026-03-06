@@ -34,13 +34,14 @@ export function getDisplayId(monitor: number): string {
   try {
     const display = Gdk.Display.get_default();
     if (display) {
-      const monitorObj = display.get_monitor(monitor);
+      const monitorObj = (
+        display as unknown as { get_monitor(n: number): Gdk.Monitor | null }
+      ).get_monitor(monitor);
       if (monitorObj) {
-        if (monitorObj.connector) return monitorObj.connector;
-        if (monitorObj.model) return monitorObj.model;
-        if (monitorObj.manufacturer) return monitorObj.manufacturer;
-        if (monitorObj.output) return monitorObj.output;
-        if (monitorObj.name) return monitorObj.name;
+        const model = monitorObj.get_model();
+        if (model) return model;
+        const manufacturer = monitorObj.get_manufacturer();
+        if (manufacturer) return manufacturer;
       }
     }
   } catch (error) {

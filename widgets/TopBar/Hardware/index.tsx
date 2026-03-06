@@ -8,7 +8,7 @@ import VRAMMeter from "./VRAMMeter";
 import DiskMeter from "./DiskMeter";
 import BatteryMeter from "./BatteryMeter";
 
-const actions = {
+const actions: Record<number, () => void> = {
   1: () => {
     try {
       exec("missioncenter");
@@ -19,9 +19,7 @@ const actions = {
 };
 
 export default () => (
-  <eventbox
-    onButtonReleaseEvent={(_, event) => actions[event.button]?.()}
-  >
+  <eventbox onButtonReleaseEvent={(_, event) => actions[event.button]?.()}>
     <box
       css={`
         margin-left: 8px;

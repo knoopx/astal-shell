@@ -6,19 +6,10 @@ import BrightnessOSD from "./widgets/OSD/BrightnessOSD";
 import BottomBar from "./widgets/BottomBar";
 import { getAllDisplays, initializeDisplaysConfig } from "./support/util";
 import { loadTheme } from "./support/theme";
+import { Gtk } from "ags/gtk3";
 import Gdk from "gi://Gdk";
 
-interface Destroyable {
-  destroy?: () => void;
-}
-
-interface BarWindows {
-  topBar?: Destroyable;
-  bottomBar?: Destroyable;
-  leftBar?: Destroyable;
-  volumeOSD?: Destroyable;
-  brightnessOSD?: Destroyable;
-}
+type BarWindows = Record<string, Gtk.Widget>;
 
 // Store references to bar windows for monitor change updates
 const barWindows = new Map<number, BarWindows>();
@@ -31,11 +22,11 @@ function createBarsForMonitor(monitor: number) {
   const brightnessOSD = BrightnessOSD({ monitor });
 
   barWindows.set(monitor, {
-    topBar,
-    bottomBar,
-    leftBar,
-    volumeOSD,
-    brightnessOSD,
+    topBar: topBar as unknown as Gtk.Widget,
+    bottomBar: bottomBar as unknown as Gtk.Widget,
+    leftBar: leftBar as unknown as Gtk.Widget,
+    volumeOSD: volumeOSD as unknown as Gtk.Widget,
+    brightnessOSD: brightnessOSD as unknown as Gtk.Widget,
   });
 
   return { topBar, leftBar, bottomBar, volumeOSD, brightnessOSD };
@@ -46,9 +37,7 @@ function destroyBarsForMonitor(monitor: number) {
   if (!bars) return;
 
   Object.values(bars).forEach((bar) => {
-    if (bar && typeof bar.destroy === "function") {
-      bar.destroy();
-    }
+    bar?.destroy();
   });
 
   barWindows.delete(monitor);

@@ -1,9 +1,7 @@
 import GLib from "gi://GLib";
+import Gtk from "gi://Gtk?version=3.0";
 
-interface TransitionWidget {
-  set_opacity(opacity: number): void;
-  set_visible(visible: boolean): void;
-}
+type TransitionWidget = Gtk.Widget;
 
 interface TransitionOptions {
   fadeInDuration?: number;

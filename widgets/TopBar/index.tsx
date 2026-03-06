@@ -90,8 +90,8 @@ export default ({ monitor }: { monitor: number }) => {
   );
 
   // Connect signals and store IDs for cleanup
-  const overviewSignalId = niri.connect("notify::overview-is-open", (obj) => {
-    applyOpacityTransition(win, obj.overviewIsOpen);
+  const overviewSignalId = niri.connect("notify::overview-is-open", () => {
+    applyOpacityTransition(win as unknown as Gtk.Widget, niri.overviewIsOpen);
   });
 
   // Register cleanup to disconnect signals when component is destroyed

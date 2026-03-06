@@ -22,19 +22,15 @@ export default ({ monitor }: { monitor: number }) => {
         background: transparent;
       `}
     >
-      <box
-        vertical
-        valign={Gtk.Align.CENTER}
-        vexpand={true}
-      >
+      <box vertical valign={Gtk.Align.CENTER} vexpand={true}>
         <WorkspaceIndicator />
       </box>
     </window>
   );
 
   // Store signal connection ID for proper cleanup
-  const signalId = niri.connect("notify::overview-is-open", (obj) => {
-    applyOpacityTransition(win, obj.overviewIsOpen);
+  const signalId = niri.connect("notify::overview-is-open", () => {
+    applyOpacityTransition(win as unknown as Gtk.Widget, niri.overviewIsOpen);
   });
 
   // Clean up signal connection when window is destroyed
