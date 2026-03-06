@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    // "strict": true,
+    "strict": true,
     "module": "ES2022",
     "target": "ES2020",
     "lib": ["ES2023"],
