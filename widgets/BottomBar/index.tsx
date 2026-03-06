@@ -3,19 +3,24 @@ import app from "ags/gtk3/app";
 import niri, { NiriWindow } from "../../support/niri";
 import AstalApps from "gi://AstalApps";
 import { applyOpacityTransition } from "../../support/transitions";
-import { Astal, Gdk } from "ags/gtk3";
+import { Astal, Gdk, Gtk } from "ags/gtk3";
 import { getDisplayId, getBarMargins } from "../../support/util";
 import { getCurrentTheme } from "../../support/theme";
 
 export default ({ monitor }: { monitor: number }) => {
   const apps = new AstalApps.Apps();
 
-  // Create a direct binding to current workspace windows
-  const currentWorkspaceWindows = createBinding(niri, "workspaces").as(
-    (workspaces) => {
-      const currentWorkspace = workspaces.find((ws) => ws.is_active);
-      return currentWorkspace?.windows || [];
-    },
+  // Create bindings to current workspace windows and active window
+  const currentWorkspace = createBinding(niri, "workspaces").as((workspaces) =>
+    workspaces.find((ws) => ws.is_active),
+  );
+
+  const currentWorkspaceWindows = currentWorkspace.as(
+    (ws) => ws?.windows ?? [],
+  );
+
+  const activeWindowId = currentWorkspace.as(
+    (ws) => ws?.active_window_id ?? -1,
   );
 
   // Helper function to get application icon
@@ -43,12 +48,14 @@ export default ({ monitor }: { monitor: number }) => {
   // Window button component
   const WindowButton = ({ window }: { window: NiriWindow }) => {
     const theme = getCurrentTheme();
-    const isFocused = createBinding(window, "is_focused");
+    const isFocused = activeWindowId.as((id) => id === window.id);
     return (
       <eventbox
-        tooltipText={window.title || window.app_id}
-        onButtonPressEvent={(self, event) => {
-          const btn = event.get_button()[1];
+        tooltipText={window.title ?? window.app_id ?? undefined}
+        onButtonPressEvent={(_self, event) => {
+          const btn = (
+            event as unknown as { get_button(): [boolean, number] }
+          ).get_button()[1];
           if (btn === Gdk.BUTTON_PRIMARY) {
             niri.focusWindow(window.id).then(() => niri.centerColumn());
             return true;
@@ -190,8 +197,8 @@ export default ({ monitor }: { monitor: number }) => {
     </window>
   );
 
-  const signalId = niri.connect("notify::overview-is-open", (obj) => {
-    applyOpacityTransition(win, obj.overviewIsOpen);
+  const signalId = niri.connect("notify::overview-is-open", () => {
+    applyOpacityTransition(win as unknown as Gtk.Widget, niri.overviewIsOpen);
   });
 
   onCleanup(() => {
