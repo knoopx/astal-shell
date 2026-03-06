@@ -2,27 +2,28 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
-export function deepMerge<T extends Record<string, unknown>>(
-  target: T,
-  source: Partial<T>,
-): T {
-  const result = { ...target };
+export type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends Record<string, unknown>
+    ? DeepPartial<T[K]>
+    : T[K];
+};
 
-  for (const key in source) {
-    if (Object.prototype.hasOwnProperty.call(source, key)) {
-      const sourceValue = source[key];
+export function deepMerge<T>(target: T, source: DeepPartial<T>): T {
+  const result = { ...target } as Record<string, unknown>;
+  const src = source as Record<string, unknown>;
+
+  for (const key in src) {
+    if (Object.prototype.hasOwnProperty.call(src, key)) {
+      const sourceValue = src[key];
       const targetValue = result[key];
 
       if (isObject(sourceValue) && isObject(targetValue)) {
-        result[key] = deepMerge(
-          targetValue as Record<string, unknown>,
-          sourceValue as Record<string, unknown>,
-        ) as T[Extract<keyof T, string>];
+        result[key] = deepMerge(targetValue, sourceValue);
       } else if (sourceValue !== undefined) {
-        result[key] = sourceValue as T[Extract<keyof T, string>];
+        result[key] = sourceValue;
       }
     }
   }
 
-  return result;
+  return result as T;
 }

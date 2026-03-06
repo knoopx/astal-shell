@@ -1,6 +1,6 @@
 import GLib from "gi://GLib";
 import { readJSONFile, writeJSONFile } from "./util";
-import { deepMerge } from "./deepMerge";
+import { deepMerge, DeepPartial } from "./deepMerge";
 
 interface Theme {
   // Colors
@@ -120,7 +120,7 @@ export function loadTheme(): Theme {
     const userTheme = readJSONFile(themePath);
     if (userTheme && typeof userTheme === "object") {
       // Deep merge user theme with default theme
-      currentTheme = deepMerge(defaultTheme, userTheme as Partial<Theme>);
+      currentTheme = deepMerge(defaultTheme, userTheme as DeepPartial<Theme>);
       console.log("Loaded custom theme from:", themePath);
     } else {
       // Create default theme file if it doesn't exist
