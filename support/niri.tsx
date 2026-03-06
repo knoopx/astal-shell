@@ -46,12 +46,12 @@ type WorkspaceData = {
 @register({ GTypeName: "NiriWindow" })
 export class NiriWindow extends GObject.Object {
   @property(Number) id = 0;
-  @property(String) title: string | null = null;
-  @property(String) app_id: string | null = null;
-  @property(Number) pid: number | null = null;
-  @property(Number) workspace_id: number | null = null;
+  @property(String) title = "";
+  @property(String) app_id = "";
+  @property(Number) pid = -1;
+  @property(Number) workspace_id = -1;
   @property(Boolean) is_focused = false;
-  @property(Boolean) is_floating = false;
+  @property(Boolean) floating = false;
   @property(Boolean) is_urgent = false;
   @property(Object) layout: WindowLayout = {
     pos_in_scrolling_layout: null,
@@ -68,12 +68,12 @@ export class NiriWindow extends GObject.Object {
 
   updateFromData(data: WindowData) {
     this.id = data.id;
-    this.title = data.title ?? null;
-    this.app_id = data.app_id ?? null;
-    this.pid = data.pid ?? null;
-    this.workspace_id = data.workspace_id ?? null;
+    this.title = data.title ?? "";
+    this.app_id = data.app_id ?? "";
+    this.pid = data.pid ?? -1;
+    this.workspace_id = data.workspace_id ?? -1;
     this.is_focused = data.is_focused;
-    this.is_floating = data.is_floating;
+    this.floating = data.is_floating;
     this.is_urgent = data.is_urgent;
     this.layout = data.layout;
   }
@@ -83,12 +83,12 @@ export class NiriWindow extends GObject.Object {
 export class NiriWorkspace extends GObject.Object {
   @property(Number) id = 0;
   @property(Number) idx = 0;
-  @property(String) name: string | null = null;
-  @property(String) output: string | null = null;
+  @property(String) name = "";
+  @property(String) output = "";
   @property(Boolean) is_urgent = false;
   @property(Boolean) is_active = false;
   @property(Boolean) is_focused = false;
-  @property(Number) active_window_id: number | null = null;
+  @property(Number) active_window_id = -1;
   @property(Array) windows: NiriWindow[] = [];
 
   constructor(data: WorkspaceData) {
@@ -99,12 +99,12 @@ export class NiriWorkspace extends GObject.Object {
   updateFromData(data: WorkspaceData) {
     this.id = data.id;
     this.idx = data.idx;
-    this.name = data.name ?? null;
-    this.output = data.output ?? null;
+    this.name = data.name ?? "";
+    this.output = data.output ?? "";
     this.is_urgent = data.is_urgent;
     this.is_active = data.is_active;
     this.is_focused = data.is_focused;
-    this.active_window_id = data.active_window_id ?? null;
+    this.active_window_id = data.active_window_id ?? -1;
   }
 }
 
@@ -114,8 +114,7 @@ class Niri extends GObject.Object {
   @property(Array) workspaces: NiriWorkspace[] = [];
   @property(Array) windows: NiriWindow[] = [];
   @property(Boolean) overviewIsOpen = false;
-
-  private focusedWindowId: number | null = null;
+  private focusedWindowId = -1;
   private windowsMap = new Map<number, NiriWindow>();
   private workspacesMap = new Map<number, NiriWorkspace>();
 
@@ -236,7 +235,7 @@ class Niri extends GObject.Object {
     activeWindowId: number | null,
   ) {
     const ws = this.workspacesMap.get(workspaceId);
-    if (ws) ws.active_window_id = activeWindowId;
+    if (ws) ws.active_window_id = activeWindowId ?? -1;
     this.notify("workspaces");
   }
 
@@ -245,7 +244,7 @@ class Niri extends GObject.Object {
     this.windowsMap.clear();
     for (const w of windows) {
       this.windowsMap.set(w.id, new NiriWindow(w));
-      if (w.is_focused) this.focusedWindowId = w.id;
+      if (w.is_focused) this.focusedWindowId = w.id ?? -1;
     }
     this.rebuildWindows();
     this.assignWindowsToWorkspaces();
@@ -274,7 +273,7 @@ class Niri extends GObject.Object {
 
   private onWindowClosed(windowId: number) {
     this.windowsMap.delete(windowId);
-    if (this.focusedWindowId === windowId) this.focusedWindowId = null;
+    if (this.focusedWindowId === windowId) this.focusedWindowId = -1;
 
     this.rebuildWindows();
     this.assignWindowsToWorkspaces();
@@ -283,7 +282,7 @@ class Niri extends GObject.Object {
   }
 
   private onWindowFocusChanged(id: number | null) {
-    this.focusedWindowId = id;
+    this.focusedWindowId = id ?? -1;
     this.applyFocusState();
     this.notify("windows");
     this.notify("workspaces");
@@ -333,7 +332,7 @@ class Niri extends GObject.Object {
     }
 
     for (const win of this.windowsMap.values()) {
-      if (win.workspace_id !== null && byWorkspace.has(win.workspace_id)) {
+      if (win.workspace_id !== -1 && byWorkspace.has(win.workspace_id)) {
         byWorkspace.get(win.workspace_id)!.push(win);
       }
     }
