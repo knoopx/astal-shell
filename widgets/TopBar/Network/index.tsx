@@ -1,5 +1,5 @@
 import { With } from "ags";
-import { Gtk } from "ags/gtk3";
+import { Gtk } from "ags/gtk4";
 
 import networkSpeed from "./networkSpeed";
 import NetworkRow from "./NetworkRow";
@@ -15,7 +15,7 @@ export default () => {
           return (
             <box
               widthRequest={90}
-              vertical
+              orientation={Gtk.Orientation.VERTICAL}
               valign={Gtk.Align.CENTER}
               css={`
                 font-size: 0.6em;
@@ -23,7 +23,7 @@ export default () => {
               `}
             >
               {showNetworkData && (
-                <box vertical>
+                <box orientation={Gtk.Orientation.VERTICAL}>
                   <NetworkRow
                     value={upload}
                     icon="▲"

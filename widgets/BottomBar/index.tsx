@@ -1,9 +1,10 @@
 import { createBinding, For, onCleanup } from "ags";
-import app from "ags/gtk3/app";
+import app from "ags/gtk4/app";
 import niri, { NiriWindow } from "../../support/niri";
 import AstalApps from "gi://AstalApps";
 import { applyOpacityTransition } from "../../support/transitions";
-import { Astal, Gdk, Gtk } from "ags/gtk3";
+import { Astal, Gtk } from "ags/gtk4";
+import Gdk from "gi://Gdk?version=4.0";
 import { getDisplayId, getBarMargins } from "../../support/util";
 import { getCurrentTheme } from "../../support/theme";
 
@@ -50,116 +51,89 @@ export default ({ monitor }: { monitor: number }) => {
     const theme = getCurrentTheme();
     const isFocused = activeWindowId.as((id) => id === window.id);
     return (
-      <eventbox
+      <box
         tooltipText={window.title ?? window.app_id ?? undefined}
-        onButtonPressEvent={(_self, event) => {
-          const btn = (
-            event as unknown as { get_button(): [boolean, number] }
-          ).get_button()[1];
-          if (btn === Gdk.BUTTON_PRIMARY) {
-            niri.focusWindow(window.id).then(() => niri.centerColumn());
-            return true;
-          }
-          if (btn === Gdk.BUTTON_MIDDLE) {
-            niri.closeWindow(window.id);
-            return true;
-          }
-          return false;
-        }}
       >
+        <Gtk.GestureClick
+          button={0}
+          onPressed={(gesture: Gtk.GestureClick) => {
+            const btn = gesture.get_current_button();
+            if (btn === Gdk.BUTTON_PRIMARY) {
+              niri.focusWindow(window.id).then(() => niri.centerColumn());
+            } else if (btn === Gdk.BUTTON_MIDDLE) {
+              niri.closeWindow(window.id);
+            }
+          }}
+        />
         <box
-          class={isFocused((f) => `app-icon ${f ? "focused" : "unfocused"}`)}
+          cssClasses={isFocused((f) => [f ? "app-icon focused" : "app-icon unfocused"])}
           css={isFocused(
             (f) => `
             border-radius: ${theme.borderRadius.medium};
             padding: ${theme.spacing.small};
             background-color: transparent;
             border: none;
-            box-shadow: none;
             opacity: ${f ? theme.opacity.high : theme.opacity.low};
-            transition: all 0.2s ease-in-out;
           `,
           )}
         >
-          <icon
-            icon={
+          <image
+            iconName={
               window.app_id
                 ? getAppIcon(window.app_id)
                 : "application-x-executable"
             }
+            pixelSize={42}
             css={isFocused(
               (f) => `
-            font-size: 42px;
             color: ${f ? theme.text.focused : theme.text.unfocused};
-            transition: color 0.2s;
           `,
             )}
           />
         </box>
-      </eventbox>
+      </box>
     );
   };
 
   const CenterModules = (
     <box
-      class="app-icons"
+      cssClasses={["app-icons"]}
       spacing={8}
       $type="center"
-      onScrollEvent={(self, event) => {
-        const currentWorkspace = niri.workspaces.find((ws) => ws.is_active);
-        if (!currentWorkspace || currentWorkspace.windows.length === 0)
-          return false;
-
-        const windows = currentWorkspace.windows;
-        const currentFocusedIndex = windows.findIndex((w) => w.is_focused);
-
-        // Get scroll direction from the deltas array
-        let direction = 1; // default forward
-        try {
-          const deltas = (
-            event as Gdk.EventScroll & { get_scroll_deltas(): unknown[] }
-          ).get_scroll_deltas();
-          // The actual scroll value is in the third element (index 2)
-          if (Array.isArray(deltas) && deltas.length >= 3) {
-            const scrollValue = deltas[2];
-            if (typeof scrollValue === "number") {
-              direction = scrollValue > 0 ? 1 : -1;
-            }
-          }
-        } catch {
-          // Fallback to event.direction if deltas fail
-          if (event.direction === 0) {
-            // UP
-            direction = -1;
-          } else if (event.direction === 1) {
-            // DOWN
-            direction = 1;
-          }
-        }
-
-        let nextIndex: number;
-        if (direction > 0) {
-          // Forward
-          nextIndex =
-            currentFocusedIndex >= windows.length - 1
-              ? 0
-              : currentFocusedIndex + 1;
-        } else {
-          // Backward
-          nextIndex =
-            currentFocusedIndex <= 0
-              ? windows.length - 1
-              : currentFocusedIndex - 1;
-        }
-
-        const nextWindow = windows[nextIndex];
-        if (nextWindow) {
-          niri.focusWindow(nextWindow.id);
-        }
-
-        return true; // Event handled
-      }}
     >
+      <Gtk.EventControllerScroll
+        flags={Gtk.EventControllerScrollFlags.VERTICAL}
+        onScroll={(_controller: Gtk.EventControllerScroll, _dx: number, dy: number) => {
+          const currentWorkspace = niri.workspaces.find((ws) => ws.is_active);
+          if (!currentWorkspace || currentWorkspace.windows.length === 0)
+            return false;
+
+          const windows = currentWorkspace.windows;
+          const currentFocusedIndex = windows.findIndex((w) => w.is_focused);
+
+          const direction = dy > 0 ? 1 : -1;
+
+          let nextIndex: number;
+          if (direction > 0) {
+            nextIndex =
+              currentFocusedIndex >= windows.length - 1
+                ? 0
+                : currentFocusedIndex + 1;
+          } else {
+            nextIndex =
+              currentFocusedIndex <= 0
+                ? windows.length - 1
+                : currentFocusedIndex - 1;
+          }
+
+          const nextWindow = windows[nextIndex];
+          if (nextWindow) {
+            niri.focusWindow(nextWindow.id);
+          }
+
+          return true;
+        }}
+      />
       <For
         each={currentWorkspaceWindows.as((windows) => {
           return [...windows].sort((a, b) => {

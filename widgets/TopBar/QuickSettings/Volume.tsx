@@ -1,6 +1,6 @@
 import Wp from "gi://AstalWp";
 import { createBinding } from "ags";
-import { Gtk } from "ags/gtk3";
+import { Gtk } from "ags/gtk4";
 
 export default () => {
   const speaker = Wp.get_default()!.audio.defaultSpeaker;
@@ -9,10 +9,10 @@ export default () => {
 
   return (
     <box spacing={4} valign={Gtk.Align.CENTER}>
-      <icon icon={volumeIcon} />
+      <image iconName={volumeIcon} pixelSize={16} />
       <slider
         widthRequest={100}
-        onDragged={({ value }) => (speaker.volume = value)}
+        onChangeValue={({ value }) => (speaker.volume = value)}
         value={volume}
       />
     </box>

@@ -1,5 +1,5 @@
 import { createPoll } from "ags/time";
-import { Gtk } from "ags/gtk3";
+import { Gtk } from "ags/gtk4";
 import GLib from "gi://GLib";
 import { getCurrentTheme } from "../../support/theme";
 

@@ -1,6 +1,6 @@
 import { subprocess } from "ags/process";
 import { createPoll } from "ags/time";
-import { Gtk } from "ags/gtk3";
+import { Gtk } from "ags/gtk4";
 import GLib from "gi://GLib";
 import niri from "../../../support/niri";
 export default function DateWidget({ dateFormat = "<b>%a %d %b</b>" }) {

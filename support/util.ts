@@ -1,8 +1,7 @@
 import { readFile, writeFile } from "ags/file";
-import app from "ags/gtk3/app";
+import app from "ags/gtk4/app";
 import Battery from "gi://AstalBattery";
 import GLib from "gi://GLib";
-import Gdk from "gi://Gdk";
 
 export function readJSONFile(filePath: string): unknown {
   const data = readFile(filePath);
@@ -32,11 +31,9 @@ export const hasBattery = (() => {
 
 export function getDisplayId(monitor: number): string {
   try {
-    const display = Gdk.Display.get_default();
-    if (display) {
-      const monitorObj = (
-        display as unknown as { get_monitor(n: number): Gdk.Monitor | null }
-      ).get_monitor(monitor);
+    const monitors = app.get_monitors();
+    if (monitors && monitor < monitors.length) {
+      const monitorObj = monitors[monitor];
       if (monitorObj) {
         const model = monitorObj.get_model();
         if (model) return model;
@@ -77,11 +74,8 @@ export function getAllDisplays(): Record<string, [number, number]> {
   const displays: Record<string, [number, number]> = {};
 
   const monitors = app.get_monitors();
-  const monitorKeys = Object.keys(monitors);
-
-  for (const key of monitorKeys) {
-    const monitorNum = Number(key);
-    const displayId = getDisplayId(monitorNum);
+  for (let i = 0; i < monitors.length; i++) {
+    const displayId = getDisplayId(i);
     displays[displayId] = [300, 100]; // Default margins
   }
 

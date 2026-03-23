@@ -1,6 +1,6 @@
-import { createState } from "ags";
+import { createState, onCleanup } from "ags";
 import { execAsync, subprocess } from "ags/process";
-import { Gtk } from "ags/gtk3";
+import { Gtk } from "ags/gtk4";
 import niri from "../../../support/niri";
 import { getCurrentTheme } from "../../../support/theme";
 import {
@@ -36,6 +36,8 @@ export default () => {
   const interval = setInterval(updateWeather, 300e3);
   updateWeather();
 
+  onCleanup(() => clearInterval(interval));
+
   const theme = getCurrentTheme();
   return (
     <button
@@ -53,7 +55,6 @@ export default () => {
           opacity: ${theme.opacity.medium};
         `}
         halign={Gtk.Align.CENTER}
-        onDestroy={() => clearInterval(interval)}
         label={weather}
       />
     </button>

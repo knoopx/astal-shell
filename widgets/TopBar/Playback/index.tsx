@@ -1,7 +1,8 @@
 import Mpris from "gi://AstalMpris";
-import { createBinding, createState, For } from "ags";
+import Gio from "gi://Gio";
 import Pango from "gi://Pango";
-import { Gtk } from "ags/gtk3";
+import { createBinding, createState, For } from "ags";
+import { Gtk } from "ags/gtk4";
 import { getCurrentTheme } from "../../../support/theme";
 
 function PlayPauseButton({ player }: { player: Mpris.Player }) {
@@ -21,8 +22,9 @@ function PlayPauseButton({ player }: { player: Mpris.Player }) {
       onClicked={() => player.play_pause()}
       visible={canPlay}
     >
-      <icon
-        icon={playbackStatus((s) => {
+      <image
+        pixelSize={16}
+        iconName={playbackStatus((s) => {
           switch (s) {
             case Mpris.PlaybackStatus.PLAYING:
               return "media-playback-pause-symbolic";
@@ -45,49 +47,49 @@ const Player = (player: Mpris.Player) => {
 
   return (
     <box>
-      <eventbox
-        onHover={() => setIsHovering(true)}
-        onHoverLost={() => setIsHovering(false)}
-      >
+      <box>
+        <Gtk.EventControllerMotion
+          onEnter={() => setIsHovering(true)}
+          onLeave={() => setIsHovering(false)}
+        />
         <overlay>
           <box
-            class="artwork-container"
+            cssClasses={["artwork-container"]}
             valign={Gtk.Align.CENTER}
-            css={`
-              min-width: 36px;
-              min-height: 36px;
-              border-radius: 4px;
-              border: 2px solid ${getCurrentTheme().accent.border};
-            `}
-          >
-            <box
-              class="artwork"
-              css={coverArt(
-                (cover) => `min-width: 36px;
-                min-height: 36px;
-                background-image: url('${cover}');
-                background-size: cover;
-                background-position: center;
-                border-radius: 3px;
-                `,
-              )}
-            />
-          </box>
+            overflow={Gtk.Overflow.HIDDEN}
+            widthRequest={36}
+            heightRequest={36}
+            css={coverArt(
+              (cover) => {
+                const uri = cover ? Gio.File.new_for_path(cover).get_uri() : null;
+                return `
+                  min-width: 36px;
+                  min-height: 36px;
+                  border-radius: 4px;
+                  border: 2px solid ${getCurrentTheme().accent.border};
+                  ${uri ? `background-image: url("${uri}");` : ""}
+                  background-size: cover;
+                  background-position: center;
+                  background-repeat: no-repeat;
+                `;
+              },
+            )}
+          />
           <box
             $type="overlay"
             halign={Gtk.Align.CENTER}
             valign={Gtk.Align.CENTER}
             css={isHovering(
               (hovering) => `
-              opacity: ${hovering ? 1 : 0};
-            `,
+                opacity: ${hovering ? 1 : 0};
+              `,
             )}
             visible={isHovering}
           >
             <PlayPauseButton player={player} />
           </box>
         </overlay>
-      </eventbox>
+      </box>
 
       <box
         orientation={Gtk.Orientation.VERTICAL}
@@ -104,9 +106,9 @@ const Player = (player: Mpris.Player) => {
           `}
           label={artist}
           halign={Gtk.Align.START}
-          visible={artist((artist) => !!artist)}
+          visible={artist((value) => !!value)}
           ellipsize={Pango.EllipsizeMode.END}
-          max-width-chars={20}
+          maxWidthChars={20}
         />
         <label
           css={`
@@ -116,7 +118,7 @@ const Player = (player: Mpris.Player) => {
           label={title}
           halign={Gtk.Align.START}
           ellipsize={Pango.EllipsizeMode.END}
-          max-width-chars={20}
+          maxWidthChars={20}
         />
       </box>
 
@@ -128,7 +130,7 @@ const Player = (player: Mpris.Player) => {
         onClicked={() => player.next()}
         visible={canGoNext}
       >
-        <icon icon={"media-skip-forward-symbolic"} />
+        <image iconName="media-skip-forward-symbolic" pixelSize={16} />
       </button>
     </box>
   );

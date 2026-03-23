@@ -6,7 +6,7 @@ export default () => {
   const items = createBinding(tray, "items");
 
   return (
-    <box class="SysTray" spacing={8}>
+    <box cssClasses={["SysTray"]} spacing={8}>
       <For each={items}>
         {(item: Tray.TrayItem) => {
           const tooltipMarkup = createBinding(item, "tooltipMarkup");
@@ -16,25 +16,22 @@ export default () => {
           return (
             <menubutton
               tooltipMarkup={tooltipMarkup}
-              usePopover={false}
               menuModel={menuModel}
               css={`
                 padding: 0;
                 margin: 0;
                 background: none;
               `}
-              $={(self) => {
+              $={(self: import("gi://Gtk?version=4.0").default.MenuButton) => {
                 self.insert_action_group("dbusmenu", item.actionGroup);
                 item.connect("notify::action-group", () => {
                   self.insert_action_group("dbusmenu", item.actionGroup);
                 });
               }}
             >
-              <icon
+              <image
                 gicon={gicon}
-                css={`
-                  font-size: 18px;
-                `}
+                pixelSize={18}
               />
             </menubutton>
           );

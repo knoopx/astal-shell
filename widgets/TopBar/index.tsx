@@ -1,6 +1,6 @@
 import { createState, onCleanup } from "ags";
-import app from "ags/gtk3/app";
-import { Gtk, Astal } from "ags/gtk3";
+import app from "ags/gtk4/app";
+import { Gtk, Astal } from "ags/gtk4";
 import CenterWidgets from "../CenterWidgets";
 import Playback from "./Playback";
 import Network from "./Network";

@@ -1,4 +1,4 @@
-import { Gtk } from "ags/gtk3";
+import { Gtk } from "ags/gtk4";
 import Meter from "./Meter";
 import Label from "./Label";
 
@@ -13,7 +13,7 @@ type LabeledMeterProps = {
 };
 
 export default ({ value, label, invert }: LabeledMeterProps) => (
-  <box halign={Gtk.Align.CENTER}>
+  <box halign={Gtk.Align.CENTER} valign={Gtk.Align.CENTER}>
     <Meter value={value} invert={invert} />
     <Label label={label} />
   </box>

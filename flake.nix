@@ -20,7 +20,7 @@
 
     astalPackages = with ags.packages.${system}; [
       io
-      astal3
+      astal4
       battery
       apps
       mpris
@@ -43,6 +43,7 @@
         libsoup_3
         gjs
         glib
+        gtk4-layer-shell
       ]);
 
     agsCustom = (
@@ -60,9 +61,15 @@
         pname = "astal-shell";
         entry = "app.ts";
 
-        src = ./.;
+        src =
+          builtins.filterSource
+          (path: type: let
+            name = builtins.baseNameOf path;
+          in
+            name != "node_modules" && name != "result" && name != ".git" && name != ".jj")
+          ./.;
         nativeBuildInputs = with pkgs; [
-          wrapGAppsHook3
+          wrapGAppsHook4
           gobject-introspection
           agsCustom
         ];
@@ -73,7 +80,7 @@
            mkdir -p $out/bin
            mkdir -p $out/share
            cp -r * $out/share
-           ags bundle --gtk 3 ${entry} $out/bin/${pname} -d "SRC='$out/share'"
+           ags bundle --gtk 4 ${entry} $out/bin/${pname} -d "SRC='$out/share'"
 
            runHook postInstall
         '';

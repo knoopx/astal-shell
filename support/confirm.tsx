@@ -1,7 +1,6 @@
 import { createState } from "ags";
-import { Gtk, Astal } from "ags/gtk3";
-
-import Gdk from "gi://Gdk?version=3.0";
+import { Gtk, Astal } from "ags/gtk4";
+import Gdk from "gi://Gdk?version=4.0";
 
 export function confirm(handler: () => void) {
   const [visible, setVisible] = createState(false);
@@ -15,12 +14,6 @@ export function confirm(handler: () => void) {
     setVisible(false);
   }
 
-  function onKeyPress(self: Gtk.Window, event: Gdk.EventKey) {
-    if (event.keyval === Gdk.KEY_Escape) {
-      setVisible(false);
-    }
-  }
-
   const dialog = (
     <window
       name="confirm"
@@ -30,13 +23,20 @@ export function confirm(handler: () => void) {
         Astal.WindowAnchor.LEFT |
         Astal.WindowAnchor.RIGHT
       }
-      onKeyPressEvent={(self, event) => onKeyPress(self, event)}
+      keymode={Astal.Keymode.ON_DEMAND}
       visible={visible}
     >
+      <Gtk.EventControllerKey
+        onKeyPressed={(_self: Gtk.EventControllerKey, keyval: number) => {
+          if (keyval === Gdk.KEY_Escape) {
+            setVisible(false);
+          }
+        }}
+      />
       <box
         halign={Gtk.Align.CENTER}
         valign={Gtk.Align.CENTER}
-        vertical
+        orientation={Gtk.Orientation.VERTICAL}
         spacing={16}
       >
         <label
@@ -45,9 +45,10 @@ export function confirm(handler: () => void) {
           `}
           label="Are you sure?"
         />
-        <box homogeneous spacing={16}>
-          <button onClicked={no}>No</button>
+        <box spacing={16}>
+          <button hexpand onClicked={no}>No</button>
           <button
+            hexpand
             css={`
               min-width: 8em;
               color: @error_color;

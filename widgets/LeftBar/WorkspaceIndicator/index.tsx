@@ -1,4 +1,4 @@
-import { Gtk } from "ags/gtk3";
+import { Gtk } from "ags/gtk4";
 import { createBinding, For } from "ags";
 import niri, { NiriWorkspace } from "../../../support/niri";
 import { getCurrentTheme } from "../../../support/theme";
@@ -30,7 +30,6 @@ export default () => {
               background-color: ${
                 focused ? theme.accent.primary : theme.accent.secondary
               };
-              transition: all 0.2s ease;
             `,
             )}
             onClicked={() => {

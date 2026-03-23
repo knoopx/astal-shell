@@ -1,5 +1,6 @@
-import { Gtk, Astal } from "ags/gtk3";
-import app from "ags/gtk3/app";
+import { Gtk, Astal } from "ags/gtk4";
+import app from "ags/gtk4/app";
+import { onCleanup } from "ags";
 import WorkspaceIndicator from "./WorkspaceIndicator";
 import niri from "../../support/niri";
 import { applyOpacityTransition } from "../../support/transitions";
@@ -22,19 +23,17 @@ export default ({ monitor }: { monitor: number }) => {
         background: transparent;
       `}
     >
-      <box vertical valign={Gtk.Align.CENTER} vexpand={true}>
+      <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER} vexpand={true}>
         <WorkspaceIndicator />
       </box>
     </window>
   );
 
-  // Store signal connection ID for proper cleanup
   const signalId = niri.connect("notify::overview-is-open", () => {
     applyOpacityTransition(win as unknown as Gtk.Widget, niri.overviewIsOpen);
   });
 
-  // Clean up signal connection when window is destroyed
-  win.connect("destroy", () => {
+  onCleanup(() => {
     niri.disconnect(signalId);
   });
 

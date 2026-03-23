@@ -1,6 +1,6 @@
 import Volume from "./Volume";
 import { execAsync } from "ags/process";
-import { Gtk } from "ags/gtk3";
+import { Gtk } from "ags/gtk4";
 import { confirm } from "../../../support/confirm";
 import ActionButton from "./ActionButton";
 

@@ -32,7 +32,7 @@ export default function ActionButton({
       onClicked={onClicked}
       tooltipText={tooltipText}
     >
-      <icon icon={icon} />
+      <image iconName={icon} pixelSize={16} />
     </button>
   );
 }
