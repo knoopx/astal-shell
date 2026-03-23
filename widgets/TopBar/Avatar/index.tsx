@@ -16,7 +16,10 @@ function parseRgba(rgba: string): [number, number, number, number] {
 }
 
 export default ({ onToggle }: { onToggle: () => void }) => {
-  const facePath = `${GLib.getenv("HOME")}/.face`;
+  const user = GLib.get_user_name();
+  const gdmPath = `/var/lib/AccountsService/icons/${user}`;
+  const homeFacePath = `${GLib.getenv("HOME")}/.face`;
+  const facePath = GLib.file_test(gdmPath, GLib.FileTest.EXISTS) ? gdmPath : homeFacePath;
   const faceExists = GLib.file_test(facePath, GLib.FileTest.EXISTS);
   const theme = getCurrentTheme();
   const [red, green, blue, alpha] = parseRgba(theme.accent.border);
