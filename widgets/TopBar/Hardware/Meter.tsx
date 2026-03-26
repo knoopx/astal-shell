@@ -16,11 +16,11 @@ function levelColor(value: number, invert: boolean): [number, number, number, nu
   const theme = getCurrentTheme();
   if (invert) {
     if (value > 0.75) return parseRgba(theme.status.success);
-    if (value > 0.25) return parseRgba(theme.accent.secondary);
+    if (value > 0.25) return parseRgba(theme.status.warning);
     return parseRgba(theme.status.error);
   }
   if (value > 0.75) return parseRgba(theme.status.error);
-  if (value > 0.25) return parseRgba(theme.accent.secondary);
+  if (value > 0.25) return parseRgba(theme.status.warning);
   return parseRgba(theme.status.success);
 }
 
