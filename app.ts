@@ -1,3 +1,4 @@
+// This is the main entry point for the AGS shell application
 import app from "ags/gtk4/app";
 import { Gtk } from "ags/gtk4";
 import TopBar from "./widgets/TopBar";
@@ -49,7 +50,9 @@ function setupMonitorChangeHandling() {
 
   function handleMonitorChange() {
     const currentMonitors = app.get_monitors();
-    const currentMonitorIds = new Set(currentMonitors.map((_: unknown, i: number) => i));
+    const currentMonitorIds = new Set(
+      currentMonitors.map((_: unknown, i: number) => i),
+    );
 
     // Find monitors that were removed
     for (const [monitorId] of barWindows.entries()) {

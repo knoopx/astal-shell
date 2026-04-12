@@ -1,20 +1,33 @@
-import { createState, onCleanup } from "ags";
+import { onCleanup } from "ags";
 import app from "ags/gtk4/app";
 import { Gtk, Astal } from "ags/gtk4";
 import CenterWidgets from "../CenterWidgets";
 import Playback from "./Playback";
-import Network from "./Network";
 import SysTray from "./SysTray";
-import QuickSettings from "./QuickSettings";
-import Hardware from "./Hardware";
+import Network from "./Network";
+import Volume from "./QuickSettings/Volume";
+import ShutdownButton from "./QuickSettings/ShutdownButton";
+import RebootButton from "./QuickSettings/RebootButton";
+import LogoutButton from "./QuickSettings/LogoutButton";
+import CPUMeter from "./Hardware/CPUMeter";
+import RAMMeter from "./Hardware/RAMMeter";
+import GPUMeter from "./Hardware/GPUMeter";
+import VRAMMeter from "./Hardware/VRAMMeter";
+import DiskMeter from "./Hardware/DiskMeter";
+import BatteryMeter from "./Hardware/BatteryMeter";
 import Avatar from "./Avatar";
-import niri from "../../support/niri";
+import niri from "../../support/niri.tsx";
 import { applyOpacityTransition } from "../../support/transitions";
-import { getDisplayId, getBarMargins } from "../../support/util";
+import {
+  getDisplayId,
+  getBarMargins,
+  hasNvidiaGpu,
+  hasBattery,
+} from "../../support/util";
+import { exec } from "ags/process";
+import Gdk from "gi://Gdk?version=4.0";
 
 export default ({ monitor }: { monitor: number }) => {
-  const [showQuickSettings, setShowQuickSettings] = createState(false);
-
   const LeftModules = (
     <box spacing={8} halign={Gtk.Align.START} $type="start">
       <Playback />
@@ -36,29 +49,45 @@ export default ({ monitor }: { monitor: number }) => {
         margin-right: 4px;
       `}
     >
-      <SysTray />
-      <box>
-        <box>
-          <revealer
-            revealChild={showQuickSettings((isOpen) => !isOpen)}
-            transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
-            transitionDuration={300}
-          >
-            <box spacing={8}>
-              <Network />
-              <Hardware />
-            </box>
-          </revealer>
-          <revealer
-            revealChild={showQuickSettings}
-            transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
-            transitionDuration={300}
-          >
-            <QuickSettings />
-          </revealer>
-        </box>
+      <Volume />
+      <Network />
+      <box
+        spacing={8}
+        valign={Gtk.Align.CENTER}
+        css={`
+          margin-left: 8px;
+        `}
+      >
+        <Gtk.GestureClick
+          button={Gdk.BUTTON_PRIMARY}
+          onReleased={() => {
+            try {
+              exec("missioncenter");
+            } catch (error) {
+              console.error("Failed to execute missioncenter:", error);
+            }
+          }}
+        />
+        <CPUMeter />
+        <RAMMeter />
+        {hasNvidiaGpu && <GPUMeter />}
+        {hasNvidiaGpu && <VRAMMeter />}
+        <DiskMeter />
+        {hasBattery && <BatteryMeter />}
       </box>
-      <Avatar onToggle={() => setShowQuickSettings((prev) => !prev)} />
+      <box
+        spacing={4}
+        valign={Gtk.Align.CENTER}
+        css={`
+          margin-left: 8px;
+        `}
+      >
+        <ShutdownButton />
+        <RebootButton />
+        <LogoutButton />
+      </box>
+      <SysTray />
+      <Avatar />
     </box>
   );
 

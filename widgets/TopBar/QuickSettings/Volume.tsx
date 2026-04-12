@@ -7,11 +7,15 @@ export default () => {
   const speaker = Wp.get_default()!.audio.defaultSpeaker;
   const volumeIcon = createBinding(speaker, "volumeIcon");
 
-  const slider = (<slider
-    widthRequest={100}
-    value={speaker.volume}
-    onChangeValue={(_self, _scroll, value) => { speaker.volume = value }}
-  />) as Astal.Slider;
+  const slider = (
+    <slider
+      widthRequest={100}
+      value={speaker.volume}
+      onChangeValue={(_self, _scroll, value) => {
+        speaker.volume = value;
+      }}
+    />
+  ) as Astal.Slider;
 
   const signalId = speaker.connect("notify::volume", () => {
     slider.value = speaker.volume;
@@ -20,7 +24,7 @@ export default () => {
   onCleanup(() => speaker.disconnect(signalId));
 
   return (
-    <box spacing={4} valign={Gtk.Align.CENTER}>
+    <box valign={Gtk.Align.CENTER}>
       <image iconName={volumeIcon} pixelSize={16} />
       {slider}
     </box>

@@ -1,28 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
-import { getCurrentTheme } from "../../../support/theme";
-
-function parseRgba(rgba: string): [number, number, number, number] {
-  const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
-  if (!match) return [1, 1, 1, 1];
-  return [
-    Number(match[1]) / 255,
-    Number(match[2]) / 255,
-    Number(match[3]) / 255,
-    match[4] !== undefined ? Number(match[4]) : 1,
-  ];
-}
-
-function levelColor(value: number, invert: boolean): [number, number, number, number] {
-  const theme = getCurrentTheme();
-  if (invert) {
-    if (value > 0.75) return parseRgba(theme.status.success);
-    if (value > 0.25) return parseRgba(theme.status.warning);
-    return parseRgba(theme.status.error);
-  }
-  if (value > 0.75) return parseRgba(theme.status.error);
-  if (value > 0.25) return parseRgba(theme.status.warning);
-  return parseRgba(theme.status.success);
-}
+import { levelColor } from "../../../support/drawing";
 
 export default ({
   invert = false,
@@ -70,11 +47,13 @@ export default ({
           }
         });
       }}
-      css={value.as((v: number) => {
-        currentValue = v;
-        if (drawingArea) drawingArea.queue_draw();
-        return "";
-      }) as unknown as string}
+      css={
+        value.as((v: number) => {
+          currentValue = v;
+          if (drawingArea) drawingArea.queue_draw();
+          return "";
+        }) as unknown as string
+      }
     />
   );
 };

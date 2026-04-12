@@ -3,23 +3,15 @@ import Gdk from "gi://Gdk?version=4.0";
 import GdkPixbuf from "gi://GdkPixbuf";
 import GLib from "gi://GLib";
 import { getCurrentTheme } from "../../../support/theme";
+import { parseRgba } from "../../../support/drawing";
 
-function parseRgba(rgba: string): [number, number, number, number] {
-  const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
-  if (!match) return [1, 1, 1, 1];
-  return [
-    Number(match[1]) / 255,
-    Number(match[2]) / 255,
-    Number(match[3]) / 255,
-    match[4] !== undefined ? Number(match[4]) : 1,
-  ];
-}
-
-export default ({ onToggle }: { onToggle: () => void }) => {
+export default () => {
   const user = GLib.get_user_name();
   const gdmPath = `/var/lib/AccountsService/icons/${user}`;
   const homeFacePath = `${GLib.getenv("HOME")}/.face`;
-  const facePath = GLib.file_test(gdmPath, GLib.FileTest.EXISTS) ? gdmPath : homeFacePath;
+  const facePath = GLib.file_test(gdmPath, GLib.FileTest.EXISTS)
+    ? gdmPath
+    : homeFacePath;
   const faceExists = GLib.file_test(facePath, GLib.FileTest.EXISTS);
   const theme = getCurrentTheme();
   const [red, green, blue, alpha] = parseRgba(theme.accent.border);
@@ -36,7 +28,6 @@ export default ({ onToggle }: { onToggle: () => void }) => {
       `}
       valign={Gtk.Align.CENTER}
       halign={Gtk.Align.CENTER}
-      onClicked={onToggle}
     >
       <drawingarea
         widthRequest={36}

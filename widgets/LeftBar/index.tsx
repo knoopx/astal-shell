@@ -1,9 +1,7 @@
 import { Gtk, Astal } from "ags/gtk4";
 import app from "ags/gtk4/app";
-import { onCleanup } from "ags";
 import WorkspaceIndicator from "./WorkspaceIndicator";
-import niri from "../../support/niri";
-import { applyOpacityTransition } from "../../support/transitions";
+import { setupOverviewOpacityTransition } from "../../support/window";
 
 export default ({ monitor }: { monitor: number }) => {
   const { TOP, LEFT, BOTTOM } = Astal.WindowAnchor;
@@ -23,19 +21,17 @@ export default ({ monitor }: { monitor: number }) => {
         background: transparent;
       `}
     >
-      <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER} vexpand={true}>
+      <box
+        orientation={Gtk.Orientation.VERTICAL}
+        valign={Gtk.Align.CENTER}
+        vexpand={true}
+      >
         <WorkspaceIndicator />
       </box>
     </window>
   );
 
-  const signalId = niri.connect("notify::overview-is-open", () => {
-    applyOpacityTransition(win as unknown as Gtk.Widget, niri.overviewIsOpen);
-  });
-
-  onCleanup(() => {
-    niri.disconnect(signalId);
-  });
+  setupOverviewOpacityTransition(win as unknown as Gtk.Widget);
 
   return win;
 };

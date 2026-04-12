@@ -7,7 +7,9 @@
     "test:watch": "bun vitest"
   },
   "type": "module",
-  "dependencies": {},
+  "dependencies": {
+    "ags": "*"
+  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.0.2",

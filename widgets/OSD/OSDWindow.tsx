@@ -2,6 +2,7 @@ import { Gtk, Astal } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import { timeout } from "ags/time";
 import { createState, onCleanup } from "ags";
+import { parseRgba } from "../../support/drawing";
 import { getCurrentTheme } from "../../support/theme";
 
 interface OSDConfig {
@@ -13,18 +14,11 @@ interface OSDConfig {
   disconnect: (id: number) => void;
 }
 
-function parseRgba(rgba: string): [number, number, number, number] {
-  const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
-  if (!match) return [1, 1, 1, 1];
-  return [
-    Number(match[1]) / 255,
-    Number(match[2]) / 255,
-    Number(match[3]) / 255,
-    match[4] !== undefined ? Number(match[4]) : 1,
-  ];
-}
-
-function VerticalBar({ value }: { value: ReturnType<typeof createState<number>>[0] }) {
+function VerticalBar({
+  value,
+}: {
+  value: ReturnType<typeof createState<number>>[0];
+}) {
   let currentValue = 0;
   let area: Gtk.DrawingArea;
   const theme = getCurrentTheme();
@@ -63,11 +57,13 @@ function VerticalBar({ value }: { value: ReturnType<typeof createState<number>>[
           cr.fill();
         });
       }}
-      css={value((next) => {
-        currentValue = next;
-        area?.queue_draw();
-        return "";
-      }) as unknown as string}
+      css={
+        value((next) => {
+          currentValue = next;
+          area?.queue_draw();
+          return "";
+        }) as unknown as string
+      }
     />
   );
 }
