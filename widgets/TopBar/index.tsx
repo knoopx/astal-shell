@@ -5,7 +5,6 @@ import CenterWidgets from "../CenterWidgets";
 import Playback from "./Playback";
 import SysTray from "./SysTray";
 import Network from "./Network";
-import Volume from "./QuickSettings/Volume";
 import ShutdownButton from "./QuickSettings/ShutdownButton";
 import RebootButton from "./QuickSettings/RebootButton";
 import LogoutButton from "./QuickSettings/LogoutButton";
@@ -24,8 +23,6 @@ import {
   hasNvidiaGpu,
   hasBattery,
 } from "../../support/util";
-import { exec } from "ags/process";
-import Gdk from "gi://Gdk?version=4.0";
 
 export default ({ monitor }: { monitor: number }) => {
   const LeftModules = (
@@ -49,7 +46,6 @@ export default ({ monitor }: { monitor: number }) => {
         margin-right: 4px;
       `}
     >
-      <Volume />
       <Network />
       <box
         spacing={8}
@@ -58,16 +54,6 @@ export default ({ monitor }: { monitor: number }) => {
           margin-left: 8px;
         `}
       >
-        <Gtk.GestureClick
-          button={Gdk.BUTTON_PRIMARY}
-          onReleased={() => {
-            try {
-              exec("missioncenter");
-            } catch (error) {
-              console.error("Failed to execute missioncenter:", error);
-            }
-          }}
-        />
         <CPUMeter />
         <RAMMeter />
         {hasNvidiaGpu && <GPUMeter />}
