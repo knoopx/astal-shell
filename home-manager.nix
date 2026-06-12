@@ -21,6 +21,42 @@ in {
       description = "Theme configuration for Astal Shell.";
     };
 
+    quickSettings = lib.mkOption {
+      type = lib.types.listOf (
+        lib.types.submodule {
+          options = {
+            id = lib.mkOption {
+              type = lib.types.str;
+              description = "Unique identifier for the button.";
+            };
+            icon = lib.mkOption {
+              type = lib.types.str;
+              description = "GTK icon name (e.g., system-shutdown-symbolic).";
+            };
+            label = lib.mkOption {
+              type = lib.types.str;
+              description = "Tooltip text shown on hover.";
+            };
+            command = lib.mkOption {
+              type = lib.types.either (
+                lib.types.str
+              ) (
+                lib.types.listOf lib.types.str
+              );
+              description = "Command to execute (array of strings or single string).";
+            };
+            confirm = lib.mkOption {
+              type = lib.types.bool;
+              default = false;
+              description = "Whether to show a confirmation dialog before executing.";
+            };
+          };
+        }
+      );
+      default = [];
+      description = "Quick settings buttons shown in the top bar.";
+    };
+
     package = lib.mkOption {
       type = lib.types.package;
       default = pkgs.astal-shell;
@@ -37,6 +73,15 @@ in {
       })
       (lib.mkIf (cfg.theme != {}) {
         "astal-shell/theme.json".text = builtins.toJSON cfg.theme;
+      })
+      (lib.mkIf (cfg.quickSettings != []) {
+        "astal-shell/quickSettings.json".text = builtins.toJSON (map (entry: {
+          id = entry.id;
+          icon = entry.icon;
+          label = entry.label;
+          command = entry.command;
+          confirm = entry.confirm;
+        }) cfg.quickSettings);
       })
     ];
 
