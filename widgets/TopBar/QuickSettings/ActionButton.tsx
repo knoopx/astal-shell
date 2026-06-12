@@ -1,6 +1,7 @@
 import { getCurrentTheme } from "../../../support/theme";
 
 type ActionButtonProps = {
+  key?: string;
   icon: string;
   tooltipText: string;
   onClicked: () => void;

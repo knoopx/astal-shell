@@ -121,3 +121,41 @@ The shell uses a JSON-based configuration. Theme settings are stored in `~/.conf
   }
 }
 ```
+
+### Quick Settings Buttons
+
+The shutdown, reboot, and logout buttons in the top bar are now configurable via `~/.config/astal-shell/quickSettings.json`:
+
+```json
+[
+  {
+    "id": "shutdown",
+    "icon": "system-shutdown-symbolic",
+    "label": "Shutdown",
+    "command": ["systemctl", "poweroff"],
+    "confirm": true
+  },
+  {
+    "id": "reboot",
+    "icon": "system-reboot-symbolic",
+    "label": "Reboot",
+    "command": ["systemctl", "reboot"],
+    "confirm": true
+  },
+  {
+    "id": "logout",
+    "icon": "system-log-out-symbolic",
+    "label": "Logout",
+    "command": ["niri", "msg", "action", "quit", "-s"],
+    "confirm": true
+  }
+]
+```
+
+Each entry supports:
+
+- `id` — unique identifier for the button
+- `icon` — GTK icon name (e.g., `system-shutdown-symbolic`)
+- `label` — tooltip text shown on hover
+- `command` — command to execute (array of strings or single string)
+- `confirm` — whether to show a confirmation dialog before executing (default: `false`)

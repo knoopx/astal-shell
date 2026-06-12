@@ -5,9 +5,7 @@ import CenterWidgets from "../CenterWidgets";
 import Playback from "./Playback";
 import SysTray from "./SysTray";
 import Network from "./Network";
-import ShutdownButton from "./QuickSettings/ShutdownButton";
-import RebootButton from "./QuickSettings/RebootButton";
-import LogoutButton from "./QuickSettings/LogoutButton";
+import DynamicQuickSettings from "./QuickSettings/DynamicQuickSettings";
 import CPUMeter from "./Hardware/CPUMeter";
 import RAMMeter from "./Hardware/RAMMeter";
 import GPUMeter from "./Hardware/GPUMeter";
@@ -61,17 +59,7 @@ export default ({ monitor }: { monitor: number }) => {
         <DiskMeter />
         {hasBattery && <BatteryMeter />}
       </box>
-      <box
-        spacing={4}
-        valign={Gtk.Align.CENTER}
-        css={`
-          margin-left: 8px;
-        `}
-      >
-        <ShutdownButton />
-        <RebootButton />
-        <LogoutButton />
-      </box>
+      <DynamicQuickSettings />
       <SysTray />
       <Avatar />
     </box>
