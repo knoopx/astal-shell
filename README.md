@@ -28,6 +28,8 @@ services.astal-shell = {
 
     # Optional: configure theme
     theme = {
+      iconTheme = "Adwaita";
+
       background = {
         primary = "rgba(30, 30, 46, 1.0)";
         secondary = "rgba(24, 24, 37, 1.0)";
@@ -45,117 +47,87 @@ services.astal-shell = {
 }
 ```
 
-## Configuration
+## Module Options
 
-### Display/Margins Configuration
+### `services.astal-shell.enable`
 
-Monitors are identified using:
+Enable the Astal Shell service. Default: `false`.
 
-1. Connector name (e.g., `DP-1`, `HDMI-A-1`)
-2. Model information
-3. Fallback to `monitor_{number}` naming
-
-You can customize margins for specific displays in `~/.config/astal-shell/displays.json`:
-
-```json
-{
-  "DP-1": [250, 80],
-  "HDMI-A-1": [400, 120]
-}
+```nix
+services.astal-shell.enable = true;
 ```
 
-### Theming
+### `services.astal-shell.displays`
 
-The shell uses a JSON-based configuration. Theme settings are stored in `~/.config/astal-shell/theme.json`:
+Map display names to `[horizontal, vertical]` margin pairs. Monitors are matched by connector name (e.g., `DP-1`), model info, or fallback `monitor_{N}` naming.
 
-```json
-{
-  "colors": {
-    "background": {
-      "primary": "rgba(0, 0, 0, 0.8)",
-      "secondary": "rgba(0, 0, 0, 0.6)"
-    },
-    "text": {
-      "primary": "rgba(255, 255, 255, 1.0)",
-      "secondary": "rgba(255, 255, 255, 0.8)",
-      "focused": "rgba(255, 255, 255, 1.0)",
-      "unfocused": "rgba(255, 255, 255, 0.6)"
-    },
-    "accent": {
-      "primary": "rgba(100, 149, 237, 0.8)",
-      "secondary": "rgba(100, 149, 237, 0.6)",
-      "border": "rgba(100, 149, 237, 0.4)",
-      "overlay": "rgba(100, 149, 237, 0.2)"
-    },
-    "status": {
-      "success": "rgba(76, 175, 80, 0.8)",
-      "warning": "rgba(255, 193, 7, 0.8)",
-      "error": "rgba(244, 67, 54, 0.8)"
-    }
-  },
-  "opacity": {
-    "high": 1.0,
-    "medium": 0.8,
-    "low": 0.6
-  },
-  "font": {
-    "sizes": {
-      "small": "0.8em",
-      "normal": "1em",
-      "large": "1.2em"
-    },
-    "weights": {
-      "normal": "normal",
-      "bold": "bold"
-    }
-  },
-  "spacing": {
-    "small": "4px",
-    "medium": "8px",
-    "large": "16px"
-  },
-  "borderRadius": {
-    "small": "2px",
-    "medium": "4px",
-    "large": "9999px"
-  }
-}
+Default: `{}`
+
+```nix
+services.astal-shell.displays = {
+  "DP-1" = [250, 80];
+  "HDMI-A-1" = [400, 120];
+};
 ```
 
-### Quick Settings Buttons
+### `services.astal-shell.theme`
 
-The shutdown, reboot, and logout buttons in the top bar are now configurable via `~/.config/astal-shell/quickSettings.json`:
+Theme configuration. Supports the following options:
 
-```json
-[
-  {
-    "id": "shutdown",
-    "icon": "system-shutdown-symbolic",
-    "label": "Shutdown",
-    "command": ["systemctl", "poweroff"],
-    "confirm": true
-  },
-  {
-    "id": "reboot",
-    "icon": "system-reboot-symbolic",
-    "label": "Reboot",
-    "command": ["systemctl", "reboot"],
-    "confirm": true
-  },
-  {
-    "id": "logout",
-    "icon": "system-log-out-symbolic",
-    "label": "Logout",
-    "command": ["niri", "msg", "action", "quit", "-s"],
-    "confirm": true
-  }
-]
+- `iconTheme` — GTK icon theme name. Default: `"Adwaita"`.
+
+Additional theme keys (background colors, text colors, accent colors, etc.) are passed through to the shell's theme config.
+
+```nix
+services.astal-shell.theme = {
+  iconTheme = "Yaru";
+
+  background = {
+    primary = "rgba(30, 30, 46, 1.0)";
+    secondary = "rgba(24, 24, 37, 1.0)";
+  };
+  text = {
+    primary = "rgba(205, 214, 244, 1.0)";
+    secondary = "rgba(186, 194, 222, 0.7)";
+  };
+};
 ```
+
+### `services.astal-shell.quickSettings`
+
+List of quick settings buttons shown in the top bar. Includes built-in defaults for shutdown, reboot, and logout — override the list to customize.
 
 Each entry supports:
 
-- `id` — unique identifier for the button
-- `icon` — GTK icon name (e.g., `system-shutdown-symbolic`)
-- `label` — tooltip text shown on hover
-- `command` — command to execute (array of strings or single string)
-- `confirm` — whether to show a confirmation dialog before executing (default: `false`)
+- `id` — unique identifier
+- `icon` — GTK icon name
+- `label` — tooltip text
+- `command` — command to execute (string or list of strings)
+- `confirm` — show confirmation dialog before executing (default: `false`)
+
+```nix
+services.astal-shell.quickSettings = [
+  {
+    id = "lock";
+    icon = "system-lock-screen-symbolic";
+    label = "Lock";
+    command = ["swaylock" "-c" "000000"];
+    confirm = false;
+  }
+  {
+    id = "shutdown";
+    icon = "system-shutdown-symbolic";
+    label = "Shutdown";
+    command = ["systemctl" "poweroff"];
+    confirm = true;
+  }
+];
+```
+
+### `services.astal-shell.package`
+
+The astal-shell package to use. Default: `pkgs.astal-shell`.
+
+```nix
+services.astal-shell.package = pkgs.astal-shell;
+```

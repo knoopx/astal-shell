@@ -16,7 +16,15 @@ in {
     };
 
     theme = lib.mkOption {
-      type = lib.types.attrsOf lib.types.anything;
+      type = lib.types.submodule {
+        options = {
+          iconTheme = lib.mkOption {
+            type = lib.types.str;
+            default = "Adwaita";
+            description = "GTK icon theme to use for icons.";
+          };
+        };
+      };
       default = {};
       description = "Theme configuration for Astal Shell.";
     };
@@ -53,7 +61,29 @@ in {
           };
         }
       );
-      default = [];
+      default = [
+        {
+          id = "shutdown";
+          icon = "system-shutdown-symbolic";
+          label = "Shutdown";
+          command = ["systemctl" "poweroff"];
+          confirm = true;
+        }
+        {
+          id = "reboot";
+          icon = "system-reboot-symbolic";
+          label = "Reboot";
+          command = ["systemctl" "reboot"];
+          confirm = true;
+        }
+        {
+          id = "logout";
+          icon = "system-log-out-symbolic";
+          label = "Logout";
+          command = ["niri" "msg" "action" "quit" "-s"];
+          confirm = true;
+        }
+      ];
       description = "Quick settings buttons shown in the top bar.";
     };
 
