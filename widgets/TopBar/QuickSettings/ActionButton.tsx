@@ -1,7 +1,7 @@
 import { getCurrentTheme } from "../../../support/theme";
+import Icon from "../../Icon";
 
 type ActionButtonProps = {
-  key?: string;
   icon: string;
   tooltipText: string;
   onClicked: () => void;
@@ -33,7 +33,7 @@ export default function ActionButton({
       onClicked={onClicked}
       tooltipText={tooltipText}
     >
-      <image iconName={icon} pixelSize={16} />
+      <Icon name={icon} size={16} />
     </button>
   );
 }

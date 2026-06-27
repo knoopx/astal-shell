@@ -3,6 +3,9 @@ import { readJSONFile, writeJSONFile } from "./util";
 import { deepMerge, DeepPartial } from "./deepMerge";
 
 interface Theme {
+  // Icon theme
+  iconTheme: string;
+
   // Colors
   background: {
     primary: string;
@@ -62,6 +65,8 @@ interface Theme {
 }
 
 const defaultTheme: Theme = {
+  iconTheme: "Adwaita",
+
   background: {
     primary: "rgba(0, 0, 0, 0.8)",
     secondary: "rgba(255, 255, 255, 0.12)",

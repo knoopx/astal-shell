@@ -4,6 +4,7 @@ import { timeout } from "ags/time";
 import { createState, onCleanup } from "ags";
 import { parseRgba } from "../../support/drawing";
 import { getCurrentTheme } from "../../support/theme";
+import Icon from "../Icon";
 
 interface OSDConfig {
   name: string;
@@ -134,7 +135,7 @@ export default function OSDWindow({
         `}
       >
         <VerticalBar value={value} />
-        <image iconName={iconName} pixelSize={24} />
+        <Icon name={iconName} size={24} />
       </box>
     </window>
   );

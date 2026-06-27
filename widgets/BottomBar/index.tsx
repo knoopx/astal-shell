@@ -1,33 +1,13 @@
 import { createBinding, For } from "ags";
 import app from "ags/gtk4/app";
 import niri, { NiriWindow } from "../../support/niri";
-import AstalApps from "gi://AstalApps";
 import { Astal, Gtk } from "ags/gtk4";
 import Gdk from "gi://Gdk?version=4.0";
 import { getDisplayId, getBarMargins } from "../../support/util";
 import { getCurrentTheme } from "../../support/theme";
 import { setupOverviewOpacityTransition } from "../../support/window";
-
-function getAppIcon(apps: AstalApps.Apps, appId: string): string {
-  if (!appId) return "application-x-executable";
-
-  let app = apps.list.find(
-    (a) => a.entry === appId || a.entry === `${appId}.desktop`,
-  );
-
-  if (!app) {
-    app = apps.list.find(
-      (a) => a.wmClass?.toLowerCase() === appId.toLowerCase(),
-    );
-  }
-
-  if (!app) {
-    const results = apps.fuzzy_query(appId);
-    app = results[0];
-  }
-
-  return app?.iconName || "application-x-executable";
-}
+import { getAppIcon } from "../../support/icons";
+import Icon from "../Icon";
 
 function handleWindowClick(gesture: Gtk.GestureClick, windowId: number): void {
   const btn = gesture.get_current_button();
@@ -69,11 +49,9 @@ function handleWorkspaceScroll(
 
 const WindowButton = ({
   window,
-  apps,
   activeWindowId,
 }: {
   window: NiriWindow;
-  apps: AstalApps.Apps;
   activeWindowId: ReturnType<typeof createBinding<unknown>>;
 }) => {
   const theme = getCurrentTheme();
@@ -101,13 +79,9 @@ const WindowButton = ({
           `,
         )}
       >
-        <image
-          iconName={
-            window.app_id
-              ? getAppIcon(apps, window.app_id)
-              : "application-x-executable"
-          }
-          pixelSize={42}
+        <Icon
+          name={getAppIcon(window.app_id)}
+          size={42}
           css={isFocused(
             (f) => `
               color: ${f ? theme.text.focused : theme.text.unfocused};
@@ -120,11 +94,9 @@ const WindowButton = ({
 };
 
 const AppIconsBar = ({
-  apps,
   currentWorkspaceWindows,
   activeWindowId,
 }: {
-  apps: AstalApps.Apps;
   currentWorkspaceWindows: ReturnType<typeof createBinding<unknown>>;
   activeWindowId: ReturnType<typeof createBinding<unknown>>;
 }) => {
@@ -146,7 +118,6 @@ const AppIconsBar = ({
         {(window: NiriWindow) => (
           <WindowButton
             window={window}
-            apps={apps}
             activeWindowId={activeWindowId}
           />
         )}
@@ -156,8 +127,6 @@ const AppIconsBar = ({
 };
 
 export default ({ monitor }: { monitor: number }) => {
-  const apps = new AstalApps.Apps();
-
   const currentWorkspace = createBinding(niri, "workspaces").as((workspaces) =>
     workspaces.find((ws) => ws.is_active),
   );
@@ -189,7 +158,6 @@ export default ({ monitor }: { monitor: number }) => {
     >
       <centerbox>
         <AppIconsBar
-          apps={apps}
           currentWorkspaceWindows={currentWorkspaceWindows}
           activeWindowId={activeWindowId}
         />

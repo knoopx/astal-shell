@@ -12,7 +12,6 @@ export default function DynamicQuickSettings() {
     <box spacing={4} valign={Gtk.Align.CENTER}>
       {entries.map((entry: QuickSettingsEntry) => (
         <ActionButton
-          key={entry.id}
           icon={entry.icon}
           tooltipText={entry.label}
           onClicked={() => {

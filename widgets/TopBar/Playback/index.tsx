@@ -4,6 +4,7 @@ import Pango from "gi://Pango";
 import { createBinding, createState, For } from "ags";
 import { Gtk } from "ags/gtk4";
 import { getCurrentTheme } from "../../../support/theme";
+import Icon from "../../Icon";
 
 function PlayPauseButton({ player }: { player: Mpris.Player }) {
   const canPlay = createBinding(player, "can_play");
@@ -22,9 +23,9 @@ function PlayPauseButton({ player }: { player: Mpris.Player }) {
       onClicked={() => player.play_pause()}
       visible={canPlay}
     >
-      <image
-        pixelSize={16}
-        iconName={playbackStatus((s) => {
+      <Icon
+        size={16}
+        name={playbackStatus((s) => {
           switch (s) {
             case Mpris.PlaybackStatus.PLAYING:
               return "media-playback-pause-symbolic";
@@ -130,7 +131,7 @@ const Player = (player: Mpris.Player) => {
         onClicked={() => player.next()}
         visible={canGoNext}
       >
-        <image iconName="media-skip-forward-symbolic" pixelSize={16} />
+        <Icon name="media-skip-forward-symbolic" size={16} />
       </button>
     </box>
   );

@@ -1,5 +1,6 @@
 import Tray from "gi://AstalTray";
 import { createBinding, For } from "ags";
+import Icon from "../../Icon";
 
 export default () => {
   const tray = Tray.get_default();
@@ -29,10 +30,7 @@ export default () => {
                 });
               }}
             >
-              <image
-                gicon={gicon}
-                pixelSize={18}
-              />
+              <Icon gicon={gicon} size={18} />
             </menubutton>
           );
         }}

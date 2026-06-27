@@ -40,6 +40,11 @@ let settings: QuickSettingsEntry[] = [];
 export function loadQuickSettings(): QuickSettingsEntry[] {
   if (settings.length > 0) return settings;
 
+  if (!GLib.file_test(CONFIG_PATH, GLib.FileTest.EXISTS)) {
+    settings = DEFAULT_SETTINGS;
+    return settings;
+  }
+
   try {
     const data = readJSONFile(CONFIG_PATH) as QuickSettingsEntry[];
     if (Array.isArray(data) && data.length > 0) {

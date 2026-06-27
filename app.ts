@@ -77,8 +77,10 @@ function setupMonitorChangeHandling() {
   console.log("Monitor change handling setup complete");
 }
 
+const theme = loadTheme();
+
 app.start({
-  iconTheme: "Adwaita",
+  iconTheme: theme.iconTheme,
   css: `
     levelbar trough {
       border-radius: 2px;
@@ -105,9 +107,6 @@ app.start({
     console.log("Displays", getAllDisplays());
     // Initialize displays configuration on startup
     initializeDisplaysConfig();
-
-    // Load theme on startup
-    loadTheme();
 
     // Create bars for all current monitors
     const monitors = app.get_monitors();
