@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.UPDATE_TOKEN }}
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@v16
