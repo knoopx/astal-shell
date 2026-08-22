@@ -22,8 +22,10 @@ export default function VolumeOSD({ monitor }: { monitor: number }) {
       monitor={monitor}
       getIcon={() => speaker.volumeIcon || "audio-volume-muted"}
       getValue={progress}
-      connect={(cb) => speaker.connect("notify::volume", cb)}
-      disconnect={(id) => speaker.disconnect(id)}
+      subscribe={(cb) => {
+        const id = speaker.connect("notify::volume", cb);
+        return () => speaker.disconnect(id);
+      }}
     />
   );
 }

@@ -2,7 +2,7 @@ import { Gtk, Astal } from "ags/gtk4";
 import app from "ags/gtk4/app";
 import { timeout } from "ags/time";
 import { createState, onCleanup } from "ags";
-import { parseRgba } from "../../support/drawing";
+import { parseRgba, capsulePath } from "../../support/drawing";
 import { getCurrentTheme } from "../../support/theme";
 import Icon from "../Icon";
 
@@ -11,8 +11,7 @@ interface OSDConfig {
   monitor: number;
   getIcon: () => string;
   getValue: () => number;
-  connect: (callback: () => void) => number;
-  disconnect: (id: number) => void;
+  subscribe: (callback: () => void) => () => void;
 }
 
 function VerticalBar({
@@ -36,9 +35,7 @@ function VerticalBar({
 
           cr.setSourceRGBA(1, 1, 1, 0.12);
           cr.newPath();
-          cr.arc(width / 2, radius, radius, Math.PI, 0);
-          cr.arc(width / 2, height - radius, radius, 0, Math.PI);
-          cr.closePath();
+          capsulePath(cr, width / 2, 0, height, radius, radius);
           cr.fill();
 
           const fill = Math.max(0, Math.min(1, currentValue));
@@ -52,9 +49,7 @@ function VerticalBar({
 
           cr.setSourceRGBA(red, green, blue, alpha);
           cr.newPath();
-          cr.arc(width / 2, y + topRadius, topRadius, Math.PI, 0);
-          cr.arc(width / 2, height - bottomRadius, bottomRadius, 0, Math.PI);
-          cr.closePath();
+          capsulePath(cr, width / 2, y, height, topRadius, bottomRadius);
           cr.fill();
         });
       }}
@@ -74,8 +69,7 @@ export default function OSDWindow({
   monitor,
   getIcon,
   getValue,
-  connect,
-  disconnect,
+  subscribe,
 }: OSDConfig) {
   const [visible, setVisible] = createState(false);
   const [iconName, setIconName] = createState(getIcon());
@@ -93,10 +87,10 @@ export default function OSDWindow({
     });
   }
 
-  const connectionId = connect(show);
+  const unsubscribe = subscribe(show);
 
   onCleanup(() => {
-    disconnect(connectionId);
+    unsubscribe();
   });
 
   const theme = getCurrentTheme();

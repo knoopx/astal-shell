@@ -14,8 +14,10 @@ export default function BrightnessOSD({ monitor }: { monitor: number }) {
       monitor={monitor}
       getIcon={() => "display-brightness-symbolic"}
       getValue={() => brightness.screen || 0}
-      connect={(cb) => brightness.connect("notify::screen", cb)}
-      disconnect={(id) => brightness.disconnect(id)}
+      subscribe={(cb) => {
+        const id = brightness.connect("notify::screen", cb);
+        return () => brightness.disconnect(id);
+      }}
     />
   );
 }
