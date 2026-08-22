@@ -1,5 +1,5 @@
 import Gtk from "gi://Gtk?version=4.0";
-import { levelColor } from "../../../support/drawing";
+import { levelColor, roundedRectPath } from "../../../support/drawing";
 
 export default ({
   invert = false,
@@ -23,11 +23,7 @@ export default ({
           // Background
           cr.setSourceRGBA(1, 1, 1, 0.1);
           cr.newSubPath();
-          cr.arc(width - r, r, r, -Math.PI / 2, 0);
-          cr.arc(width - r, height - r, r, 0, Math.PI / 2);
-          cr.arc(r, height - r, r, Math.PI / 2, Math.PI);
-          cr.arc(r, r, r, Math.PI, (3 * Math.PI) / 2);
-          cr.closePath();
+          roundedRectPath(cr, 0, 0, width, height, r);
           cr.fill();
 
           // Filled portion
@@ -38,11 +34,7 @@ export default ({
             cr.setSourceRGBA(red, green, blue, alpha);
             const y = height - fillHeight;
             cr.newSubPath();
-            cr.arc(width - r, y + r, r, -Math.PI / 2, 0);
-            cr.arc(width - r, height - r, r, 0, Math.PI / 2);
-            cr.arc(r, height - r, r, Math.PI / 2, Math.PI);
-            cr.arc(r, y + r, r, Math.PI, (3 * Math.PI) / 2);
-            cr.closePath();
+            roundedRectPath(cr, 0, y, width, fillHeight, r);
             cr.fill();
           }
         });
