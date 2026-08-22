@@ -3,7 +3,7 @@ import app from "ags/gtk4/app";
 import niri, { NiriWindow } from "../../support/niri";
 import { Astal, Gtk } from "ags/gtk4";
 import Gdk from "gi://Gdk?version=4.0";
-import { getDisplayId, getBarMargins } from "../../support/util";
+import { getBarMargins } from "../../support/displays";
 import { getCurrentTheme } from "../../support/theme";
 import { setupOverviewOpacityTransition } from "../../support/window";
 import { getAppIcon } from "../../support/icons";
@@ -139,8 +139,7 @@ export default ({ monitor }: { monitor: number }) => {
     (ws) => ws?.active_window_id ?? -1,
   );
 
-  const displayId = getDisplayId(monitor);
-  const margins = getBarMargins(displayId);
+  const margins = getBarMargins(monitor);
   const { BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor;
 
   const win = (

@@ -1,5 +1,5 @@
 import GLib from "gi://GLib";
-import { readJSONFile, writeJSONFile } from "./util";
+import { readJSONFile, writeJSONFile } from "./json";
 import { deepMerge, DeepPartial } from "./deepMerge";
 
 interface Theme {
