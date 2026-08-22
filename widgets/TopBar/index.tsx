@@ -13,14 +13,9 @@ import VRAMMeter from "./Hardware/VRAMMeter";
 import DiskMeter from "./Hardware/DiskMeter";
 import BatteryMeter from "./Hardware/BatteryMeter";
 import Avatar from "./Avatar";
-import niri from "../../support/niri.tsx";
-import { applyOpacityTransition } from "../../support/transitions";
-import {
-  getDisplayId,
-  getBarMargins,
-  hasNvidiaGpu,
-  hasBattery,
-} from "../../support/util";
+import { setupOverviewOpacityTransition } from "../../support/window";
+import { getBarMargins } from "../../support/displays";
+import { hasNvidiaGpu, hasBattery } from "../../support/util";
 
 export default ({ monitor }: { monitor: number }) => {
   const LeftModules = (
@@ -65,8 +60,7 @@ export default ({ monitor }: { monitor: number }) => {
     </box>
   );
 
-  const displayId = getDisplayId(monitor);
-  const margins = getBarMargins(displayId);
+  const margins = getBarMargins(monitor);
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
 
   const win = (
@@ -92,21 +86,7 @@ export default ({ monitor }: { monitor: number }) => {
     </window>
   );
 
-  // Connect signals and store IDs for cleanup
-  const overviewSignalId = niri.connect("notify::overview-is-open", () => {
-    applyOpacityTransition(win as unknown as Gtk.Widget, niri.overviewIsOpen);
-  });
-
-  // Register cleanup to disconnect signals when component is destroyed
-  onCleanup(() => {
-    try {
-      if (overviewSignalId) {
-        niri.disconnect(overviewSignalId);
-      }
-    } catch (error) {
-      console.warn("Error disconnecting signal:", error);
-    }
-  });
+  setupOverviewOpacityTransition(win as unknown as Gtk.Widget);
 
   return win;
 };
