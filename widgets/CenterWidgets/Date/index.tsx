@@ -1,8 +1,7 @@
-import { subprocess } from "ags/process";
 import { createPoll } from "ags/time";
 import { Gtk } from "ags/gtk4";
 import GLib from "gi://GLib";
-import niri from "../../../support/niri";
+import CenterWidgetButton from "../CenterWidgetButton";
 export default function DateWidget({ dateFormat = "<b>%a %d %b</b>" }) {
   const date = createPoll(
     "",
@@ -11,15 +10,8 @@ export default function DateWidget({ dateFormat = "<b>%a %d %b</b>" }) {
   );
 
   return (
-    <button
-      css="background: transparent; margin: 0; padding: 0;"
-      halign={Gtk.Align.CENTER}
-      onClicked={() => {
-        niri.toggleOverview();
-        subprocess("gnome-calendar");
-      }}
-    >
+    <CenterWidgetButton app="gnome-calendar">
       <label useMarkup halign={Gtk.Align.CENTER} label={date} />
-    </button>
+    </CenterWidgetButton>
   );
 }

@@ -1,7 +1,7 @@
 import { createState, onCleanup } from "ags";
-import { execAsync, subprocess } from "ags/process";
+import { execAsync } from "ags/process";
 import { Gtk } from "ags/gtk4";
-import niri from "../../../support/niri";
+import CenterWidgetButton from "../CenterWidgetButton";
 import { getCurrentTheme } from "../../../support/theme";
 import {
   moonPhaseFromDate,
@@ -40,14 +40,7 @@ export default () => {
 
   const theme = getCurrentTheme();
   return (
-    <button
-      css="background: transparent; margin: 0; padding: 0; margin-top: -8px;"
-      halign={Gtk.Align.CENTER}
-      onClicked={() => {
-        niri.toggleOverview();
-        subprocess("gnome-weather");
-      }}
-    >
+    <CenterWidgetButton app="gnome-weather" css="margin-top: -8px;">
       <label
         css={`
           font-size: ${theme.font.size.small};
@@ -57,6 +50,6 @@ export default () => {
         halign={Gtk.Align.CENTER}
         label={weather}
       />
-    </button>
+    </CenterWidgetButton>
   );
 };
