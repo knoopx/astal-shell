@@ -11,7 +11,8 @@ let lastTotalDownBytes = 0;
 let lastTotalUpBytes = 0;
 
 // Create a blink state that syncs with network polling
-export const [blinkState, setBlinkState] = createState(true);
+const [blinkState, setBlinkState] = createState(true);
+export { blinkState };
 
 const networkSpeed = createPoll({ download: 0, upload: 0 }, interval, () => {
   setBlinkState((prev) => !prev);
