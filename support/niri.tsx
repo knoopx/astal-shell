@@ -346,34 +346,22 @@ class Niri extends GObject.Object {
 
   // Actions
 
-  focusWorkspace(idx: number) {
-    return this.action("focus-workspace", String(idx));
+  // Turns a Niri action name into a bound caller. The argument tuple (and
+  // therefore the arity/param types and return type) is inferred from how the
+  // returned function is assigned to the ergonomic public bindings below.
+  private makeAction<A extends readonly unknown[]>(action: string) {
+    return (...args: A) => this.action(action, ...(args as unknown as string[]));
   }
 
-  focusWindow(id: number) {
-    return this.action("focus-window", "--id", String(id));
-  }
-
-  closeWindow(id: number) {
-    return this.action("close-window", "--id", String(id));
-  }
-
-  centerColumn() {
-    return this.action("center-column");
-  }
-
-  moveWindowToWorkspace(windowId: number, workspaceIdx: number) {
-    return this.action(
-      "move-window-to-workspace",
-      "--window-id",
-      String(windowId),
-      String(workspaceIdx),
-    );
-  }
-
-  toggleOverview() {
-    return this.action("toggle-overview");
-  }
+  // Ergonomic public bindings — signatures derived from makeAction.
+  readonly focusWorkspace = this.makeAction<[number]>("focus-workspace");
+  readonly focusWindow = this.makeAction<[number]>("focus-window");
+  readonly closeWindow = this.makeAction<[number]>("close-window");
+  readonly centerColumn = this.makeAction<[]>("center-column");
+  readonly toggleOverview = this.makeAction<[]>("toggle-overview");
+  readonly moveWindowToWorkspace = this.makeAction<[number, number]>(
+    "move-window-to-workspace",
+  );
 
   action(...args: string[]) {
     return execAsync(["niri", "msg", "action", ...args]);
