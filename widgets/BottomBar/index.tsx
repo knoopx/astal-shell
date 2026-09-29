@@ -9,11 +9,17 @@ import { setupOverviewOpacityTransition } from "../../support/window";
 import { getAppIcon } from "../../support/icons";
 import Icon from "../Icon";
 
-function handleWindowClick(gesture: Gtk.GestureClick, windowId: number): void {
+function handleWindowClick(
+  gesture: Gtk.GestureClick,
+  nPresses: number,
+  windowId: number,
+): void {
   const btn = gesture.get_current_button();
-  if (btn === Gdk.BUTTON_PRIMARY) {
+  if (nPresses === 2) {
+    niri.toggleFullscreen();
+  } else if (btn === Gdk.BUTTON_PRIMARY) {
     niri.focusWindow(windowId).then(() => niri.centerColumn());
-  } else if (btn === Gdk.BUTTON_MIDDLE) {
+  } else if (btn === Gdk.BUTTON_SECONDARY) {
     niri.closeWindow(windowId);
   }
 }
@@ -61,8 +67,8 @@ const WindowButton = ({
     <box tooltipText={window.title ?? window.app_id ?? undefined}>
       <Gtk.GestureClick
         button={0}
-        onPressed={(gesture: Gtk.GestureClick) =>
-          handleWindowClick(gesture, window.id)
+        onPressed={(gesture: Gtk.GestureClick, nPresses: number) =>
+          handleWindowClick(gesture, nPresses, window.id)
         }
       />
       <box

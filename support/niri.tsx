@@ -378,6 +378,11 @@ class Niri extends GObject.Object {
     ["--window-id"],
   );
 
+  readonly toggleFullscreen = async (): Promise<void> => {
+    await this.action("maximize-column");
+    await this.action("center-window");
+  };
+
   action(...args: string[]) {
     return execAsync(["niri", "msg", "action", ...args]);
   }
