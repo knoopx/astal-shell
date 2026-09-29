@@ -11,7 +11,6 @@ import GPUMeter from "./Hardware/GPUMeter";
 import VRAMMeter from "./Hardware/VRAMMeter";
 import DiskMeter from "./Hardware/DiskMeter";
 import BatteryMeter from "./Hardware/BatteryMeter";
-import Avatar from "./Avatar";
 import { setupOverviewOpacityTransition } from "../../support/window";
 import { getBarMargins } from "../../support/layout";
 import { hasNvidiaGpu, hasBattery } from "../../support/util";
@@ -55,7 +54,6 @@ export default ({ monitor }: { monitor: number }) => {
       </box>
       <DynamicQuickSettings />
       <SysTray />
-      <Avatar />
     </box>
   );
 
