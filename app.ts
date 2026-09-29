@@ -6,7 +6,6 @@ import LeftBar from "./widgets/LeftBar";
 import VolumeOSD from "./widgets/OSD/VolumeOSD";
 import BrightnessOSD from "./widgets/OSD/BrightnessOSD";
 import BottomBar from "./widgets/BottomBar";
-import { initializeDisplaysConfig } from "./support/displays";
 import { loadTheme } from "./support/theme";
 
 type BarWindows = Record<string, Gtk.Window>;
@@ -25,16 +24,9 @@ class DisplayController {
   readonly #barWindows = new Map<number, BarWindows>();
 
   /**
-   * Fresh-boot lifecycle: initialise the display configuration once and build
-   * bars for every currently-connected monitor.
+   * Fresh-boot lifecycle: build bars for every currently-connected monitor.
    */
   start(): void {
-    // Initialize displays configuration on startup. initializeDisplaysConfig()
-    // is file-guarded (returns early once displays.json has content), so the
-    // single call here fully covers the previous dual trigger and needs no
-    // second call from the monitor-change path.
-    initializeDisplaysConfig();
-
     // Create bars for all current monitors.
     const monitors = app.get_monitors();
     for (let i = 0; i < monitors.length; i++) {
@@ -131,7 +123,7 @@ app.start({
   main() {
     // One seam owns the monitor↔bar lifecycle for this boot.
     const controller = new DisplayController();
-    controller.start();       // init displays config + create bars for current monitors
+    controller.start();       // create bars for current monitors
     controller.attach();      // connect notify::monitors -> diff/create/destroy
   },
 });

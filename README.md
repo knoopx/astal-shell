@@ -20,12 +20,6 @@ nix run path:.
 services.astal-shell = {
     enable = true;
 
-    # Optional: configure display margins
-    displays = {
-      "LG HDR 4K" = [390 145];
-      "DP-1" = [250 80];
-    };
-
     # Optional: configure theme
     theme = {
       iconTheme = "Adwaita";
@@ -57,18 +51,17 @@ Enable the Astal Shell service. Default: `false`.
 services.astal-shell.enable = true;
 ```
 
-### `services.astal-shell.displays`
+### Bar layout
 
-Map display names to `[horizontal, vertical]` margin pairs. Monitors are matched by connector name (e.g., `DP-1`), model info, or fallback `monitor_{N}` naming.
+Bar margins are derived at runtime from the niri overview zoom and each monitor's logical size. Set the zoom in your niri config (`~/.config/niri/config.kdl`):
 
-Default: `{}`
-
-```nix
-services.astal-shell.displays = {
-  "DP-1" = [250, 80];
-  "HDMI-A-1" = [400, 120];
-};
+```kdl
+overview {
+  zoom 0.5
+}
 ```
+
+Bars match the overview card width and centre in the inter-workspace gap, so they track the overview at any zoom. No per-display configuration is needed.
 
 ### `services.astal-shell.theme`
 

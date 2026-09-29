@@ -2,7 +2,7 @@ import { createBinding, For } from "ags";
 import app from "ags/gtk4/app";
 import niri, { NiriWindow } from "../../support/niri";
 import { Astal, Gtk } from "ags/gtk4";
-import { getBarMargins } from "../../support/displays";
+import { getBarMargins } from "../../support/layout";
 import { getCurrentTheme } from "../../support/theme";
 import { setupOverviewOpacityTransition } from "../../support/window";
 import { getAppIcon } from "../../support/icons";

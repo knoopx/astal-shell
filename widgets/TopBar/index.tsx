@@ -1,4 +1,3 @@
-import { onCleanup } from "ags";
 import app from "ags/gtk4/app";
 import { Gtk, Astal } from "ags/gtk4";
 import CenterWidgets from "../CenterWidgets";
@@ -14,7 +13,7 @@ import DiskMeter from "./Hardware/DiskMeter";
 import BatteryMeter from "./Hardware/BatteryMeter";
 import Avatar from "./Avatar";
 import { setupOverviewOpacityTransition } from "../../support/window";
-import { getBarMargins } from "../../support/displays";
+import { getBarMargins } from "../../support/layout";
 import { hasNvidiaGpu, hasBattery } from "../../support/util";
 
 export default ({ monitor }: { monitor: number }) => {

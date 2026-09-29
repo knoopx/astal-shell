@@ -9,12 +9,6 @@ in {
   options.services.astal-shell = {
     enable = lib.mkEnableOption "Astal Shell service";
 
-    displays = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.listOf lib.types.int);
-      default = {};
-      description = "Display configuration mapping display names to [horizontal, vertical] margins.";
-    };
-
     theme = lib.mkOption {
       type = lib.types.attrsOf lib.types.anything;
       default = {};
@@ -90,9 +84,6 @@ in {
     home.packages = [cfg.package];
 
     xdg.configFile = lib.mkMerge [
-      (lib.mkIf (cfg.displays != {}) {
-        "astal-shell/displays.json".text = builtins.toJSON cfg.displays;
-      })
       (lib.mkIf (cfg.theme != {}) {
         "astal-shell/theme.json".text = builtins.toJSON cfg.theme;
       })
