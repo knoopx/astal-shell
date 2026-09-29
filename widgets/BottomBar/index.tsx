@@ -67,6 +67,9 @@ const WindowButton = ({
         button={3}
         onPressed={() => niri.closeWindow(window.id)}
       />
+      <Gtk.GestureLongPress
+        onPressed={() => niri.closeWindow(window.id)}
+      />
       <box
         cssClasses={isFocused((f) => [
           f ? "app-icon focused" : "app-icon unfocused",
