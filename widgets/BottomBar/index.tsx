@@ -2,25 +2,17 @@ import { createBinding, For } from "ags";
 import app from "ags/gtk4/app";
 import niri, { NiriWindow } from "../../support/niri";
 import { Astal, Gtk } from "ags/gtk4";
-import Gdk from "gi://Gdk?version=4.0";
 import { getBarMargins } from "../../support/displays";
 import { getCurrentTheme } from "../../support/theme";
 import { setupOverviewOpacityTransition } from "../../support/window";
 import { getAppIcon } from "../../support/icons";
 import Icon from "../Icon";
 
-function handleWindowClick(
-  gesture: Gtk.GestureClick,
-  nPresses: number,
-  windowId: number,
-): void {
-  const btn = gesture.get_current_button();
+function handlePrimaryClick(nPresses: number, windowId: number): void {
   if (nPresses === 2) {
     niri.toggleFullscreen();
-  } else if (btn === Gdk.BUTTON_PRIMARY) {
+  } else {
     niri.focusWindow(windowId).then(() => niri.centerColumn());
-  } else if (btn === Gdk.BUTTON_SECONDARY) {
-    niri.closeWindow(windowId);
   }
 }
 
@@ -66,10 +58,14 @@ const WindowButton = ({
   return (
     <box tooltipText={window.title ?? window.app_id ?? undefined}>
       <Gtk.GestureClick
-        button={0}
-        onPressed={(gesture: Gtk.GestureClick, nPresses: number) =>
-          handleWindowClick(gesture, nPresses, window.id)
+        button={1}
+        onPressed={(_gesture: Gtk.GestureClick, nPresses: number) =>
+          handlePrimaryClick(nPresses, window.id)
         }
+      />
+      <Gtk.GestureClick
+        button={3}
+        onPressed={() => niri.closeWindow(window.id)}
       />
       <box
         cssClasses={isFocused((f) => [
