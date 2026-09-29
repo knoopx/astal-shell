@@ -1,4 +1,4 @@
-import { createBinding, For } from "ags";
+import { createBinding, For, type Accessor } from "ags";
 import app from "ags/gtk4/app";
 import niri, { NiriWindow } from "../../support/niri";
 import { Astal, Gtk } from "ags/gtk4";
@@ -50,7 +50,7 @@ const WindowButton = ({
   activeWindowId,
 }: {
   window: NiriWindow;
-  activeWindowId: ReturnType<typeof createBinding<unknown>>;
+  activeWindowId: Accessor<number>;
 }) => {
   const theme = getCurrentTheme();
   const isFocused = activeWindowId.as((id) => id === window.id);
@@ -102,8 +102,8 @@ const AppIconsBar = ({
   currentWorkspaceWindows,
   activeWindowId,
 }: {
-  currentWorkspaceWindows: ReturnType<typeof createBinding<unknown>>;
-  activeWindowId: ReturnType<typeof createBinding<unknown>>;
+  currentWorkspaceWindows: Accessor<NiriWindow[]>;
+  activeWindowId: Accessor<number>;
 }) => {
   return (
     <box cssClasses={["app-icons"]} spacing={8} $type="center">

@@ -1,12 +1,12 @@
-import type { Binding } from "ags";
-import type GObject from "gi://GObject";
+import type { Accessor } from "ags";
+import type Gio from "gi://Gio";
 
 interface IconProps {
-  name?: string | Binding<string>;
-  gicon?: GObject.Icon | Binding<GObject.Icon>;
+  name?: string | Accessor<string>;
+  gicon?: Gio.Icon | Accessor<Gio.Icon>;
   size?: number;
-  css?: string;
-  cssClasses?: string[];
+  css?: string | Accessor<string>;
+  cssClasses?: string[] | Accessor<string[]>;
 }
 
 export default function Icon({
@@ -19,8 +19,8 @@ export default function Icon({
   return (
     <image
       $type="icon"
-      iconName={name as string | Binding<string> | undefined}
-      gicon={gicon as GObject.Icon | Binding<GObject.Icon> | undefined}
+      iconName={name}
+      gicon={gicon}
       pixelSize={size}
       css={css}
       cssClasses={cssClasses}

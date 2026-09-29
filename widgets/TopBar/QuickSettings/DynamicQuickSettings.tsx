@@ -19,7 +19,8 @@ export default function DynamicQuickSettings() {
               execAsync(Array.isArray(entry.command)
                 ? entry.command
                 : entry.command.split(" "));
-            entry.confirm ? confirm(handler) : handler();
+            if (entry.confirm) confirm(handler);
+            else handler();
           }}
         />
       ))}
