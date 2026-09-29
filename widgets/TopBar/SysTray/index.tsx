@@ -18,11 +18,7 @@ export default () => {
             <menubutton
               tooltipMarkup={tooltipMarkup}
               menuModel={menuModel}
-              css={`
-                padding: 0;
-                margin: 0;
-                background: none;
-              `}
+              hasFrame={false}
               $={(self: import("gi://Gtk?version=4.0").default.MenuButton) => {
                 self.insert_action_group("dbusmenu", item.actionGroup);
                 item.connect("notify::action-group", () => {
@@ -30,7 +26,7 @@ export default () => {
                 });
               }}
             >
-              <Icon gicon={gicon} size={18} />
+              <Icon gicon={gicon} size={24} />
             </menubutton>
           );
         }}

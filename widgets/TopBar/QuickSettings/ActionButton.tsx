@@ -19,8 +19,8 @@ export default function ActionButton({
     padding: 0;
     margin: 0;
     border-radius: ${theme.borderRadius.large};
-    min-width: 24px;
-    min-height: 24px;
+    min-width: 32px;
+    min-height: 32px;
     background-color: ${theme.background.secondary};
   `;
   const css = additionalCss ? `${baseCss}${additionalCss}` : baseCss;
@@ -33,7 +33,7 @@ export default function ActionButton({
       onClicked={onClicked}
       tooltipText={tooltipText}
     >
-      <Icon name={icon} size={16} />
+      <Icon name={icon} size={20} />
     </button>
   );
 }

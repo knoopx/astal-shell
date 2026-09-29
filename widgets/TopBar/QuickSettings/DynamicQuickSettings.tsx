@@ -9,16 +9,25 @@ export default function DynamicQuickSettings() {
   const entries = getQuickSettings();
 
   return (
-    <box spacing={4} valign={Gtk.Align.CENTER}>
+    <box
+      spacing={16}
+      valign={Gtk.Align.CENTER}
+      css={`
+        margin-left: 8px;
+        margin-right: 8px;
+      `}
+    >
       {entries.map((entry: QuickSettingsEntry) => (
         <ActionButton
           icon={entry.icon}
           tooltipText={entry.label}
           onClicked={() => {
             const handler = () =>
-              execAsync(Array.isArray(entry.command)
-                ? entry.command
-                : entry.command.split(" "));
+              execAsync(
+                Array.isArray(entry.command)
+                  ? entry.command
+                  : entry.command.split(" "),
+              );
             if (entry.confirm) confirm(handler);
             else handler();
           }}
