@@ -17,17 +17,32 @@ export default () => {
         'curl "http://ip-api.com/json?fields=lat,lon"',
       );
       const loc = JSON.parse(res);
+      if (typeof loc?.lat !== "number" || typeof loc?.lon !== "number") {
+        console.warn("Weather geolocation failed:", loc);
+        return;
+      }
       const weatherRes = await execAsync(
         `curl https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,is_day,weather_code&models=gem_seamless`,
       );
       const weatherData = JSON.parse(weatherRes);
-      const emoji = weatherData.current.is_day
-        ? openWeatherWMOToEmoji(weatherData.current.weather_code).value
+      // API errors, rate limits, and network failures all yield responses
+      // without a `current` block; keep the previous value in that case.
+      const current = weatherData?.current;
+      if (
+        !current ||
+        typeof current.temperature_2m !== "number" ||
+        typeof current.weather_code !== "number" ||
+        typeof current.is_day !== "number"
+      ) {
+        console.warn("Weather response missing current data:", weatherData);
+        return;
+      }
+
+      const emoji = current.is_day
+        ? openWeatherWMOToEmoji(current.weather_code).value
         : moonPhaseFromDate().icon;
 
-      setWeather(
-        () => `${emoji} ${Math.round(weatherData.current.temperature_2m)}°C`,
-      );
+      setWeather(() => `${emoji} ${Math.round(current.temperature_2m)}°C`);
     } catch (e) {
       console.warn("Failed to update weather:", e);
     }
